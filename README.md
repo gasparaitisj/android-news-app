@@ -1,6 +1,6 @@
 # Justas Onboarding App
 
-## Requirements 
+# Requirements 
 
 ## General
 - Project configuration
@@ -11,17 +11,17 @@
 
 ## App
 - Error handling, displaying error message on the screen
-
-#Mandatory Technologies to use
 - Public git repo (https://gitlab.telesoftas.net)
 - Feature branches
 - Android requirements
-- App
+
+
+# Android requirements
 - Min Android SDK - 24
 - Target Android SDK - newest available
 - Android Design Guidelines (https://developer.android.com/design/index.html)
 
-## Mandatory Technologies to use
+## Mandatory Technologies to use (Android)
 - MVVM
 - Retrofit - network manager (https://square.github.io/retrofit/)
 - ImageLoader
