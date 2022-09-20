@@ -4,7 +4,7 @@
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
 
-    <style name="Theme.JustasOnboardingApp.Starting" parent="Theme.SplashScreen">
+    <style name="Theme.JustasOnboardingApp.SplashScreen" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
         <item name="windowSplashScreenBackground">@color/splashScreenBackground</item>
 
