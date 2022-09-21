@@ -3,16 +3,22 @@ package com.example.justasonboardingapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.justasonboardingapp.about.AboutScreen
+import com.example.justasonboardingapp.favorite.FavoriteScreen
+import com.example.justasonboardingapp.sourcelist.SourceListScreen
 import com.example.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 
+@ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -20,12 +26,39 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JustasOnboardingAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                val navController = rememberNavController()
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigationBar(
+                            items = listOf(
+                                BottomNavItem(
+                                    name = "Source list",
+                                    route = "source-list",
+                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_source_list),
+                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_source_list_active),
+                                ),
+                                BottomNavItem(
+                                    name = "Favorite",
+                                    route = "favorite",
+                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_favorite),
+                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_favorite_active)
+                                ),
+                                BottomNavItem(
+                                    name = "About",
+                                    route = "about",
+                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_about),
+                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_about_active)
+                                ),
+                            ),
+                            navController = navController,
+                            onItemClick = {
+                                navController.navigate(it.route)
+                            }
+                        )
+                    }
                 ) {
-                    Greeting("Android")
+                    it.calculateBottomPadding()
+                    Navigation(navController = navController)
                 }
             }
         }
@@ -33,14 +66,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    JustasOnboardingAppTheme {
-        Greeting("Android")
+fun Navigation(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "source-list") {
+        composable("source-list") {
+            SourceListScreen()
+        }
+        composable("favorite") {
+            FavoriteScreen()
+        }
+        composable("about") {
+            AboutScreen()
+        }
     }
 }
+
