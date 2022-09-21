@@ -7,5 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
     <color name="splashScreenBackground">#344955</color>
+    <color name="statusBar">#232F34</color>
+    <color name="toolBar">#232F34</color>
+    <color name="botNavBar">#232F34</color>
+    <color name="selectedContent">#F9AA33</color>
+    <color name="unselectedContent">#FFFFFFFF</color>
 </resources>
