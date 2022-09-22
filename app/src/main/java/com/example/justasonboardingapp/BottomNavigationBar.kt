@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -22,8 +21,7 @@ fun BottomNavigationBar(
     val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(
         modifier = modifier,
-        backgroundColor = colorResource(id = R.color.botNavBar),
-        elevation = 5.dp
+        backgroundColor = colorResource(id = R.color.botNavBar)
     ) {
         items.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route
