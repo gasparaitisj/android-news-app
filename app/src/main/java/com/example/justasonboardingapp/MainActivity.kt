@@ -26,34 +26,7 @@ class MainActivity : ComponentActivity() {
             JustasOnboardingAppTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                    bottomBar = {
-                        BottomNavigationBar(
-                            items = listOf(
-                                BottomNavItem(
-                                    name = "Source list",
-                                    route = "source-list",
-                                    iconInactiveResId = R.drawable.btn_source_list,
-                                    iconActiveResId = R.drawable.btn_source_list_active
-                                ),
-                                BottomNavItem(
-                                    name = "Favorite",
-                                    route = "favorite",
-                                    iconInactiveResId = R.drawable.btn_favorite,
-                                    iconActiveResId = R.drawable.btn_favorite_active
-                                ),
-                                BottomNavItem(
-                                    name = "About",
-                                    route = "about",
-                                    iconInactiveResId = R.drawable.btn_about,
-                                    iconActiveResId = R.drawable.btn_about_active
-                                ),
-                            ),
-                            navController = navController,
-                            onItemClick = {
-                                navController.navigate(it.route)
-                            }
-                        )
-                    }
+                    bottomBar = { BottomNavigationBar(navController = navController) }
                 ) {
                     it.calculateBottomPadding()
                     Navigation(navController = navController)
@@ -62,6 +35,38 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@Composable
+@ExperimentalMaterialApi
+fun BottomNavigationBar(navController: NavHostController) {
+    BottomNavigationBar(
+        items = listOf(
+            BottomNavItem(
+                name = "Source list",
+                route = "source-list",
+                iconInactiveResId = R.drawable.btn_source_list,
+                iconActiveResId = R.drawable.btn_source_list_active
+            ),
+            BottomNavItem(
+                name = "Favorite",
+                route = "favorite",
+                iconInactiveResId = R.drawable.btn_favorite,
+                iconActiveResId = R.drawable.btn_favorite_active
+            ),
+            BottomNavItem(
+                name = "About",
+                route = "about",
+                iconInactiveResId = R.drawable.btn_about,
+                iconActiveResId = R.drawable.btn_about_active
+            ),
+        ),
+        navController = navController,
+        onItemClick = {
+            navController.navigate(it.route)
+        }
+    )
+}
+
 
 @Composable
 fun Navigation(navController: NavHostController) {
