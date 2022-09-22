@@ -3,9 +3,12 @@ package com.example.justasonboardingapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,9 +30,13 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 Scaffold(
                     bottomBar = { BottomNavigationBar(navController = navController) }
-                ) {
-                    it.calculateBottomPadding()
-                    Navigation(navController = navController)
+                ) { paddingValues ->
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = paddingValues.calculateBottomPadding())
+                    ) {
+                        Navigation(navController = navController)
+                    }
                 }
             }
         }
