@@ -9,6 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -49,20 +50,20 @@ fun BottomNavigationBar(navController: NavHostController) {
     BottomNavigationBar(
         items = listOf(
             BottomNavItem(
-                name = "Source list",
-                route = "source-list",
+                name = stringResource(id = R.string.bottom_navigation_source_list),
+                route = Routes.SOURCE_LIST,
                 iconInactiveResId = R.drawable.btn_source_list,
                 iconActiveResId = R.drawable.btn_source_list_active
             ),
             BottomNavItem(
-                name = "Favorite",
-                route = "favorite",
+                name = stringResource(id = R.string.bottom_navigation_favorite),
+                route = Routes.FAVORITE,
                 iconInactiveResId = R.drawable.btn_favorite,
                 iconActiveResId = R.drawable.btn_favorite_active
             ),
             BottomNavItem(
-                name = "About",
-                route = "about",
+                name = stringResource(id = R.string.bottom_navigation_about),
+                route = Routes.ABOUT,
                 iconInactiveResId = R.drawable.btn_about,
                 iconActiveResId = R.drawable.btn_about_active
             ),
@@ -77,16 +78,21 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "source-list") {
-        composable("source-list") {
+    NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
+        composable(Routes.SOURCE_LIST) {
             SourceListScreen()
         }
-        composable("favorite") {
+        composable(Routes.FAVORITE) {
             FavoriteScreen()
         }
-        composable("about") {
+        composable(Routes.ABOUT) {
             AboutScreen()
         }
     }
 }
 
+object Routes {
+    const val SOURCE_LIST = "source-list"
+    const val FAVORITE = "favorite"
+    const val ABOUT = "about"
+}
