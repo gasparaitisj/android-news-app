@@ -5,10 +5,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import com.example.justasonboardingapp.R
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -49,8 +45,3 @@ fun JustasOnboardingAppTheme(
         content = content
     )
 }
-
-val Roboto = FontFamily(
-    Font(R.font.roboto_medium, FontWeight.W500),
-    Font(R.font.roboto_regular, FontWeight.W400)
-)

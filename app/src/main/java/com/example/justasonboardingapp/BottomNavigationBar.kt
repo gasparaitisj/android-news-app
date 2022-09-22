@@ -6,12 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.justasonboardingapp.ui.theme.Roboto
 
 @ExperimentalMaterialApi
 @Composable
@@ -43,14 +40,7 @@ fun BottomNavigationBar(
                         )
                     }
                 },
-                label = {
-                    Text(
-                        text = item.name,
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                        fontFamily = Roboto
-                    )
-                }
+                label = { Text(text = item.name) }
             )
         }
     }
