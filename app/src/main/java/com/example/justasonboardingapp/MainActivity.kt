@@ -76,7 +76,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 
 @Composable
-fun Navigation(navController: NavHostController) {
+private fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "source-list") {
         composable("source-list") {
             SourceListScreen()
