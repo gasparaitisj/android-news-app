@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Justas Onboarding App</string>
+    <string name="bottom_navigation_source_list">Source list</string>
+    <string name="bottom_navigation_favorite">Favorite</string>
+    <string name="bottom_navigation_about">About</string>
 </resources>
