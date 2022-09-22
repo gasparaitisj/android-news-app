@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -34,20 +32,20 @@ class MainActivity : ComponentActivity() {
                                 BottomNavItem(
                                     name = "Source list",
                                     route = "source-list",
-                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_source_list),
-                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_source_list_active),
+                                    iconInactiveResId = R.drawable.btn_source_list,
+                                    iconActiveResId = R.drawable.btn_source_list_active
                                 ),
                                 BottomNavItem(
                                     name = "Favorite",
                                     route = "favorite",
-                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_favorite),
-                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_favorite_active)
+                                    iconInactiveResId = R.drawable.btn_favorite,
+                                    iconActiveResId = R.drawable.btn_favorite_active
                                 ),
                                 BottomNavItem(
                                     name = "About",
                                     route = "about",
-                                    iconInactive = ImageVector.vectorResource(id = R.drawable.btn_about),
-                                    iconActive = ImageVector.vectorResource(id = R.drawable.btn_about_active)
+                                    iconInactiveResId = R.drawable.btn_about,
+                                    iconActiveResId = R.drawable.btn_about_active
                                 ),
                             ),
                             navController = navController,

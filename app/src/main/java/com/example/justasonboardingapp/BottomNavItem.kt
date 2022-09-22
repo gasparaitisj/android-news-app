@@ -1,10 +1,10 @@
 package com.example.justasonboardingapp
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
 
 data class BottomNavItem(
     val name: String,
     val route: String,
-    val iconInactive: ImageVector,
-    val iconActive: ImageVector
+    @DrawableRes val iconInactiveResId: Int,
+    @DrawableRes val iconActiveResId: Int
 )

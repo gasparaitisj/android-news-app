@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -35,7 +36,11 @@ fun BottomNavigationBar(
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
                         Icon(
-                            imageVector = if (selected) item.iconActive else item.iconInactive,
+                            painter = if (selected) {
+                                painterResource(id = item.iconActiveResId)
+                            } else {
+                                painterResource(id = item.iconInactiveResId)
+                            },
                             contentDescription = item.name
                         )
                     }
