@@ -18,4 +18,5 @@
     <string name="about_screen_paragraph_5">
         © 1999–2019 OA NEWS. All rights reserved. Privacy. Boosted by Sigis android
     </string>
+    <string name="about_screen_enable_notifications">Enable notifications</string>
 </resources>
