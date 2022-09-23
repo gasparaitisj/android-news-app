@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JustasOnboardingApp"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name="com.telesoftas.justasonboardingapp.MainActivity"
             android:exported="true"
