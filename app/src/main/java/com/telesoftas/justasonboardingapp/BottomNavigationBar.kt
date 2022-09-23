@@ -1,4 +1,4 @@
-package com.example.justasonboardingapp
+package com.telesoftas.justasonboardingapp
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*

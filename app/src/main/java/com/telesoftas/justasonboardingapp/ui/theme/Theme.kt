@@ -1,4 +1,4 @@
-package com.example.justasonboardingapp.ui.theme
+package com.telesoftas.justasonboardingapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

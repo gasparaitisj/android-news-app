@@ -1,4 +1,4 @@
-package com.example.justasonboardingapp
+package com.telesoftas.justasonboardingapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,10 +15,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.justasonboardingapp.about.AboutScreen
-import com.example.justasonboardingapp.favorite.FavoriteScreen
-import com.example.justasonboardingapp.sourcelist.SourceListScreen
-import com.example.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
+import com.telesoftas.justasonboardingapp.about.AboutScreen
+import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
+import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {

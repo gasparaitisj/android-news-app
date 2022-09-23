@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Justas Onboarding App"
-include ':app'
+include ":app"
