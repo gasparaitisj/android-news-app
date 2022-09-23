@@ -32,4 +32,6 @@
     <string name="tutorial_screen_third_description">
         We will give you the tools to rediscover your dearest hit-pieces.
     </string>
+    <string name="favorite_screen_favorite">Favorite</string>
+    <string name="source_list_screen_source_list">Source list</string>
 </resources>

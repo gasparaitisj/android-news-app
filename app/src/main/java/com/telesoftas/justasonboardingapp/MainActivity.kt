@@ -4,12 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
@@ -34,16 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             JustasOnboardingAppTheme {
                 val navController = rememberNavController()
-                Scaffold(
-                    bottomBar = { BottomNavigationBar(navController = navController) }
-                ) { paddingValues ->
-                    Column(
-                        modifier = Modifier
-                            .padding(bottom = paddingValues.calculateBottomPadding())
-                    ) {
-                        Navigation(navController = navController)
-                    }
-                }
+                Navigation(navController = navController)
             }
         }
     }
@@ -81,6 +68,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
@@ -90,13 +78,13 @@ private fun Navigation(navController: NavHostController) {
             TutorialScreen(navController = navController)
         }
         composable(Routes.SOURCE_LIST) {
-            SourceListScreen()
+            SourceListScreen(navController = navController)
         }
         composable(Routes.FAVORITE) {
-            FavoriteScreen()
+            FavoriteScreen(navController = navController)
         }
         composable(Routes.ABOUT) {
-            AboutScreen()
+            AboutScreen(navController = navController)
         }
     }
 }
