@@ -20,4 +20,16 @@
     </string>
     <string name="about_screen_enable_notifications">Enable notifications</string>
     <string name="about_screen_about">About</string>
+    <string name="tutorial_screen_first_title">Access your favorite news source</string>
+    <string name="tutorial_screen_first_description">
+        Keep in touch with the latest updates on the state of the world.
+    </string>
+    <string name="tutorial_screen_second_title">See every important article</string>
+    <string name="tutorial_screen_second_description">
+        Never miss out on what really interests you.
+    </string>
+    <string name="tutorial_screen_third_title">Save your favorite articles</string>
+    <string name="tutorial_screen_third_description">
+        We will give you the tools to rediscover your dearest hit-pieces.
+    </string>
 </resources>
