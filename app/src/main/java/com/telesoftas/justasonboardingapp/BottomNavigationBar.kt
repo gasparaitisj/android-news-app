@@ -1,4 +1,4 @@
-package com.example.justasonboardingapp
+package com.telesoftas.justasonboardingapp
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
@@ -9,6 +9,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.justasonboardingapp.R
 
 @ExperimentalMaterialApi
 @Composable

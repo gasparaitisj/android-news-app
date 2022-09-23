@@ -1,4 +1,4 @@
-package com.example.justasonboardingapp.ui.theme
+package com.telesoftas.justasonboardingapp.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
