@@ -3,6 +3,7 @@ package com.telesoftas.justasonboardingapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -15,11 +16,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,9 +81,14 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
+    NavHost(navController = navController, startDestination = Routes.TUTORIAL) {
+        composable(Routes.TUTORIAL) {
+            TutorialScreen(navController = navController)
+        }
         composable(Routes.SOURCE_LIST) {
             SourceListScreen()
         }
@@ -92,6 +102,7 @@ private fun Navigation(navController: NavHostController) {
 }
 
 object Routes {
+    const val TUTORIAL = "tutorial"
     const val SOURCE_LIST = "source-list"
     const val FAVORITE = "favorite"
     const val ABOUT = "about"
