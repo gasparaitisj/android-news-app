@@ -51,7 +51,7 @@ fun TutorialScreen(navController: NavHostController) {
             modifier = Modifier.weight(1f),
             pagerState = pagerState
         ) {
-            navController.navigate(Routes.SOURCE_LIST)
+            navController.navigate(Routes.RANDOM)
         }
     }
 }

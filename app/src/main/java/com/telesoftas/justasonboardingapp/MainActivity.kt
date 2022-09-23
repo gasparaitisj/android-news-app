@@ -13,9 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.telesoftas.justasonboardingapp.about.AboutScreen
-import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
-import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 
@@ -77,14 +74,8 @@ private fun Navigation(navController: NavHostController) {
         composable(Routes.TUTORIAL) {
             TutorialScreen(navController = navController)
         }
-        composable(Routes.SOURCE_LIST) {
-            SourceListScreen(navController = navController)
-        }
-        composable(Routes.FAVORITE) {
-            FavoriteScreen(navController = navController)
-        }
-        composable(Routes.ABOUT) {
-            AboutScreen(navController = navController)
+        composable(Routes.RANDOM) {
+            RandomScreen()
         }
     }
 }
@@ -94,4 +85,5 @@ object Routes {
     const val SOURCE_LIST = "source-list"
     const val FAVORITE = "favorite"
     const val ABOUT = "about"
+    const val RANDOM = "random"
 }

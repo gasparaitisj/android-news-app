@@ -10,13 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
-import com.telesoftas.justasonboardingapp.BottomNavigationBar
 import com.telesoftas.justasonboardingapp.R
 
 @ExperimentalMaterialApi
 @Composable
-fun SourceListScreen(navController: NavHostController) {
+fun SourceListScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -27,7 +25,6 @@ fun SourceListScreen(navController: NavHostController) {
                 contentColor = colorResource(id = R.color.topAppBarContent)
             )
         },
-        bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
