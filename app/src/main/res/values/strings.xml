@@ -3,4 +3,19 @@
     <string name="bottom_navigation_source_list">Source list</string>
     <string name="bottom_navigation_favorite">Favorite</string>
     <string name="bottom_navigation_about">About</string>
+    <string name="about_screen_paragraph_1">Vision</string>
+    <string name="about_screen_paragraph_2">
+        The Week makes sense of the week\'s news by curating
+        the best of the U.S. and international media into a succinct, lively digest.
+    </string>
+    <string name="about_screen_paragraph_3">
+        Created for busy people like you, The Week is packed with provocative,
+        often surprising perspectives, providing you complete understanding and
+        insight into the week\'s most vital stories. Intuitive and easy to navigate,
+        this app has been designed to suit the way you\'ll read on your iPad or iPhone.
+    </string>
+    <string name="about_screen_paragraph_4">Version 12.01.08</string>
+    <string name="about_screen_paragraph_5">
+        © 1999–2019 OA NEWS. All rights reserved. Privacy. Boosted by Sigis android
+    </string>
 </resources>
