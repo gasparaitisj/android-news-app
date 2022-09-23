@@ -14,4 +14,6 @@
     <color name="botNavBar">#232F34</color>
     <color name="selectedContent">#F9AA33</color>
     <color name="unselectedContent">#FFFFFFFF</color>
+    <color name="topAppBarBackground">#232F34</color>
+    <color name="topAppBarContent">#FFFFFFFF</color>
 </resources>
