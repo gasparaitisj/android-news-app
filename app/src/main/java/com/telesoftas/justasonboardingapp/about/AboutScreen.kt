@@ -1,10 +1,7 @@
 package com.telesoftas.justasonboardingapp.about
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +20,7 @@ fun AboutScreen() {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("About")
+                    Text(stringResource(id = R.string.about_screen_about))
                 },
                 backgroundColor = colorResource(id = R.color.topAppBarBackground),
                 contentColor = colorResource(id = R.color.topAppBarContent)
@@ -69,10 +66,17 @@ fun AboutScreen() {
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Checkbox(
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colorResource(R.color.checkbox),
+                            uncheckedColor = colorResource(R.color.checkbox)
+                        ),
                         checked = checkedState.value,
                         onCheckedChange = { checkedState.value = it }
                     )
-                    Text(text = stringResource(R.string.about_screen_enable_notifications))
+                    Text(
+                        text = stringResource(R.string.about_screen_enable_notifications),
+                        style = Typography.subtitle2
+                    )
                 }
                 
             }
