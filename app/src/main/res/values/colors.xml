@@ -16,4 +16,5 @@
     <color name="unselectedContent">#FFFFFFFF</color>
     <color name="topAppBarBackground">#232F34</color>
     <color name="topAppBarContent">#FFFFFFFF</color>
+    <color name="checkbox">#33344A</color>
 </resources>
