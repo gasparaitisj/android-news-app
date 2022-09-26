@@ -17,4 +17,8 @@
     <color name="topAppBarBackground">#232F34</color>
     <color name="topAppBarContent">#FFFFFFFF</color>
     <color name="checkbox">#33344A</color>
+    <color name="buttonPressedBackground">#CBF1F6</color>
+    <color name="buttonPressedContent">#4195A5</color>
+    <color name="buttonNotPressedBackground">#EAEAEA</color>
+    <color name="buttonNotPressedContent">#6A6A6A</color>
 </resources>

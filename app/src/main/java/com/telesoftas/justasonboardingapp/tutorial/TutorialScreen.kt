@@ -3,14 +3,18 @@ package com.telesoftas.justasonboardingapp.tutorial
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -104,6 +108,21 @@ fun FinishButton(
     pagerState: PagerState,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val backgroundColor = if (isPressed) {
+        colorResource(id = R.color.buttonPressedBackground)
+    } else {
+        colorResource(id = R.color.buttonNotPressedBackground)
+    }
+
+    val contentColor = if (isPressed) {
+        colorResource(id = R.color.buttonPressedContent)
+    } else {
+        colorResource(id = R.color.buttonNotPressedContent)
+    }
+
     Row(
         modifier = modifier
             .padding(horizontal = 40.dp),
@@ -117,10 +136,15 @@ fun FinishButton(
             Button(
                 onClick = onClick,
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White
-                )
+                    backgroundColor = backgroundColor,
+                    contentColor = contentColor
+                ),
+                interactionSource = interactionSource
             ) {
-                Text(text = stringResource(id = R.string.tutorial_screen_btn_finish))
+                Text(
+                    text = stringResource(id = R.string.tutorial_screen_btn_finish),
+                    style = Typography.button
+                )
             }
         }
     }
