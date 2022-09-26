@@ -8,7 +8,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,7 +27,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             JustasOnboardingAppTheme {
                 val navController = rememberNavController()
+                val firstTime = true
                 Navigation(navController = navController)
+                if (firstTime) {
+                    navController.navigate(route = Routes.TUTORIAL) {
+                        popUpTo(Routes.MAIN) { inclusive = true }
+                    }
+                }
             }
         }
     }
@@ -61,16 +66,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         navController = navController,
         onItemClick = {
             navController.navigate(it.route) {
-                // Pop up to the start destination of the graph to
-                // avoid building up a large stack of destinations
-                // on the back stack as users select items
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-                // Avoid multiple copies of the same destination when reselecting the same item
-                launchSingleTop = true
-                // Restore state when reselecting a previously selected item
-                restoreState = true
+                popUpTo(Routes.SOURCE_LIST)
             }
         }
     )
@@ -82,12 +78,12 @@ fun BottomNavigationBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.TUTORIAL) {
+    NavHost(navController = navController, startDestination = Routes.MAIN) {
         composable(Routes.TUTORIAL) {
             TutorialScreen(navController = navController)
         }
-        composable(Routes.RANDOM) {
-            RandomScreen()
+        composable(Routes.MAIN) {
+            MainScreen()
         }
     }
 }
@@ -97,5 +93,5 @@ object Routes {
     const val SOURCE_LIST = "source-list"
     const val FAVORITE = "favorite"
     const val ABOUT = "about"
-    const val RANDOM = "random"
+    const val MAIN = "main"
 }

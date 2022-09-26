@@ -25,7 +25,7 @@ import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun RandomScreen() {
+fun MainScreen() {
     val bottomNavController = rememberNavController()
     Scaffold(
         topBar = { TopBar(navController = bottomNavController) },
