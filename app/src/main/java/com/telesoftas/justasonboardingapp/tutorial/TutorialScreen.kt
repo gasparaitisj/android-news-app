@@ -67,8 +67,7 @@ fun TutorialScreen(navController: NavHostController) {
 @Composable
 fun PagerScreen(onBoardingPage: OnBoardingPage) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -80,8 +79,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             contentDescription = "Pager Image"
         )
         Text(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(onBoardingPage.titleResId),
             fontSize = Typography.h4.fontSize,
             fontWeight = FontWeight.Bold,
@@ -90,8 +88,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .padding(top = 20.dp),
+                .padding(start = 40.dp, top = 20.dp, end = 20.dp),
             text = stringResource(id = onBoardingPage.descriptionResId),
             fontSize = Typography.subtitle1.fontSize,
             fontWeight = FontWeight.Medium,
@@ -124,8 +121,7 @@ fun FinishButton(
     }
 
     Row(
-        modifier = modifier
-            .padding(horizontal = 40.dp),
+        modifier = modifier.padding(horizontal = 40.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
     ) {

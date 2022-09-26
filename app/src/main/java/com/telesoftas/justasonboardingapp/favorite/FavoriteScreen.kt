@@ -17,10 +17,7 @@ fun FavoriteScreen(navController: NavHostController) {
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
-                modifier = Modifier
-                    .padding(
-                        top = paddingValues.calculateTopPadding()
-                    ),
+                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
                 content = {
                     Text(text = "Favorite screen")
                 }

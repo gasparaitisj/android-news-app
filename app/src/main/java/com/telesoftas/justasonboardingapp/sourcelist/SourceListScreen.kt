@@ -15,10 +15,7 @@ fun SourceListScreen(navController: NavHostController) {
     Scaffold(
         content = { paddingValues ->
             Column(
-                modifier = Modifier
-                    .padding(
-                        top = paddingValues.calculateTopPadding()
-                    ),
+                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
                 content = {
                     Text(text = "Source list screen")
                 }
