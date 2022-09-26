@@ -75,7 +75,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .fillMaxHeight(0.7f),
-            painter = painterResource(id = onBoardingPage.image),
+            painter = painterResource(id = onBoardingPage.imageResId),
             contentDescription = "Pager Image"
         )
         Text(
