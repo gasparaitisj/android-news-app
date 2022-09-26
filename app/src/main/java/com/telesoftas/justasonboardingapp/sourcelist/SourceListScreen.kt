@@ -1,18 +1,25 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 
+@ExperimentalMaterialApi
 @Composable
-fun SourceListScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Source list screen")
-    }
+fun SourceListScreen(navController: NavHostController) {
+    Scaffold(
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
+                content = {
+                    Text(text = "Source list screen")
+                }
+            )
+        }
+    )
 }

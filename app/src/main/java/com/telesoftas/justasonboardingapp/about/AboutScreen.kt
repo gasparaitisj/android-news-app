@@ -9,23 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.telesoftas.justasonboardingapp.BottomNavigationBar
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 
+@ExperimentalMaterialApi
 @Composable
-fun AboutScreen() {
+fun AboutScreen(navController: NavHostController) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(id = R.string.about_screen_about))
-                },
-                backgroundColor = colorResource(id = R.color.topAppBarBackground),
-                contentColor = colorResource(id = R.color.topAppBarContent)
-            )
-        },
+        bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
@@ -78,14 +72,7 @@ fun AboutScreen() {
                         style = Typography.subtitle2
                     )
                 }
-                
             }
         }
     )
-}
-
-@Preview
-@Composable
-fun AboutScreenPreview() {
-    AboutScreen()
 }

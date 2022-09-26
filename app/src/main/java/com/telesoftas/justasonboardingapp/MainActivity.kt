@@ -3,23 +3,21 @@ package com.telesoftas.justasonboardingapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.telesoftas.justasonboardingapp.about.AboutScreen
-import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
-import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,14 +27,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             JustasOnboardingAppTheme {
                 val navController = rememberNavController()
-                Scaffold(
-                    bottomBar = { BottomNavigationBar(navController = navController) }
-                ) { paddingValues ->
-                    Column(
-                        modifier = Modifier
-                            .padding(bottom = paddingValues.calculateBottomPadding())
-                    ) {
-                        Navigation(navController = navController)
+                val firstTime = true
+                Navigation(navController = navController)
+                if (firstTime) {
+                    navController.navigate(route = Routes.TUTORIAL) {
+                        popUpTo(Routes.MAIN) { inclusive = true }
                     }
                 }
             }
@@ -70,29 +65,33 @@ fun BottomNavigationBar(navController: NavHostController) {
         ),
         navController = navController,
         onItemClick = {
-            navController.navigate(it.route)
+            navController.navigate(it.route) {
+                popUpTo(Routes.SOURCE_LIST)
+            }
         }
     )
 }
 
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
-        composable(Routes.SOURCE_LIST) {
-            SourceListScreen()
+    NavHost(navController = navController, startDestination = Routes.MAIN) {
+        composable(Routes.TUTORIAL) {
+            TutorialScreen(navController = navController)
         }
-        composable(Routes.FAVORITE) {
-            FavoriteScreen()
-        }
-        composable(Routes.ABOUT) {
-            AboutScreen()
+        composable(Routes.MAIN) {
+            MainScreen()
         }
     }
 }
 
 object Routes {
+    const val TUTORIAL = "tutorial"
     const val SOURCE_LIST = "source-list"
     const val FAVORITE = "favorite"
     const val ABOUT = "about"
+    const val MAIN = "main"
 }
