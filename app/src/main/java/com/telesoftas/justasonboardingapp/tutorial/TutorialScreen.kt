@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.*
+import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.Routes
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 
@@ -32,7 +32,9 @@ fun TutorialScreen(navController: NavHostController) {
         OnBoardingPage.Third
     )
     val pagerState = rememberPagerState()
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
         HorizontalPager(
             modifier = Modifier.weight(10f),
             count = 3,
@@ -85,7 +87,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
                 .padding(horizontal = 40.dp)
                 .padding(top = 20.dp),
             text = stringResource(id = onBoardingPage.descriptionResId),
-            fontSize = MaterialTheme.typography.subtitle1.fontSize,
+            fontSize = Typography.subtitle1.fontSize,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
         )
@@ -116,7 +118,7 @@ fun FinishButton(
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Finish")
+                Text(text = stringResource(id = R.string.tutorial_screen_btn_finish))
             }
         }
     }

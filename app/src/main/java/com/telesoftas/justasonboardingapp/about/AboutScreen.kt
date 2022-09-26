@@ -19,15 +19,6 @@ import com.telesoftas.justasonboardingapp.ui.theme.Typography
 @Composable
 fun AboutScreen(navController: NavHostController) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(id = R.string.about_screen_about))
-                },
-                backgroundColor = colorResource(id = R.color.topAppBarBackground),
-                contentColor = colorResource(id = R.color.topAppBarContent)
-            )
-        },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
