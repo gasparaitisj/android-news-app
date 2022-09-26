@@ -88,7 +88,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 40.dp, top = 20.dp, end = 20.dp),
+                .padding(start = 40.dp, top = 20.dp, end = 40.dp),
             text = stringResource(id = onBoardingPage.descriptionResId),
             fontSize = Typography.subtitle1.fontSize,
             fontWeight = FontWeight.Medium,
