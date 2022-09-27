@@ -8,9 +8,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,12 +26,26 @@ import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navController: NavHostController,
+    viewModel: MainViewModel = hiltViewModel()
+) {
     val bottomNavController = rememberNavController()
+    val isFirstLaunch by viewModel.isFirstLaunch.collectAsStateWithLifecycle(initialValue = null)
+
+    if (isFirstLaunch == true) {
+        LaunchedEffect(isFirstLaunch) {
+            viewModel.updateIsFirstLaunch(false)
+            navController.navigate(route = Routes.TUTORIAL) {
+                popUpTo(Routes.MAIN) { inclusive = true }
+            }
+        }
+    }
     Scaffold(
         topBar = { TopBar(navController = bottomNavController) },
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
