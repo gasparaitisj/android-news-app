@@ -8,6 +8,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,10 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -27,13 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             JustasOnboardingAppTheme {
                 val navController = rememberNavController()
-                val firstTime = true
                 Navigation(navController = navController)
-                if (firstTime) {
-                    navController.navigate(route = Routes.TUTORIAL) {
-                        popUpTo(Routes.MAIN) { inclusive = true }
-                    }
-                }
             }
         }
     }
@@ -73,6 +72,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -83,7 +83,7 @@ private fun Navigation(navController: NavHostController) {
             TutorialScreen(navController = navController)
         }
         composable(Routes.MAIN) {
-            MainScreen()
+            MainScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }

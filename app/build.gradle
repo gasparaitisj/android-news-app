@@ -1,6 +1,8 @@
 plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
 }
 
 android {
@@ -52,9 +54,15 @@ android {
 }
 
 dependencies {
-    // KTX
+    // Core libraries
     implementation "androidx.core:core-ktx:$core_ktx_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_ktx_version"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
 
     // Compose
     implementation "androidx.compose.ui:ui:$compose_ui_version"
@@ -69,8 +77,16 @@ dependencies {
     // Splash Screen API
     implementation "androidx.core:core-splashscreen:$splash_screen_version"
 
+    // DataStore
+    implementation "androidx.datastore:datastore-preferences:$data_store_preferences_version"
+
     // Material Design
     implementation "androidx.compose.material:material:$material_version"
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // JUnit
     testImplementation "junit:junit:$junit_version"
