@@ -69,6 +69,9 @@ dependencies {
     // Splash Screen API
     implementation "androidx.core:core-splashscreen:$splash_screen_version"
 
+    // DataStore
+    implementation "androidx.datastore:datastore-preferences:$data_store_preferences_version"
+
     // Material Design
     implementation "androidx.compose.material:material:$material_version"
 
