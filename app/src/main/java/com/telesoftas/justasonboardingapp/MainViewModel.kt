@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject internal constructor(
+class MainViewModel @Inject constructor(
     private val preferencesStore: PreferencesStore
 ) : ViewModel() {
     val isFirstLaunch = preferencesStore.isFirstLaunch()

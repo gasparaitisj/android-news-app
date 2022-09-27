@@ -15,7 +15,7 @@ import javax.inject.Inject
 class PreferencesStore @Inject constructor(
     @ApplicationContext val context: Context
 ) {
-    private val Context.dataStore by preferencesDataStore(PreferencesKeys.SETTINGS_PREFERENCE_NAME)
+    private val Context.dataStore by preferencesDataStore(SETTINGS_PREFERENCE_NAME)
 
     fun isFirstLaunch(): Flow<Boolean> = context.dataStore.data.catch { exception ->
         // dataStore.data throws an IOException if it can't read the data
@@ -25,17 +25,17 @@ class PreferencesStore @Inject constructor(
             throw exception
         }
     }.map { preferences ->
-        preferences[PreferencesKeys.FIRST_LAUNCH] ?: true
+        preferences[FIRST_LAUNCH] ?: true
     }
 
     suspend fun updateIsFirstLaunch(isFirstLaunch: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FIRST_LAUNCH] = isFirstLaunch
+            preferences[FIRST_LAUNCH] = isFirstLaunch
         }
     }
-}
 
-object PreferencesKeys {
-    const val SETTINGS_PREFERENCE_NAME = "settings"
-    val FIRST_LAUNCH = booleanPreferencesKey("FIRST_LAUNCH")
+    companion object {
+        private const val SETTINGS_PREFERENCE_NAME = "settings"
+        private val FIRST_LAUNCH = booleanPreferencesKey("FIRST_LAUNCH")
+    }
 }
