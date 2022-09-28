@@ -80,6 +80,12 @@ dependencies {
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$data_store_preferences_version"
 
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
     // Material Design
     implementation "androidx.compose.material:material:$material_version"
 
