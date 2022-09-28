@@ -35,4 +35,5 @@
     <string name="favorite_screen_favorite">Favorite</string>
     <string name="source_list_screen_source_list">Source list</string>
     <string name="tutorial_screen_btn_finish">Finish</string>
+    <string name="network_error">Couldn\'t reach the server. Check your internet connection.</string>
 </resources>
