@@ -85,6 +85,7 @@ private fun TopBar(navController: NavHostController) {
 }
 
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
