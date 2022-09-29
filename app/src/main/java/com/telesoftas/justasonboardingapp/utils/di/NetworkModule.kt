@@ -1,7 +1,7 @@
 package com.telesoftas.justasonboardingapp.utils.di
 
 import com.telesoftas.justasonboardingapp.utils.Constants
-import com.telesoftas.justasonboardingapp.utils.network.ArticleApi
+import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideGetService(): ArticleApi {
+    fun provideArticlesService(): ArticlesApi {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             this.level = HttpLoggingInterceptor.Level.BODY
         }
@@ -31,6 +31,6 @@ class NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-            .create(ArticleApi::class.java)
+            .create(ArticlesApi::class.java)
     }
 }

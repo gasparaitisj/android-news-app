@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
-import com.telesoftas.justasonboardingapp.utils.network.data.ArticleListResponse
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,9 +16,9 @@ import javax.inject.Inject
 class SourceListViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository
 ) : ViewModel() {
-    private val _response: MutableStateFlow<Resource<ArticleListResponse>> =
+    private val _response: MutableStateFlow<Resource<ArticlesListResponse>> =
         MutableStateFlow(Resource.loading())
-    val response: StateFlow<Resource<ArticleListResponse>> = _response.asStateFlow()
+    val response: StateFlow<Resource<ArticlesListResponse>> = _response.asStateFlow()
 
     fun getArticles(
         query: String? = null,
