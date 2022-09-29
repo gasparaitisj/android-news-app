@@ -16,9 +16,9 @@ import javax.inject.Inject
 class SourceListViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository
 ) : ViewModel() {
-    private val _response: MutableStateFlow<Resource<ArticlesListResponse>> =
+    private val _articles: MutableStateFlow<Resource<ArticlesListResponse>> =
         MutableStateFlow(Resource.loading())
-    val response: StateFlow<Resource<ArticlesListResponse>> = _response.asStateFlow()
+    val articles: StateFlow<Resource<ArticlesListResponse>> = _articles.asStateFlow()
 
     fun getArticles(
         query: String? = null,
@@ -30,7 +30,7 @@ class SourceListViewModel @Inject constructor(
         xRequestId: String? = null
     ) {
         viewModelScope.launch {
-            _response.value = articlesRepository.getArticles(
+            _articles.value = articlesRepository.getArticles(
                 query = query,
                 page = page,
                 pageSize = pageSize,

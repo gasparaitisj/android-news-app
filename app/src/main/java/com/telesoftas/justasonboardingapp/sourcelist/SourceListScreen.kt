@@ -29,17 +29,17 @@ fun SourceListScreen(
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
     viewModel.getArticles()
-    val response by viewModel.response.collectAsStateWithLifecycle(initialValue = Resource.loading())
+    val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
     val newsSourceList = mutableListOf<NewsSource>()
     when (response.status) {
         Status.SUCCESS -> {
             response.data?.articlePreviewResponses?.let { articles ->
                 articles.forEach { article ->
                     newsSourceList.add(NewsSource(
-                        article.title ?: "",
-                        article.description ?: ""
-                    ))
-                    println("category: " + article.category)
+                        title = article.title ?: "",
+                        description = article.description ?: ""
+                    )
+                    )
                 }
             }
         }
@@ -54,7 +54,6 @@ fun SourceListScreen(
             ).show()
         }
     }
-
     Scaffold(
         content = { paddingValues ->
             Column(
