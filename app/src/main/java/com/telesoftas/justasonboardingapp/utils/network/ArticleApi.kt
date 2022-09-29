@@ -1,13 +1,13 @@
 package com.telesoftas.justasonboardingapp.utils.network
 
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
-import com.telesoftas.justasonboardingapp.utils.network.data.GetArticlesResponse
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticleListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
-interface ArticlesApi {
+interface ArticleApi {
     @Headers("Content-Type: application/json")
     @GET("articles")
     suspend fun getArticles(
@@ -18,5 +18,5 @@ interface ArticlesApi {
         @Query("sortBy") sortBy: String? = null,
         @Query("order") pageNumber: Int? = null,
         @Query("x-request-id") xRequestId: String? = null
-    ): Response<GetArticlesResponse>
+    ): Response<ArticleListResponse>
 }

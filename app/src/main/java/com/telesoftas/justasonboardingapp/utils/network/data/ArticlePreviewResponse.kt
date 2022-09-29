@@ -2,12 +2,12 @@ package com.telesoftas.justasonboardingapp.utils.network.data
 
 import com.squareup.moshi.Json
 
-data class Article (
-    val id: String?,
-    val votes: Long?,
-    val publishedAt: String?,
+data class ArticlePreviewResponse (
+    val id: String,
+    val votes: Long,
+    val publishedAt: String,
     val source: String?,
-    val category: ArticleCategory?,
+    val category: ArticleCategory,
     val author: String?,
     val title: String?,
     val description: String?,

@@ -1,16 +1,16 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import com.telesoftas.justasonboardingapp.utils.network.ArticleApi
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
-import com.telesoftas.justasonboardingapp.utils.network.data.GetArticlesResponse
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticleListResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ArticlesRepository @Inject constructor(
-    private val articlesApi: ArticlesApi
+    private val articleApi: ArticleApi
 ) {
     suspend fun getArticles(
         query: String? = null,
@@ -20,9 +20,9 @@ class ArticlesRepository @Inject constructor(
         sortBy: String? = null,
         pageNumber: Int? = null,
         xRequestId: String? = null
-    ): Resource<GetArticlesResponse> {
+    ): Resource<ArticleListResponse> {
         return try {
-            val response = articlesApi.getArticles(
+            val response = articleApi.getArticles(
                 query = query,
                 page = page,
                 pageSize = pageSize,

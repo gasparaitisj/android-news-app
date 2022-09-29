@@ -33,7 +33,7 @@ fun SourceListScreen(
     val newsSourceList = mutableListOf<NewsSource>()
     when (response.status) {
         Status.SUCCESS -> {
-            response.data?.articles?.let { articles ->
+            response.data?.articlePreviewResponses?.let { articles ->
                 articles.forEach { article ->
                     newsSourceList.add(NewsSource(
                         article.title ?: "",
