@@ -21,4 +21,8 @@
     <color name="buttonPressedContent">#4195A5</color>
     <color name="buttonNotPressedBackground">#EAEAEA</color>
     <color name="buttonNotPressedContent">#6A6A6A</color>
+    <color name="snackbarBackground">#232F34</color>
+    <color name="snackbarContent">#FFFFFFFF</color>
+    <color name="snackbarAction">#F9AA33</color>
+
 </resources>

@@ -1,15 +1,15 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +21,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
+import kotlinx.coroutines.launch
 
 @ExperimentalLifecycleComposeApi
 @Composable
@@ -28,6 +29,9 @@ fun SourceListScreen(
     navController: NavHostController,
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+
     viewModel.getArticles()
     val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
     val newsSourceList = mutableListOf<NewsSource>()
@@ -47,17 +51,35 @@ fun SourceListScreen(
             // do nothing
         }
         Status.ERROR -> {
-            Toast.makeText(
-                LocalContext.current,
-                stringResource(id = R.string.network_error),
-                Toast.LENGTH_SHORT
-            ).show()
+            val message = stringResource(id = R.string.network_error)
+            val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
+            LaunchedEffect(Unit) {
+                scope.launch {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = message,
+                        actionLabel = actionLabel,
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
         }
     }
+
     Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(it) { data ->
+                Snackbar(
+                    backgroundColor = colorResource(id = R.color.snackbarBackground),
+                    actionColor = colorResource(id = R.color.snackbarAction),
+                    contentColor = colorResource(id = R.color.snackbarContent),
+                    snackbarData = data
+                )
+            }
+        },
         content = { paddingValues ->
             Column(
-                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
+                modifier = Modifier.padding(paddingValues),
                 content = {
                     SourceListContent(newsSourceList = newsSourceList)
                 }
