@@ -51,7 +51,7 @@ fun MainScreen(
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
         content = { paddingValues ->
             Column(
-                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
+                modifier = Modifier.padding(paddingValues),
                 content = {
                     BottomNavigationBarNavigation(navController = bottomNavController)
                 }
