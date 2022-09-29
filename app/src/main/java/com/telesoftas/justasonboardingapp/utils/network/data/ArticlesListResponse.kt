@@ -5,5 +5,5 @@ data class ArticlesListResponse (
     val currentPage: Long,
     val totalPages: Long,
     val pageSize: Long,
-    val articlePreviewResponses: List<ArticlePreviewResponse>?
+    val articles: List<ArticlePreviewResponse>?
 )
