@@ -1,8 +1,18 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Justas Onboarding App</string>
+
+    <!-- Top app bar -->
+    <string name="top_app_bar_title_source_list">Source list</string>
+    <string name="top_app_bar_title_favorite">Favorite</string>
+    <string name="top_app_bar_title_about">About</string>
+
+    <!-- Bottom navigation -->
     <string name="bottom_navigation_source_list">Source list</string>
     <string name="bottom_navigation_favorite">Favorite</string>
     <string name="bottom_navigation_about">About</string>
+
+    <!-- About screen -->
     <string name="about_screen_paragraph_1">Vision</string>
     <string name="about_screen_paragraph_2">
         The Week makes sense of the week\'s news by curating
@@ -20,6 +30,8 @@
     </string>
     <string name="about_screen_enable_notifications">Enable notifications</string>
     <string name="about_screen_about">About</string>
+
+    <!-- Tutorial screen -->
     <string name="tutorial_screen_first_title">Access your favorite news source</string>
     <string name="tutorial_screen_first_description">
         Keep in touch with the latest updates on the state of the world.
@@ -32,8 +44,8 @@
     <string name="tutorial_screen_third_description">
         We will give you the tools to rediscover your dearest hit-pieces.
     </string>
-    <string name="favorite_screen_favorite">Favorite</string>
-    <string name="source_list_screen_source_list">Source list</string>
     <string name="tutorial_screen_btn_finish">Finish</string>
+
+    <!-- Network error -->
     <string name="network_error">Couldn\'t reach the server. Check your internet connection.</string>
 </resources>
