@@ -69,13 +69,13 @@ private fun TopBar(navController: NavHostController) {
         title = {
             when (navController.currentBackStackEntryAsState().value?.destination?.route) {
                 Routes.SOURCE_LIST -> {
-                    Text(stringResource(id = R.string.source_list_screen_source_list))
+                    Text(stringResource(id = R.string.top_app_bar_title_source_list))
                 }
                 Routes.FAVORITE -> {
-                    Text(stringResource(id = R.string.favorite_screen_favorite))
+                    Text(stringResource(id = R.string.top_app_bar_title_favorite))
                 }
                 Routes.ABOUT -> {
-                    Text(stringResource(id = R.string.about_screen_about))
+                    Text(stringResource(id = R.string.top_app_bar_title_about))
                 }
             }
         },
@@ -85,6 +85,7 @@ private fun TopBar(navController: NavHostController) {
 }
 
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi

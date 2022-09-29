@@ -1,7 +1,7 @@
 package com.telesoftas.justasonboardingapp
 
 import androidx.lifecycle.ViewModel
-import com.telesoftas.justasonboardingapp.utils.PreferencesStore
+import com.telesoftas.justasonboardingapp.utils.preferences.PreferencesStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

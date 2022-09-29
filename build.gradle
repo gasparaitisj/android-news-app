@@ -19,6 +19,8 @@ buildscript {
         junit_version = "4.13.2"
         lifecycle_version = "2.6.0-alpha02"
         material_version = "1.2.1"
+        okhttp_version = "4.10.0"
+        retrofit_version = "2.9.0"
         splash_screen_version = "1.0.0"
     }
 

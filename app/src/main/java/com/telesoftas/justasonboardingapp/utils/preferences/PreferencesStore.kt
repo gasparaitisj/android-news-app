@@ -1,4 +1,4 @@
-package com.telesoftas.justasonboardingapp.utils
+package com.telesoftas.justasonboardingapp.utils.preferences
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
