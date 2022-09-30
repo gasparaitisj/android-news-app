@@ -13,7 +13,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -27,14 +26,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun SourceListScreen(
     navController: NavHostController,
-    viewModel: SourceListViewModel = hiltViewModel()
+    viewModel: SourceListViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-
-    viewModel.getArticles()
-    val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
     val newsSourceList = mutableListOf<NewsSource>()
+    val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
     when (response.status) {
         Status.SUCCESS -> {
             response.data?.articles?.let { articles ->

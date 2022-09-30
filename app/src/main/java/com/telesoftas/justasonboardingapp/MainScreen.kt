@@ -33,7 +33,7 @@ import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel
 ) {
     val bottomNavController = rememberNavController()
     val isFirstLaunch by viewModel.isFirstLaunch.collectAsStateWithLifecycle(initialValue = null)
@@ -93,7 +93,7 @@ private fun TopBar(navController: NavHostController) {
 private fun BottomNavigationBarNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
         composable(Routes.SOURCE_LIST) {
-            SourceListScreen(navController = navController)
+            SourceListScreen(navController = navController, viewModel = hiltViewModel())
         }
         composable(Routes.FAVORITE) {
             FavoriteScreen(navController = navController)

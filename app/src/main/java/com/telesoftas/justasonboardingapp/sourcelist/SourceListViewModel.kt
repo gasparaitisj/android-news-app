@@ -20,6 +20,10 @@ class SourceListViewModel @Inject constructor(
         MutableStateFlow(Resource.loading())
     val articles: StateFlow<Resource<ArticlesListResponse>> = _articles.asStateFlow()
 
+    init {
+        getArticles()
+    }
+
     fun getArticles(
         query: String? = null,
         page: Int? = null,
