@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
+import androidx.compose.material.ChipDefaults.filterChipColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -139,11 +140,18 @@ private fun SourceItem(item: NewsSource) {
 fun ChipGroupSortArticles(
     viewModel: SourceListViewModel,
     chipAscendingState: MutableState<Boolean>,
-    chipDescendingState: MutableState<Boolean>,
+    chipDescendingState: MutableState<Boolean>
 ) {
+    val chipColors = filterChipColors(
+        backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
+        contentColor = colorResource(id = R.color.chipNotSelectedContent),
+        selectedBackgroundColor = colorResource(id = R.color.chipSelectedBackground),
+        selectedContentColor = colorResource(id = R.color.chipSelectedContent),
+    )
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
             FilterChip(
+                colors = chipColors,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 selected = chipAscendingState.value,
                 onClick = {
@@ -158,6 +166,7 @@ fun ChipGroupSortArticles(
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
             }
             FilterChip(
+                colors = chipColors,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 selected = chipDescendingState.value,
                 onClick = {
