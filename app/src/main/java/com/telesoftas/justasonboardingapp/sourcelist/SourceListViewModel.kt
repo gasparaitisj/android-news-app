@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
+import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +36,7 @@ class SourceListViewModel @Inject constructor(
         xRequestId: String? = null
     ) {
         viewModelScope.launch {
+            _articles.value = Resource.loading()
             _articles.value = articlesRepository.getArticles(
                 query = query,
                 page = page,
@@ -43,6 +46,27 @@ class SourceListViewModel @Inject constructor(
                 pageNumber = pageNumber,
                 xRequestId = xRequestId
             )
+        }
+    }
+
+    fun sortArticles(sortBy: SortBy) {
+        when(sortBy.ordinal) {
+            SortBy.ASCENDING.ordinal -> {
+                val data = _articles.value.data?.copy(
+                    articles = _articles.value.data?.articles?.sortedBy { it.title }
+                )
+                _articles.update {
+                    it.copy(data = data)
+                }
+            }
+            SortBy.DESCENDING.ordinal -> {
+                val data = _articles.value.data?.copy(
+                    articles = _articles.value.data?.articles?.sortedByDescending { it.title }
+                )
+                _articles.update {
+                    it.copy(data = data)
+                }
+            }
         }
     }
 }

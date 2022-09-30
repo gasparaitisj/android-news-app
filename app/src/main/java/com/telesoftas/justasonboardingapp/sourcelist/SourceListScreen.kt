@@ -1,17 +1,16 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,8 +21,10 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
+import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import kotlinx.coroutines.launch
 
+@ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @Composable
 fun SourceListScreen(
@@ -81,7 +82,7 @@ fun SourceListScreen(
                         state = rememberSwipeRefreshState(response.status == Status.LOADING),
                         onRefresh = { viewModel.getArticles() },
                     ) {
-                        SourceListContent(newsSourceList = newsSourceList)
+                        SourceListContent(newsSourceList = newsSourceList, viewModel = viewModel)
                     }
                 }
             )
@@ -89,15 +90,22 @@ fun SourceListScreen(
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun SourceListContent(newsSourceList: List<NewsSource>) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        items(newsSourceList) { item ->
-            SourceItem(item = item)
+private fun SourceListContent(
+    newsSourceList: List<NewsSource>,
+    viewModel: SourceListViewModel
+) {
+    Column {
+        ChipGroupSortArticles(viewModel)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            items(newsSourceList) { item ->
+                SourceItem(item = item)
+            }
         }
     }
 }
@@ -113,12 +121,53 @@ private fun SourceItem(item: NewsSource) {
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
+@ExperimentalMaterialApi
 @Composable
-private fun SourceListContentPreview() {
-    val list = listOf(
-        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
-        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
-    )
-    SourceListContent(newsSourceList = list)
+fun ChipGroupSortArticles(viewModel: SourceListViewModel) {
+    val chipDescendingState = remember { mutableStateOf(false) }
+    val chipAscendingState = remember { mutableStateOf(false) }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+            FilterChip(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                selected = chipAscendingState.value,
+                onClick = {
+                    chipAscendingState.value = !chipAscendingState.value
+                    chipDescendingState.value = false
+                    if (chipAscendingState.value) {
+                        viewModel.sortArticles(SortBy.ASCENDING)
+                    } else {
+                        viewModel.getArticles()
+                    }
+                }) {
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
+            }
+            FilterChip(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                selected = chipDescendingState.value,
+                onClick = {
+                    chipDescendingState.value = !chipDescendingState.value
+                    chipAscendingState.value = false
+                    if (chipDescendingState.value) {
+                        viewModel.sortArticles(SortBy.DESCENDING)
+                    } else {
+                        viewModel.getArticles()
+                    }
+                }) {
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
+            }
+        }
+    }
 }
+
+
+//@ExperimentalMaterialApi
+//@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
+//@Composable
+//private fun SourceListContentPreview() {
+//    val list = listOf(
+//        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
+//        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
+//    )
+//    SourceListContent(newsSourceList = list)
+//}

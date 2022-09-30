@@ -39,3 +39,8 @@ enum class ArticleCategory(val value: String) {
     @Json(name="Other")
     OTHER("Other")
 }
+
+enum class SortBy {
+    ASCENDING,
+    DESCENDING
+}
