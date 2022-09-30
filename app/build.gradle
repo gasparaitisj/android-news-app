@@ -71,8 +71,9 @@ dependencies {
     implementation "androidx.activity:activity-compose:$compose_activity_version"
 
     // Accompanist libraries
-    implementation "com.google.accompanist:accompanist-pager:$accompanist_pager_version"
-    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_pager_version"
+    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist_version"
 
     // Splash Screen API
     implementation "androidx.core:core-splashscreen:$splash_screen_version"

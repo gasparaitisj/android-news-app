@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -30,23 +32,20 @@ fun SourceListScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val newsSourceList = mutableListOf<NewsSource>()
+    var newsSourceList = listOf<NewsSource>()
     val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
     when (response.status) {
         Status.SUCCESS -> {
             response.data?.articles?.let { articles ->
-                articles.forEach { article ->
-                    newsSourceList.add(NewsSource(
-                        title = article.title ?: "",
-                        description = article.description ?: ""
-                    )
+                newsSourceList = articles.map { articlePreviewResponse ->
+                    NewsSource(
+                        title = articlePreviewResponse.title ?: "",
+                        description = articlePreviewResponse.description ?: ""
                     )
                 }
             }
         }
-        Status.LOADING -> {
-            // do nothing
-        }
+        Status.LOADING -> {}
         Status.ERROR -> {
             val message = stringResource(id = R.string.network_error)
             val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
@@ -78,7 +77,12 @@ fun SourceListScreen(
             Column(
                 modifier = Modifier.padding(paddingValues),
                 content = {
-                    SourceListContent(newsSourceList = newsSourceList)
+                    SwipeRefresh(
+                        state = rememberSwipeRefreshState(response.status == Status.LOADING),
+                        onRefresh = { viewModel.getArticles() },
+                    ) {
+                        SourceListContent(newsSourceList = newsSourceList)
+                    }
                 }
             )
         }
