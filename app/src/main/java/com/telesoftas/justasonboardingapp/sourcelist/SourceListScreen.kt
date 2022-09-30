@@ -32,6 +32,8 @@ fun SourceListScreen(
     viewModel: SourceListViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
+    val chipDescendingState = remember { mutableStateOf(false) }
+    val chipAscendingState = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var newsSourceList = listOf<NewsSource>()
     val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
@@ -46,7 +48,11 @@ fun SourceListScreen(
                 }
             }
         }
-        Status.LOADING -> {}
+        Status.LOADING -> {
+            // Unselect chips
+            chipDescendingState.value = false
+            chipAscendingState.value = false
+        }
         Status.ERROR -> {
             val message = stringResource(id = R.string.network_error)
             val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
@@ -82,7 +88,12 @@ fun SourceListScreen(
                         state = rememberSwipeRefreshState(response.status == Status.LOADING),
                         onRefresh = { viewModel.getArticles() },
                     ) {
-                        SourceListContent(newsSourceList = newsSourceList, viewModel = viewModel)
+                        SourceListContent(
+                            newsSourceList = newsSourceList,
+                            viewModel = viewModel,
+                            chipAscendingState = chipAscendingState,
+                            chipDescendingState = chipDescendingState
+                        )
                     }
                 }
             )
@@ -94,10 +105,12 @@ fun SourceListScreen(
 @Composable
 private fun SourceListContent(
     newsSourceList: List<NewsSource>,
-    viewModel: SourceListViewModel
+    viewModel: SourceListViewModel,
+    chipAscendingState: MutableState<Boolean>,
+    chipDescendingState: MutableState<Boolean>,
 ) {
     Column {
-        ChipGroupSortArticles(viewModel)
+        ChipGroupSortArticles(viewModel, chipAscendingState, chipDescendingState)
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,9 +136,11 @@ private fun SourceItem(item: NewsSource) {
 
 @ExperimentalMaterialApi
 @Composable
-fun ChipGroupSortArticles(viewModel: SourceListViewModel) {
-    val chipDescendingState = remember { mutableStateOf(false) }
-    val chipAscendingState = remember { mutableStateOf(false) }
+fun ChipGroupSortArticles(
+    viewModel: SourceListViewModel,
+    chipAscendingState: MutableState<Boolean>,
+    chipDescendingState: MutableState<Boolean>,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
             FilterChip(
@@ -133,7 +148,6 @@ fun ChipGroupSortArticles(viewModel: SourceListViewModel) {
                 selected = chipAscendingState.value,
                 onClick = {
                     chipAscendingState.value = !chipAscendingState.value
-                    chipDescendingState.value = false
                     if (chipAscendingState.value) {
                         viewModel.sortArticles(SortBy.ASCENDING)
                     } else {
@@ -147,7 +161,6 @@ fun ChipGroupSortArticles(viewModel: SourceListViewModel) {
                 selected = chipDescendingState.value,
                 onClick = {
                     chipDescendingState.value = !chipDescendingState.value
-                    chipAscendingState.value = false
                     if (chipDescendingState.value) {
                         viewModel.sortArticles(SortBy.DESCENDING)
                     } else {
@@ -159,15 +172,3 @@ fun ChipGroupSortArticles(viewModel: SourceListViewModel) {
         }
     }
 }
-
-
-//@ExperimentalMaterialApi
-//@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
-//@Composable
-//private fun SourceListContentPreview() {
-//    val list = listOf(
-//        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
-//        NewsSource("Lorem ipsum dolor sit amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc"),
-//    )
-//    SourceListContent(newsSourceList = list)
-//}

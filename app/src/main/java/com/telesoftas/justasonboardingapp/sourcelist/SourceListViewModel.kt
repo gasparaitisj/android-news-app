@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,22 +49,20 @@ class SourceListViewModel @Inject constructor(
     }
 
     fun sortArticles(sortBy: SortBy) {
+        val articlesCopy = _articles.value.copy()
+        _articles.value = Resource.loading()
         when(sortBy.ordinal) {
             SortBy.ASCENDING.ordinal -> {
-                val data = _articles.value.data?.copy(
-                    articles = _articles.value.data?.articles?.sortedBy { it.title }
+                val data = articlesCopy.data?.copy(
+                    articles = articlesCopy.data.articles?.sortedBy { it.title }
                 )
-                _articles.update {
-                    it.copy(data = data)
-                }
+                _articles.value = articlesCopy.copy(data = data)
             }
             SortBy.DESCENDING.ordinal -> {
-                val data = _articles.value.data?.copy(
-                    articles = _articles.value.data?.articles?.sortedByDescending { it.title }
+                val data = articlesCopy.data?.copy(
+                    articles = articlesCopy.data.articles?.sortedByDescending { it.title }
                 )
-                _articles.update {
-                    it.copy(data = data)
-                }
+                _articles.value = articlesCopy.copy(data = data)
             }
         }
     }
