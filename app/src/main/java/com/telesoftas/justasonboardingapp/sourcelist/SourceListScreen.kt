@@ -147,6 +147,7 @@ fun ChipGroupSortArticles(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 selected = chipAscendingState.value,
                 onClick = {
+                    chipDescendingState.value = false
                     chipAscendingState.value = !chipAscendingState.value
                     if (chipAscendingState.value) {
                         viewModel.sortArticles(SortBy.ASCENDING)
@@ -160,6 +161,7 @@ fun ChipGroupSortArticles(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 selected = chipDescendingState.value,
                 onClick = {
+                    chipAscendingState.value = false
                     chipDescendingState.value = !chipDescendingState.value
                     if (chipDescendingState.value) {
                         viewModel.sortArticles(SortBy.DESCENDING)
