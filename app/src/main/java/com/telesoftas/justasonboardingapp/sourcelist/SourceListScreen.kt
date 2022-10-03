@@ -33,30 +33,39 @@ fun SourceListScreen(
     navController: NavHostController,
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
+    val newsSources by viewModel.newsSources.collectAsStateWithLifecycle()
+    val sortType by viewModel.sortType.collectAsState()
+
+    SourceListContent(
+        newsSources = newsSources,
+        sortType = sortType,
+        onRefresh = { viewModel.getArticles() },
+        onSortTypeChanged = { viewModel.sortArticles(it) }
+    )
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun SourceListContent(
+    newsSources: Resource<List<NewsSource>>,
+    sortType: SortBy,
+    onRefresh: () -> Unit,
+    onSortTypeChanged: (SortBy) -> Unit
+) {
     val scaffoldState = rememberScaffoldState()
-    val chipDescendingState = remember { mutableStateOf(false) }
-    val chipAscendingState = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var newsSourceList = listOf<NewsSource>()
-    val response by viewModel.articles.collectAsStateWithLifecycle(initialValue = Resource.loading())
-    when (response.status) {
+    var newsSourcesList = listOf<NewsSource>()
+
+    when (newsSources.status) {
         Status.SUCCESS -> {
-            response.data?.articles?.let { articles ->
-                newsSourceList = articles.map { articlePreviewResponse ->
-                    NewsSource(
-                        title = articlePreviewResponse.title ?: "",
-                        description = articlePreviewResponse.description ?: ""
-                    )
-                }
-            }
+            newsSourcesList = newsSources.data ?: listOf()
         }
         Status.LOADING -> {
-            // Unselect chips
-            chipDescendingState.value = false
-            chipAscendingState.value = false
+            newsSourcesList = listOf()
         }
         Status.ERROR -> {
-            val message = stringResource(id = R.string.network_error)
+            // Show Snackbar
+            val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
             val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
             LaunchedEffect(Unit) {
                 scope.launch {
@@ -72,8 +81,8 @@ fun SourceListScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        snackbarHost = {
-            SnackbarHost(it) { data ->
+        snackbarHost = { snackbarHostState ->
+            SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
                     backgroundColor = colorResource(id = R.color.snackbarBackground),
                     actionColor = colorResource(id = R.color.snackbarAction),
@@ -87,42 +96,27 @@ fun SourceListScreen(
                 modifier = Modifier.padding(paddingValues),
                 content = {
                     SwipeRefresh(
-                        state = rememberSwipeRefreshState(response.status == Status.LOADING),
-                        onRefresh = { viewModel.getArticles() },
+                        state = rememberSwipeRefreshState(
+                            isRefreshing = newsSources.status == Status.LOADING
+                        ),
+                        onRefresh = { onRefresh() },
                     ) {
-                        SourceListContent(
-                            newsSourceList = newsSourceList,
-                            viewModel = viewModel,
-                            chipAscendingState = chipAscendingState,
-                            chipDescendingState = chipDescendingState
-                        )
+                        Column {
+                            ChipGroupSortArticles(
+                                sortType = sortType,
+                                onSortTypeChanged = onSortTypeChanged
+                            )
+                            LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                                items(newsSourcesList) { item ->
+                                    SourceItem(item = item)
+                                }
+                            }
+                        }
                     }
                 }
             )
         }
     )
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun SourceListContent(
-    newsSourceList: List<NewsSource>,
-    viewModel: SourceListViewModel,
-    chipAscendingState: MutableState<Boolean>,
-    chipDescendingState: MutableState<Boolean>,
-) {
-    Column {
-        ChipGroupSortArticles(viewModel, chipAscendingState, chipDescendingState)
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            items(newsSourceList) { item ->
-                SourceItem(item = item)
-            }
-        }
-    }
 }
 
 @Composable
@@ -139,9 +133,8 @@ private fun SourceItem(item: NewsSource) {
 @ExperimentalMaterialApi
 @Composable
 fun ChipGroupSortArticles(
-    viewModel: SourceListViewModel,
-    chipAscendingState: MutableState<Boolean>,
-    chipDescendingState: MutableState<Boolean>
+    sortType: SortBy,
+    onSortTypeChanged: (SortBy) -> Unit
 ) {
     val chipColors = filterChipColors(
         backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
@@ -154,31 +147,17 @@ fun ChipGroupSortArticles(
             FilterChip(
                 colors = chipColors,
                 modifier = Modifier.padding(horizontal = 8.dp),
-                selected = chipAscendingState.value,
-                onClick = {
-                    chipDescendingState.value = false
-                    chipAscendingState.value = !chipAscendingState.value
-                    if (chipAscendingState.value) {
-                        viewModel.sortArticles(SortBy.ASCENDING)
-                    } else {
-                        viewModel.getArticles()
-                    }
-                }) {
+                selected = sortType == SortBy.ASCENDING,
+                onClick = { onSortTypeChanged(SortBy.ASCENDING) }
+                ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
             }
             FilterChip(
                 colors = chipColors,
                 modifier = Modifier.padding(horizontal = 8.dp),
-                selected = chipDescendingState.value,
-                onClick = {
-                    chipAscendingState.value = false
-                    chipDescendingState.value = !chipDescendingState.value
-                    if (chipDescendingState.value) {
-                        viewModel.sortArticles(SortBy.DESCENDING)
-                    } else {
-                        viewModel.getArticles()
-                    }
-                }) {
+                selected = sortType == SortBy.DESCENDING,
+                onClick = { onSortTypeChanged(SortBy.DESCENDING) }
+            ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
             }
         }

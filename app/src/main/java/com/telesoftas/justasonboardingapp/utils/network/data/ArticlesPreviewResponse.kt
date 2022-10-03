@@ -42,5 +42,6 @@ enum class ArticleCategory(val value: String) {
 
 enum class SortBy {
     ASCENDING,
-    DESCENDING
+    DESCENDING,
+    NONE
 }
