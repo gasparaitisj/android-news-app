@@ -53,21 +53,6 @@ private fun SourceListContent(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
-    val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-
-    // Show Snackbar on network error
-    LaunchedEffect(newsSources.status) {
-        if (newsSources.status == Status.ERROR) {
-            scope.launch {
-                scaffoldState.snackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = actionLabel,
-                    duration = SnackbarDuration.Long
-                )
-            }
-        }
-    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -108,6 +93,21 @@ private fun SourceListContent(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // Show Snackbar on network error
+    val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
+    val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
+    LaunchedEffect(newsSources.status) {
+        if (newsSources.status == Status.ERROR) {
+            scope.launch {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = actionLabel,
+                    duration = SnackbarDuration.Long
+                )
             }
         }
     }
