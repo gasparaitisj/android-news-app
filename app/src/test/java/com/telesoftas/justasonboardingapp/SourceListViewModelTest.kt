@@ -11,7 +11,7 @@ import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -78,6 +78,7 @@ class SourceListViewModelTest {
 
     @Test
     fun getArticles_loadsArticlesCorrectly() = runTest {
+        advanceUntilIdle()
         val answer = listOf(
             NewsSource("D Title", "D Description"),
             NewsSource("A Title", "A Description"),
@@ -86,13 +87,13 @@ class SourceListViewModelTest {
         )
 
         viewModel.getArticles()
-        delay(1000)
 
         assertEquals(answer, viewModel.newsSources.value.data)
     }
 
     @Test
     fun sortArticles_sortsArticlesAscendingCorrectly() = runTest {
+        advanceUntilIdle()
         val answer = listOf(
             NewsSource("A Title", "A Description"),
             NewsSource("B Title", "B Description"),
@@ -100,7 +101,6 @@ class SourceListViewModelTest {
             NewsSource("D Title", "D Description"),
         )
 
-        delay(1000)
         viewModel.sortArticles(SortBy.ASCENDING)
 
         assertEquals(answer, viewModel.newsSources.value.data)
@@ -108,6 +108,7 @@ class SourceListViewModelTest {
 
     @Test
     fun sortArticles_sortsArticlesDescendingCorrectly() = runTest {
+        advanceUntilIdle()
         val answer = listOf(
             NewsSource("D Title", "D Description"),
             NewsSource("C Title", "C Description"),
@@ -115,7 +116,6 @@ class SourceListViewModelTest {
             NewsSource("A Title", "A Description"),
         )
 
-        delay(1000)
         viewModel.sortArticles(SortBy.DESCENDING)
 
         assertEquals(answer, viewModel.newsSources.value.data)
