@@ -5,7 +5,7 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 
-object SourceListFactory {
+class SourceListFactory {
     fun create(response: Resource<ArticlesListResponse>): Resource<List<NewsSource>> {
         when (response.status) {
             Status.SUCCESS -> {

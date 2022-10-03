@@ -47,7 +47,7 @@ class SourceListViewModel @Inject constructor(
                 pageNumber = pageNumber,
                 xRequestId = xRequestId
             )
-            _newsSources.value = SourceListFactory.create(response)
+            _newsSources.value = SourceListFactory().create(response)
         }
     }
 
