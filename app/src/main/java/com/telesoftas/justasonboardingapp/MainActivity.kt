@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
+import com.telesoftas.justasonboardingapp.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalLifecycleComposeApi
@@ -44,19 +45,19 @@ fun BottomNavigationBar(navController: NavHostController) {
         items = listOf(
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_source_list),
-                route = Routes.SOURCE_LIST,
+                route = Constants.Routes.SOURCE_LIST,
                 iconInactiveResId = R.drawable.btn_source_list,
                 iconActiveResId = R.drawable.btn_source_list_active
             ),
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_favorite),
-                route = Routes.FAVORITE,
+                route = Constants.Routes.FAVORITE,
                 iconInactiveResId = R.drawable.btn_favorite,
                 iconActiveResId = R.drawable.btn_favorite_active
             ),
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_about),
-                route = Routes.ABOUT,
+                route = Constants.Routes.ABOUT,
                 iconInactiveResId = R.drawable.btn_about,
                 iconActiveResId = R.drawable.btn_about_active
             ),
@@ -83,20 +84,12 @@ fun BottomNavigationBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.MAIN) {
-        composable(Routes.TUTORIAL) {
+    NavHost(navController = navController, startDestination = Constants.Routes.MAIN) {
+        composable(Constants.Routes.TUTORIAL) {
             TutorialScreen(navController = navController)
         }
-        composable(Routes.MAIN) {
+        composable(Constants.Routes.MAIN) {
             MainScreen(navController = navController)
         }
     }
-}
-
-object Routes {
-    const val TUTORIAL = "tutorial"
-    const val SOURCE_LIST = "source-list"
-    const val FAVORITE = "favorite"
-    const val ABOUT = "about"
-    const val MAIN = "main"
 }

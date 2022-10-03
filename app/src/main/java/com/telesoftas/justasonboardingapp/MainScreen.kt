@@ -25,6 +25,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.telesoftas.justasonboardingapp.utils.Constants
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -41,8 +42,8 @@ fun MainScreen(
     if (isFirstLaunch == true) {
         LaunchedEffect(isFirstLaunch) {
             viewModel.updateIsFirstLaunch(false)
-            navController.navigate(route = Routes.TUTORIAL) {
-                popUpTo(Routes.MAIN) { inclusive = true }
+            navController.navigate(route = Constants.Routes.TUTORIAL) {
+                popUpTo(Constants.Routes.MAIN) { inclusive = true }
             }
         }
     }
@@ -68,13 +69,13 @@ private fun TopBar(navController: NavHostController) {
     TopAppBar(
         title = {
             when (navController.currentBackStackEntryAsState().value?.destination?.route) {
-                Routes.SOURCE_LIST -> {
+                Constants.Routes.SOURCE_LIST -> {
                     Text(stringResource(id = R.string.top_app_bar_title_source_list))
                 }
-                Routes.FAVORITE -> {
+                Constants.Routes.FAVORITE -> {
                     Text(stringResource(id = R.string.top_app_bar_title_favorite))
                 }
-                Routes.ABOUT -> {
+                Constants.Routes.ABOUT -> {
                     Text(stringResource(id = R.string.top_app_bar_title_about))
                 }
             }
@@ -91,14 +92,14 @@ private fun TopBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun BottomNavigationBarNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
-        composable(Routes.SOURCE_LIST) {
+    NavHost(navController = navController, startDestination = Constants.Routes.SOURCE_LIST) {
+        composable(Constants.Routes.SOURCE_LIST) {
             SourceListScreen(navController = navController)
         }
-        composable(Routes.FAVORITE) {
+        composable(Constants.Routes.FAVORITE) {
             FavoriteScreen(navController = navController)
         }
-        composable(Routes.ABOUT) {
+        composable(Constants.Routes.ABOUT) {
             AboutScreen(navController = navController)
         }
     }
