@@ -6,12 +6,12 @@ data class ArticlePreviewResponse (
     val id: String,
     val votes: Long,
     val publishedAt: String,
-    val source: String?,
+    val source: String? = null,
     val category: ArticleCategory,
-    val author: String?,
-    val title: String?,
-    val description: String?,
-    val imageURL: String?
+    val author: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val imageURL: String? = null
 )
 
 enum class ArticleCategory(val value: String) {

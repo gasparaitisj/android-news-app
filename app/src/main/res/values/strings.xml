@@ -51,8 +51,8 @@
 
     <!-- Source list screen -->
     <string name="source_list_screen_snackbar_dismiss">Dismiss</string>
-    <string name="source_list_screen_chip_sort_descending">A → Z</string>
-    <string name="source_list_screen_chip_sort_ascending">Z → A</string>
+    <string name="source_list_screen_chip_sort_ascending">A → Z</string>
+    <string name="source_list_screen_chip_sort_descending">Z → A</string>
 
     <!-- Other errors -->
     <string name="unknown_error">Unknown error</string>
