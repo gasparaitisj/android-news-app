@@ -11,7 +11,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.telesoftas.justasonboardingapp.BottomNavigationBar
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 
@@ -19,13 +18,10 @@ import com.telesoftas.justasonboardingapp.ui.theme.Typography
 @Composable
 fun AboutScreen(navController: NavHostController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
-                    .padding(
-                        top = paddingValues.calculateTopPadding()
-                    )
+                    .padding(paddingValues)
                     .padding(
                         horizontal = 16.dp,
                         vertical = 16.dp

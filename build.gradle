@@ -6,7 +6,7 @@ buildscript {
         targetSdkVersion = 33
 
         // App dependencies
-        accompanist_pager_version = "0.25.1"
+        accompanist_version = "0.25.1"
         compose_activity_version = "1.6.0"
         compose_navigation_version = "2.6.0-alpha01"
         compose_ui_version = "1.2.1"

@@ -8,16 +8,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.telesoftas.justasonboardingapp.BottomNavigationBar
 
 @ExperimentalMaterialApi
 @Composable
 fun FavoriteScreen(navController: NavHostController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController) },
         content = { paddingValues ->
             Column(
-                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
+                modifier = Modifier.padding(paddingValues),
                 content = {
                     Text(text = "Favorite screen")
                 }
