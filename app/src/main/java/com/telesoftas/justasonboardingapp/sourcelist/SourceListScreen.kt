@@ -82,7 +82,7 @@ private fun SourceListContent(
                         onSortTypeChanged = onSortTypeChanged
                     )
                     LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                        items(newsSources.getDataOrNull() ?: listOf()) { item ->
+                        items(newsSources.getSuccessDataOrNull() ?: listOf()) { item ->
                             SourceItem(item = item)
                         }
                     }
