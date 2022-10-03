@@ -35,7 +35,6 @@ fun SourceListScreen(
 ) {
     val newsSources by viewModel.newsSources.collectAsStateWithLifecycle()
     val sortType by viewModel.sortType.collectAsState()
-
     SourceListContent(
         newsSources = newsSources,
         sortType = sortType,
@@ -54,27 +53,18 @@ private fun SourceListContent(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    var newsSourcesList = listOf<NewsSource>()
+    val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
+    val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
 
-    when (newsSources.status) {
-        Status.SUCCESS -> {
-            newsSourcesList = newsSources.data ?: listOf()
-        }
-        Status.LOADING -> {
-            newsSourcesList = listOf()
-        }
-        Status.ERROR -> {
-            // Show Snackbar
-            val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
-            val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-            LaunchedEffect(Unit) {
-                scope.launch {
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = message,
-                        actionLabel = actionLabel,
-                        duration = SnackbarDuration.Long
-                    )
-                }
+    // Show Snackbar on network error
+    LaunchedEffect(newsSources.status) {
+        if (newsSources.status == Status.ERROR) {
+            scope.launch {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = actionLabel,
+                    duration = SnackbarDuration.Long
+                )
             }
         }
     }
@@ -90,33 +80,37 @@ private fun SourceListContent(
                     snackbarData = data
                 )
             }
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier.padding(paddingValues),
-                content = {
-                    SwipeRefresh(
-                        state = rememberSwipeRefreshState(
-                            isRefreshing = newsSources.status == Status.LOADING
-                        ),
-                        onRefresh = { onRefresh() },
-                    ) {
-                        Column {
-                            ChipGroupSortArticles(
-                                sortType = sortType,
-                                onSortTypeChanged = onSortTypeChanged
-                            )
-                            LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                                items(newsSourcesList) { item ->
-                                    SourceItem(item = item)
-                                }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(
+                    isRefreshing = newsSources.status == Status.LOADING
+                ),
+                onRefresh = { onRefresh() },
+            ) {
+                Column {
+                    ChipGroupSortArticles(
+                        sortType = sortType,
+                        onSortTypeChanged = onSortTypeChanged
+                    )
+                    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                        items(
+                            if (newsSources.status == Status.SUCCESS) {
+                                newsSources.data as List<NewsSource>
+                            } else {
+                                listOf()
                             }
+                        ) { item ->
+                            SourceItem(item = item)
                         }
                     }
                 }
-            )
+            }
         }
-    )
+    }
 }
 
 @Composable
