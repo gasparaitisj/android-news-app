@@ -138,7 +138,7 @@ fun ChipGroupSortArticles(
                 selected = sortType == SortBy.ASCENDING,
                 onClick = { onSortTypeChanged(SortBy.ASCENDING) }
                 ) {
-                Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
             }
             FilterChip(
                 colors = chipColors,
@@ -146,7 +146,7 @@ fun ChipGroupSortArticles(
                 selected = sortType == SortBy.DESCENDING,
                 onClick = { onSortTypeChanged(SortBy.DESCENDING) }
             ) {
-                Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
             }
         }
     }
