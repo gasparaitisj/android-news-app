@@ -8,7 +8,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -89,7 +88,7 @@ private fun Navigation(navController: NavHostController) {
             TutorialScreen(navController = navController)
         }
         composable(Routes.MAIN) {
-            MainScreen(navController = navController, viewModel = hiltViewModel())
+            MainScreen(navController = navController)
         }
     }
 }

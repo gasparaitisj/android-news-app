@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SourceListScreen(
     navController: NavHostController,
-    viewModel: SourceListViewModel
+    viewModel: SourceListViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
     val chipDescendingState = remember { mutableStateOf(false) }
