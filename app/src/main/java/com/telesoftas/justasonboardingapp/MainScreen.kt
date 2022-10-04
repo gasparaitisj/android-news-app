@@ -17,14 +17,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Constants
 
 @ExperimentalLifecycleComposeApi
@@ -68,7 +71,8 @@ fun MainScreen(
 private fun TopBar(navController: NavHostController) {
     TopAppBar(
         title = {
-            when (navController.currentBackStackEntryAsState().value?.destination?.route) {
+            val backStackEntry = navController.currentBackStackEntryAsState().value
+            when (backStackEntry?.destination?.route) {
                 Constants.Routes.SOURCE_LIST -> {
                     Text(stringResource(id = R.string.top_app_bar_title_source_list))
                 }
@@ -95,6 +99,15 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Constants.Routes.SOURCE_LIST) {
         composable(Constants.Routes.SOURCE_LIST) {
             SourceListScreen(navController = navController)
+        }
+
+        composable(
+            route = "${Constants.Routes.NEWS_LIST}/{${Constants.Routes.NewsListArguments.title}}",
+            arguments = listOf(navArgument(Constants.Routes.NewsListArguments.title) {
+                type = NavType.StringType
+            })
+        ) {
+            NewsListScreen(navController = navController)
         }
         composable(Constants.Routes.FAVORITE) {
             FavoriteScreen(navController = navController)
