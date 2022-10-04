@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
-import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalLifecycleComposeApi
@@ -45,19 +45,19 @@ fun BottomNavigationBar(navController: NavHostController) {
         items = listOf(
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_source_list),
-                route = Constants.Routes.SOURCE_LIST,
+                route = Screen.SourceList.route,
                 iconInactiveResId = R.drawable.btn_source_list,
                 iconActiveResId = R.drawable.btn_source_list_active
             ),
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_favorite),
-                route = Constants.Routes.FAVORITE,
+                route = Screen.Favorite.route,
                 iconInactiveResId = R.drawable.btn_favorite,
                 iconActiveResId = R.drawable.btn_favorite_active
             ),
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_about),
-                route = Constants.Routes.ABOUT,
+                route = Screen.About.route,
                 iconInactiveResId = R.drawable.btn_about,
                 iconActiveResId = R.drawable.btn_about_active
             ),
@@ -84,11 +84,11 @@ fun BottomNavigationBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Constants.Routes.MAIN) {
-        composable(Constants.Routes.TUTORIAL) {
+    NavHost(navController = navController, startDestination = Screen.Main.route) {
+        composable(Screen.Tutorial.route) {
             TutorialScreen(navController = navController)
         }
-        composable(Constants.Routes.MAIN) {
+        composable(Screen.Main.route) {
             MainScreen(navController = navController)
         }
     }

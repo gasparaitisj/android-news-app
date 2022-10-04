@@ -25,7 +25,7 @@ import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
-import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.Screen
 import timber.log.Timber
 
 @ExperimentalLifecycleComposeApi
@@ -47,17 +47,17 @@ fun MainScreen(
     bottomNavController.addOnDestinationChangedListener { controller, destination, arguments ->
         Timber.d(destination.route)
         when (destination.route) {
-            Constants.Routes.SOURCE_LIST -> {
+            Screen.SourceList.route -> {
                 topBarTitle.value = sourceList
             }
-            Constants.Routes.FAVORITE -> {
+            Screen.Favorite.route -> {
                 topBarTitle.value = favorite
             }
-            Constants.Routes.ABOUT -> {
+            Screen.About.route -> {
                 topBarTitle.value = about
             }
-            Constants.Routes.NEWS_LIST -> {
-                topBarTitle.value = arguments?.getString(Constants.NavArgs.NEWS_LIST_TITLE)
+            Screen.NewsList.route -> {
+                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
                     ?: newsList
             }
         }
@@ -68,8 +68,8 @@ fun MainScreen(
     if (isFirstLaunch == true) {
         LaunchedEffect(isFirstLaunch) {
             viewModel.updateIsFirstLaunch(false)
-            navController.navigate(route = Constants.Routes.TUTORIAL) {
-                popUpTo(Constants.Routes.MAIN) { inclusive = true }
+            navController.navigate(route = Screen.Tutorial.route) {
+                popUpTo(Screen.Main.route) { inclusive = true }
             }
         }
     }
@@ -107,22 +107,22 @@ private fun TopBar(title: String) {
 @ExperimentalPagerApi
 @Composable
 private fun BottomNavigationBarNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Constants.Routes.SOURCE_LIST) {
-        composable(Constants.Routes.SOURCE_LIST) {
+    NavHost(navController = navController, startDestination = Screen.SourceList.route) {
+        composable(Screen.SourceList.route) {
             SourceListScreen(navController = navController)
         }
         composable(
-            route = Constants.Routes.NEWS_LIST,
-            arguments = listOf(navArgument(Constants.NavArgs.NEWS_LIST_TITLE) {
+            route = Screen.NewsList.route,
+            arguments = listOf(navArgument(Screen.NewsList.KEY_TITLE) {
                 type = NavType.StringType
             })
         ) {
             NewsListScreen(navController = navController)
         }
-        composable(Constants.Routes.FAVORITE) {
+        composable(Screen.Favorite.route) {
             FavoriteScreen(navController = navController)
         }
-        composable(Constants.Routes.ABOUT) {
+        composable(Screen.About.route) {
             AboutScreen(navController = navController)
         }
     }

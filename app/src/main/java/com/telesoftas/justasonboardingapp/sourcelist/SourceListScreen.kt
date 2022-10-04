@@ -22,7 +22,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
-import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
@@ -43,12 +43,7 @@ fun SourceListScreen(
         onRefresh = { viewModel.getArticles() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { item ->
-            navController.navigate(
-                Constants.Routes.NEWS_LIST.replace(
-                    oldValue = "{${Constants.NavArgs.NEWS_LIST_TITLE}}",
-                    newValue = item.title
-                )
-            )
+            navController.navigate(Screen.NewsList.destination(item.title))
         }
     )
 }
