@@ -1,16 +1,65 @@
 package com.telesoftas.justasonboardingapp.sourcelist.newslist
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.telesoftas.justasonboardingapp.utils.Screen
+import androidx.lifecycle.viewModelScope
+import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
+import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val articlesRepository: ArticlesRepository
 ) : ViewModel() {
-    val sourceTitle: String =
-        checkNotNull(savedStateHandle[Screen.NewsList.KEY_TITLE])
+    private val _articles: MutableStateFlow<Resource<List<Article>>> =
+        MutableStateFlow(Resource.loading())
+    val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
 
+    private val _categoryType: MutableStateFlow<ArticleCategory> = MutableStateFlow(ArticleCategory.NONE)
+    val categoryType: StateFlow<ArticleCategory> = _categoryType.asStateFlow()
+
+    init {
+        getArticles()
+    }
+
+    fun getArticles(
+        query: String? = null,
+        page: Int? = null,
+        pageSize: Int? = null,
+        category: ArticleCategory? = null,
+        sortBy: String? = null,
+        pageNumber: Int? = null,
+        xRequestId: String? = null
+    ) {
+        viewModelScope.launch {
+            _articles.value = Resource.loading()
+            val response = articlesRepository.getArticles(
+                query = query,
+                page = page,
+                pageSize = pageSize,
+                category = category,
+                sortBy = sortBy,
+                pageNumber = pageNumber,
+                xRequestId = xRequestId
+            )
+            _articles.value = NewsListFactory().create(response)
+        }
+    }
+
+    fun filterArticles(filterBy: ArticleCategory) {
+        if (_categoryType.value == ArticleCategory.NONE) {
+            _categoryType.value = filterBy
+            _articles.value = _articles.value.copy(
+                data = _articles.value.data?.filter { it.category == filterBy }
+            )
+        } else {
+            _categoryType.value = ArticleCategory.NONE
+            getArticles()
+        }
+    }
 }
