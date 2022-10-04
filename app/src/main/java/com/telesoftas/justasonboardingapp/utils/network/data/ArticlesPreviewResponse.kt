@@ -37,7 +37,9 @@ enum class ArticleCategory(val value: String) {
     HEALTH("Health"),
 
     @Json(name="Other")
-    OTHER("Other")
+    OTHER("Other"),
+
+    NONE("")
 }
 
 enum class SortBy {
