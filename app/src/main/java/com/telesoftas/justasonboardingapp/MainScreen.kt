@@ -7,9 +7,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -20,7 +18,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -29,6 +26,7 @@ import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Constants
+import timber.log.Timber
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -40,6 +38,31 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val bottomNavController = rememberNavController()
+    val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
+    val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
+    val about = stringResource(id = R.string.top_app_bar_title_about)
+    val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
+    val topBarTitle = remember { mutableStateOf("") }
+
+    bottomNavController.addOnDestinationChangedListener { controller, destination, arguments ->
+        Timber.d(destination.route)
+        when (destination.route) {
+            Constants.Routes.SOURCE_LIST -> {
+                topBarTitle.value = sourceList
+            }
+            Constants.Routes.FAVORITE -> {
+                topBarTitle.value = favorite
+            }
+            Constants.Routes.ABOUT -> {
+                topBarTitle.value = about
+            }
+            Constants.Routes.NEWS_LIST -> {
+                topBarTitle.value = arguments?.getString(Constants.NavArgs.NEWS_LIST_TITLE)
+                    ?: newsList
+            }
+        }
+    }
+
     val isFirstLaunch by viewModel.isFirstLaunch.collectAsStateWithLifecycle(initialValue = null)
 
     if (isFirstLaunch == true) {
@@ -50,8 +73,9 @@ fun MainScreen(
             }
         }
     }
+
     Scaffold(
-        topBar = { TopBar(navController = bottomNavController) },
+        topBar = { TopBar(title = topBarTitle.value) },
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
         content = { paddingValues ->
             Column(
@@ -68,22 +92,9 @@ fun MainScreen(
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
-private fun TopBar(navController: NavHostController) {
+private fun TopBar(title: String) {
     TopAppBar(
-        title = {
-            val backStackEntry = navController.currentBackStackEntryAsState().value
-            when (backStackEntry?.destination?.route) {
-                Constants.Routes.SOURCE_LIST -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_source_list))
-                }
-                Constants.Routes.FAVORITE -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_favorite))
-                }
-                Constants.Routes.ABOUT -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_about))
-                }
-            }
-        },
+        title = { Text(title) },
         backgroundColor = colorResource(id = R.color.topAppBarBackground),
         contentColor = colorResource(id = R.color.topAppBarContent)
     )
@@ -100,10 +111,9 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         composable(Constants.Routes.SOURCE_LIST) {
             SourceListScreen(navController = navController)
         }
-
         composable(
-            route = "${Constants.Routes.NEWS_LIST}/{${Constants.Routes.NewsListArguments.title}}",
-            arguments = listOf(navArgument(Constants.Routes.NewsListArguments.title) {
+            route = Constants.Routes.NEWS_LIST,
+            arguments = listOf(navArgument(Constants.NavArgs.NEWS_LIST_TITLE) {
                 type = NavType.StringType
             })
         ) {

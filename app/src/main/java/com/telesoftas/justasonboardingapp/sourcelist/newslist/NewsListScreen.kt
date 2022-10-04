@@ -21,7 +21,7 @@ fun NewsListScreen(
             Column(
                 modifier = Modifier.padding(paddingValues),
                 content = {
-                    Text(text = "News list screen")
+                    Text(text = viewModel.sourceTitle)
                 }
             )
         }

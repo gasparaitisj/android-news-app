@@ -43,7 +43,12 @@ fun SourceListScreen(
         onRefresh = { viewModel.getArticles() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { item ->
-            navController.navigate("${Constants.Routes.NEWS_LIST}/${item.title}")
+            navController.navigate(
+                Constants.Routes.NEWS_LIST.replace(
+                    oldValue = "{${Constants.NavArgs.NEWS_LIST_TITLE}}",
+                    newValue = item.title
+                )
+            )
         }
     )
 }

@@ -9,9 +9,10 @@ object Constants {
         const val FAVORITE = "favorite"
         const val ABOUT = "about"
         const val MAIN = "main"
-        const val NEWS_LIST = "news-list"
-        object NewsListArguments {
-            const val title = "title"
-        }
+        const val NEWS_LIST = "news-list/{title}"
+    }
+
+    object NavArgs {
+        const val NEWS_LIST_TITLE = "title"
     }
 }
