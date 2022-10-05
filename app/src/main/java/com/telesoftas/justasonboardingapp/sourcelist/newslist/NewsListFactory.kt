@@ -19,7 +19,7 @@ class NewsListFactory {
                             author = articlePreviewResponse.author,
                             title = articlePreviewResponse.title,
                             description = articlePreviewResponse.description,
-                            imageURL = articlePreviewResponse.imageURL
+                            imageUrl = articlePreviewResponse.imageUrl
                         )
                     })
                 }
