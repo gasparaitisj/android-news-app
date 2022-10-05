@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -125,7 +126,8 @@ private fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit
 ) {
-    val selected = remember { mutableStateOf(false) }
+    val selected = rememberSaveable { mutableStateOf(false) }
+    val publishedAtFormatted = item.publishedAt.replace("[\$TZ]".toRegex(), " ")
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -137,7 +139,7 @@ private fun ArticleItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${item.author} - ${item.publishedAt}",
+                text = "${item.author} - $publishedAtFormatted",
                 style = Typography.caption
             )
             IconButton(
