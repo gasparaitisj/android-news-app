@@ -28,40 +28,24 @@ class NewsListViewModel @Inject constructor(
         onRefresh()
     }
 
-    fun onRefresh(
-        query: String? = null,
-        page: Int? = null,
-        pageSize: Int? = null,
-        category: ArticleCategory? = null,
-        sortBy: String? = null,
-        pageNumber: Int? = null,
-        xRequestId: String? = null
-    ) {
+    fun onRefresh() {
         viewModelScope.launch {
-            _articles.update { Resource.loading() }
-            val response = articlesRepository.getArticles(
-                query = query,
-                page = page,
-                pageSize = pageSize,
-                category = category,
-                sortBy = sortBy,
-                pageNumber = pageNumber,
-                xRequestId = xRequestId
-            )
-            _articles.update { NewsListFactory().create(response) }
+            _articles.value = Resource.loading()
+            val response = articlesRepository.getArticles()
+            _articles.value = NewsListFactory().create(response)
         }
     }
 
     fun onCategoryTypeChanged(categoryType: ArticleCategory) {
         if (_categoryType.value == ArticleCategory.NONE) {
-            _categoryType.update { categoryType }
+            _categoryType.value = categoryType
             _articles.update {
                 it.copy(
                     data = _articles.value.data?.filter { it.category == categoryType }
                 )
             }
         } else {
-            _categoryType.update { ArticleCategory.NONE }
+            _categoryType.value = ArticleCategory.NONE
             onRefresh()
         }
     }
