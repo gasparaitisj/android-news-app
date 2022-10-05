@@ -13,7 +13,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,11 +37,62 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val bottomNavController = rememberNavController()
+    val topBarTitle = remember { mutableStateOf("") }
+    setOnDestinationChangedListener(bottomNavController, topBarTitle)
+    handleFirstLaunch(viewModel, navController)
+
+    MainScreenContent(topBarTitle, bottomNavController)
+}
+
+@ExperimentalLifecycleComposeApi
+@ExperimentalPagerApi
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
+@Composable
+private fun MainScreenContent(
+    topBarTitle: MutableState<String>,
+    bottomNavController: NavHostController
+) {
+    Scaffold(
+        topBar = { TopBar(title = topBarTitle.value) },
+        bottomBar = { BottomNavigationBar(navController = bottomNavController) },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier.padding(paddingValues),
+                content = {
+                    BottomNavigationBarNavigation(navController = bottomNavController)
+                }
+            )
+        }
+    )
+}
+
+@Composable
+private fun handleFirstLaunch(
+    viewModel: MainViewModel,
+    navController: NavHostController
+) {
+    val isFirstLaunch by viewModel.isFirstLaunch.collectAsState(initial = false)
+
+    if (isFirstLaunch) {
+        LaunchedEffect(true) {
+            viewModel.setFirstLaunchCompleted()
+            navController.navigate(route = Screen.Tutorial.route) {
+                popUpTo(Screen.Main.route) { inclusive = true }
+            }
+        }
+    }
+}
+
+@Composable
+private fun setOnDestinationChangedListener(
+    bottomNavController: NavHostController,
+    topBarTitle: MutableState<String>
+) {
     val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
     val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
     val about = stringResource(id = R.string.top_app_bar_title_about)
     val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
-    val topBarTitle = remember { mutableStateOf("") }
 
     bottomNavController.addOnDestinationChangedListener { controller, destination, arguments ->
         Timber.d(destination.route)
@@ -62,30 +112,6 @@ fun MainScreen(
             }
         }
     }
-
-    val isFirstLaunch by viewModel.isFirstLaunch.collectAsStateWithLifecycle(initialValue = null)
-
-    if (isFirstLaunch == true) {
-        LaunchedEffect(isFirstLaunch) {
-            viewModel.updateIsFirstLaunch(false)
-            navController.navigate(route = Screen.Tutorial.route) {
-                popUpTo(Screen.Main.route) { inclusive = true }
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = { TopBar(title = topBarTitle.value) },
-        bottomBar = { BottomNavigationBar(navController = bottomNavController) },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier.padding(paddingValues),
-                content = {
-                    BottomNavigationBarNavigation(navController = bottomNavController)
-                }
-            )
-        }
-    )
 }
 
 @ExperimentalMaterialApi
