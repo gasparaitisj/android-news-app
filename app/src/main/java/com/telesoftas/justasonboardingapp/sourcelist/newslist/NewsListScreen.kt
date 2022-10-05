@@ -1,27 +1,25 @@
 package com.telesoftas.justasonboardingapp.sourcelist.newslist
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
@@ -127,27 +125,110 @@ private fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit
 ) {
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .clickable { onArticleItemClick(item) }
+    val selected = remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
     ) {
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = "${item.author} - ${item.publishedAt}",
-                style = Typography.h6
+                style = Typography.caption
+            )
+            IconButton(
+                onClick = { selected.value = !selected.value },
+                content = {
+                    Icon(
+                        painter = if (selected.value) {
+                            painterResource(id = R.drawable.btn_favorite_active)
+                        } else {
+                            painterResource(id = R.drawable.btn_favorite)
+                        },
+                        contentDescription = "Favorite"
+                    )
+                }
             )
         }
-
-        Column {
-            Image(
-                painter = painterResource(id = R.drawable.tutorial_first_image),
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AsyncImage(
+                model = "https://${item.imageUrl}",
                 contentDescription = "Image"
             )
+            Text(
+                text = item.title ?: "",
+                style = Typography.subtitle2
+            )
         }
+        Text(
+            text = item.description ?: "",
+            style = Typography.body2,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.description ?: "", style = Typography.body2)
+@Composable
+@Preview
+private fun ArticleItem() {
+    val selected = remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        val author = "justasgasparaitis@one.lt"
+        val publishedAt = "2021-06-03T10:58:55Z"
+        val title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi."
+        val description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi."
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "$author - $publishedAt",
+                style = Typography.caption
+            )
+            IconButton(
+                onClick = { selected.value = !selected.value },
+                content = {
+                    Icon(
+                        painter = if (selected.value) {
+                            painterResource(id = R.drawable.btn_favorite_active)
+                        } else {
+                            painterResource(id = R.drawable.btn_favorite)
+                        },
+                        contentDescription = "Favorite"
+                    )
+                }
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            AsyncImage(
+                model = "https://placebear.com/200/300",
+                contentDescription = "Image"
+            )
+            Text(
+                text = title,
+                style = Typography.subtitle2
+            )
+        }
+        Text(
+            text = description,
+            style = Typography.body2,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
