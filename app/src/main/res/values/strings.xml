@@ -56,4 +56,13 @@
 
     <!-- Other errors -->
     <string name="unknown_error">Unknown error</string>
+    <string name="top_app_bar_title_news_list">News list</string>
+    <string name="news_list_screen_chip_category_politics">Politics</string>
+    <string name="news_list_screen_chip_category_sports">Sports</string>
+    <string name="news_list_screen_chip_category_business">Business</string>
+    <string name="news_list_screen_chip_category_food">Food</string>
+    <string name="news_list_screen_chip_category_culture">Culture</string>
+    <string name="news_list_screen_chip_category_gaming">Gaming</string>
+    <string name="news_list_screen_chip_category_other">Other</string>
+    <string name="news_list_screen_chip_category_health">Health</string>
 </resources>

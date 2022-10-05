@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.*
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.Routes
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.Screen
 
 @ExperimentalAnimationApi
 @Composable
@@ -57,8 +57,8 @@ fun TutorialScreen(navController: NavHostController) {
             modifier = Modifier.weight(1f),
             pagerState = pagerState
         ) {
-            navController.navigate(Routes.MAIN) {
-                popUpTo(Routes.TUTORIAL) { inclusive = true }
+            navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Tutorial.route) { inclusive = true }
             }
         }
     }

@@ -3,15 +3,32 @@ package com.telesoftas.justasonboardingapp.utils.network.data
 import com.squareup.moshi.Json
 
 data class ArticlePreviewResponse (
+    @Json(name="id")
     val id: String,
+
+    @Json(name="votes")
     val votes: Long,
+
+    @Json(name="publishedAt")
     val publishedAt: String,
+
+    @Json(name="source")
     val source: String? = null,
+
+    @Json(name="category")
     val category: ArticleCategory,
+
+    @Json(name="author")
     val author: String? = null,
+
+    @Json(name="title")
     val title: String? = null,
+
+    @Json(name="description")
     val description: String? = null,
-    val imageURL: String? = null
+
+    @Json(name="imageUrl")
+    val imageUrl: String? = null
 )
 
 enum class ArticleCategory(val value: String) {
@@ -37,7 +54,9 @@ enum class ArticleCategory(val value: String) {
     HEALTH("Health"),
 
     @Json(name="Other")
-    OTHER("Other")
+    OTHER("Other"),
+
+    NONE("")
 }
 
 enum class SortBy {

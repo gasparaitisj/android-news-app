@@ -28,5 +28,7 @@
     <color name="chipSelectedContent">#FFFFFF</color>
     <color name="chipNotSelectedBackground">#EAEAEA</color>
     <color name="chipNotSelectedContent">#6A6A6A</color>
+    <color name="news_list_caption">#4A6572</color>
+    <color name="news_list_divider">#A4B2B8</color>
 
 </resources>

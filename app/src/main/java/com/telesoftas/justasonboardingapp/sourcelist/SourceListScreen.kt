@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
@@ -39,7 +41,10 @@ fun SourceListScreen(
         newsSources = newsSources,
         sortType = sortType,
         onRefresh = { viewModel.getArticles() },
-        onSortTypeChanged = { viewModel.sortArticles(it) }
+        onSortTypeChanged = { viewModel.sortArticles(it) },
+        onSourceItemClick = { item ->
+            navController.navigate(Screen.NewsList.destination(item.title))
+        }
     )
 }
 
@@ -49,7 +54,8 @@ private fun SourceListContent(
     newsSources: Resource<List<NewsSource>>,
     sortType: SortBy,
     onRefresh: () -> Unit,
-    onSortTypeChanged: (SortBy) -> Unit
+    onSortTypeChanged: (SortBy) -> Unit,
+    onSourceItemClick: (NewsSource) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -81,9 +87,16 @@ private fun SourceListContent(
                         sortType = sortType,
                         onSortTypeChanged = onSortTypeChanged
                     )
-                    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                        items(newsSources.getSuccessDataOrNull() ?: listOf()) { item ->
-                            SourceItem(item = item)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
+                            SourceItem(
+                                item = item,
+                                onSourceItemClick = { onSourceItemClick(item) }
+                            )
                         }
                     }
                 }
@@ -108,10 +121,15 @@ private fun SourceListContent(
 }
 
 @Composable
-private fun SourceItem(item: NewsSource) {
+private fun SourceItem(
+    item: NewsSource,
+    onSourceItemClick: (NewsSource) -> Unit
+) {
     Column(modifier = Modifier
         .padding(16.dp)
-        .fillMaxWidth()) {
+        .fillMaxWidth()
+        .clickable { onSourceItemClick(item) }
+    ) {
         Text(text = item.title, style = Typography.h6)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = item.description, style = Typography.body2)
@@ -137,7 +155,7 @@ fun ChipGroupSortArticles(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 selected = sortType == SortBy.ASCENDING,
                 onClick = { onSortTypeChanged(SortBy.ASCENDING) }
-                ) {
+            ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
             }
             FilterChip(

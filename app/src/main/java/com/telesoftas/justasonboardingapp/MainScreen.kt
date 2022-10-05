@@ -7,24 +7,25 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
+import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
+import com.telesoftas.justasonboardingapp.utils.Screen
+import timber.log.Timber
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -36,18 +37,24 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val bottomNavController = rememberNavController()
-    val isFirstLaunch by viewModel.isFirstLaunch.collectAsStateWithLifecycle(initialValue = null)
+    val topBarTitle = remember { mutableStateOf("") }
+    setOnDestinationChangedListener(bottomNavController, topBarTitle)
+    handleFirstLaunch(viewModel, navController)
 
-    if (isFirstLaunch == true) {
-        LaunchedEffect(isFirstLaunch) {
-            viewModel.updateIsFirstLaunch(false)
-            navController.navigate(route = Routes.TUTORIAL) {
-                popUpTo(Routes.MAIN) { inclusive = true }
-            }
-        }
-    }
+    MainScreenContent(topBarTitle, bottomNavController)
+}
+
+@ExperimentalLifecycleComposeApi
+@ExperimentalPagerApi
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
+@Composable
+private fun MainScreenContent(
+    topBarTitle: MutableState<String>,
+    bottomNavController: NavHostController
+) {
     Scaffold(
-        topBar = { TopBar(navController = bottomNavController) },
+        topBar = { TopBar(title = topBarTitle.value) },
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
         content = { paddingValues ->
             Column(
@@ -60,25 +67,60 @@ fun MainScreen(
     )
 }
 
+@Composable
+private fun handleFirstLaunch(
+    viewModel: MainViewModel,
+    navController: NavHostController
+) {
+    val isFirstLaunch by viewModel.isFirstLaunch.collectAsState(initial = false)
+
+    if (isFirstLaunch) {
+        LaunchedEffect(true) {
+            viewModel.setFirstLaunchCompleted()
+            navController.navigate(route = Screen.Tutorial.route) {
+                popUpTo(Screen.Main.route) { inclusive = true }
+            }
+        }
+    }
+}
+
+@Composable
+private fun setOnDestinationChangedListener(
+    bottomNavController: NavHostController,
+    topBarTitle: MutableState<String>
+) {
+    val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
+    val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
+    val about = stringResource(id = R.string.top_app_bar_title_about)
+    val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
+
+    bottomNavController.addOnDestinationChangedListener { controller, destination, arguments ->
+        Timber.d(destination.route)
+        when (destination.route) {
+            Screen.SourceList.route -> {
+                topBarTitle.value = sourceList
+            }
+            Screen.Favorite.route -> {
+                topBarTitle.value = favorite
+            }
+            Screen.About.route -> {
+                topBarTitle.value = about
+            }
+            Screen.NewsList.route -> {
+                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
+                    ?: newsList
+            }
+        }
+    }
+}
+
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
-private fun TopBar(navController: NavHostController) {
+private fun TopBar(title: String) {
     TopAppBar(
-        title = {
-            when (navController.currentBackStackEntryAsState().value?.destination?.route) {
-                Routes.SOURCE_LIST -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_source_list))
-                }
-                Routes.FAVORITE -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_favorite))
-                }
-                Routes.ABOUT -> {
-                    Text(stringResource(id = R.string.top_app_bar_title_about))
-                }
-            }
-        },
+        title = { Text(title) },
         backgroundColor = colorResource(id = R.color.topAppBarBackground),
         contentColor = colorResource(id = R.color.topAppBarContent)
     )
@@ -91,14 +133,22 @@ private fun TopBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun BottomNavigationBarNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.SOURCE_LIST) {
-        composable(Routes.SOURCE_LIST) {
+    NavHost(navController = navController, startDestination = Screen.SourceList.route) {
+        composable(Screen.SourceList.route) {
             SourceListScreen(navController = navController)
         }
-        composable(Routes.FAVORITE) {
+        composable(
+            route = Screen.NewsList.route,
+            arguments = listOf(navArgument(Screen.NewsList.KEY_TITLE) {
+                type = NavType.StringType
+            })
+        ) {
+            NewsListScreen(navController = navController)
+        }
+        composable(Screen.Favorite.route) {
             FavoriteScreen(navController = navController)
         }
-        composable(Routes.ABOUT) {
+        composable(Screen.About.route) {
             AboutScreen(navController = navController)
         }
     }
