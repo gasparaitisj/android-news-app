@@ -38,7 +38,7 @@ class NewsListViewModel @Inject constructor(
         xRequestId: String? = null
     ) {
         viewModelScope.launch {
-            _articles.value = Resource.loading()
+            _articles.update { Resource.loading() }
             val response = articlesRepository.getArticles(
                 query = query,
                 page = page,
@@ -54,12 +54,14 @@ class NewsListViewModel @Inject constructor(
 
     fun onCategoryTypeChanged(categoryType: ArticleCategory) {
         if (_categoryType.value == ArticleCategory.NONE) {
-            _categoryType.value = categoryType
-            _articles.value = _articles.value.copy(
-                data = _articles.value.data?.filter { it.category == categoryType }
-            )
+            _categoryType.update { categoryType }
+            _articles.update {
+                it.copy(
+                    data = _articles.value.data?.filter { it.category == categoryType }
+                )
+            }
         } else {
-            _categoryType.value = ArticleCategory.NONE
+            _categoryType.update { ArticleCategory.NONE }
             onRefresh()
         }
     }
