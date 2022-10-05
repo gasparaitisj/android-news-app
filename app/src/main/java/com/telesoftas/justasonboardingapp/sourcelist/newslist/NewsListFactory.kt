@@ -13,7 +13,7 @@ class NewsListFactory {
                     return Resource.success(data = articles.map { articlePreviewResponse ->
                         Article(
                             id = articlePreviewResponse.id,
-                            publishedAt = articlePreviewResponse.publishedAt,
+                            publishedAt = articlePreviewResponse.publishedAt.replace("[\$TZ]".toRegex(), " "),
                             source = articlePreviewResponse.source,
                             category = articlePreviewResponse.category,
                             author = articlePreviewResponse.author,

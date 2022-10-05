@@ -92,7 +92,7 @@ private fun SourceListContent(
                             .fillMaxWidth()
                             .fillMaxHeight()
                     ) {
-                        items(newsSources.getSuccessDataOrNull() ?: listOf()) { item ->
+                        items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
                             SourceItem(
                                 item = item,
                                 onSourceItemClick = { onSourceItemClick(item) }

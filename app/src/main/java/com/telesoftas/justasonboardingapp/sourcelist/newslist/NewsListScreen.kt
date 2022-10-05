@@ -43,8 +43,8 @@ fun NewsListScreen(
     NewsListContent(
         articles = articles,
         categoryType = categoryType,
-        onRefresh = { viewModel.getArticles() },
-        onCategoryTypeChanged = { viewModel.filterArticles(it) },
+        onRefresh = { viewModel.onRefresh() },
+        onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
         onArticleItemClick = { (_) -> }
     )
 }
@@ -93,7 +93,7 @@ private fun NewsListContent(
                             .fillMaxWidth()
                             .fillMaxHeight()
                     ) {
-                        items(articles.getSuccessDataOrNull() ?: listOf()) { item ->
+                        items(articles.getSuccessDataOrNull().orEmpty()) { item ->
                             ArticleItem(
                                 item = item,
                                 onArticleItemClick = { onArticleItemClick(item) }
@@ -121,13 +121,90 @@ private fun NewsListContent(
     }
 }
 
+@ExperimentalMaterialApi
+@Composable
+fun ChipGroupFilterArticles(
+    categoryType: ArticleCategory,
+    onCategoryTypeChanged: (ArticleCategory) -> Unit
+) {
+    val chipColors = ChipDefaults.filterChipColors(
+        backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
+        contentColor = colorResource(id = R.color.chipNotSelectedContent),
+        selectedBackgroundColor = colorResource(id = R.color.chipSelectedBackground),
+        selectedContentColor = colorResource(id = R.color.chipSelectedContent),
+    )
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.POLITICS,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_politics),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.SPORTS,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_sports),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.BUSINESS,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_business),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.FOOD,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_food),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.CULTURE,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_culture),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.GAMING,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_gaming),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.HEALTH,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_health),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+            CategoryFilterChip(
+                chipCategoryType = ArticleCategory.OTHER,
+                chipText = stringResource(id = R.string.news_list_screen_chip_category_other),
+                chipColors, categoryType, onCategoryTypeChanged
+            )
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun CategoryFilterChip(
+    chipCategoryType: ArticleCategory,
+    chipText: String,
+    chipColors: SelectableChipColors,
+    categoryType: ArticleCategory,
+    onCategoryTypeChanged: (ArticleCategory) -> Unit,
+) {
+    FilterChip(
+        colors = chipColors,
+        modifier = Modifier.padding(horizontal = 8.dp),
+        selected = categoryType == chipCategoryType,
+        onClick = { onCategoryTypeChanged(chipCategoryType) }
+    ) {
+        Text(chipText)
+    }
+}
+
 @Composable
 private fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit
 ) {
     val selected = rememberSaveable { mutableStateOf(false) }
-    val publishedAtFormatted = item.publishedAt.replace("[\$TZ]".toRegex(), " ")
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -139,7 +216,7 @@ private fun ArticleItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${item.author} - $publishedAtFormatted",
+                text = "${item.author} - ${item.publishedAt}",
                 style = Typography.caption
             )
             IconButton(
@@ -239,83 +316,5 @@ private fun ArticleItem() {
             maxLines = 4,
             overflow = TextOverflow.Ellipsis
         )
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-fun ChipGroupFilterArticles(
-    categoryType: ArticleCategory,
-    onCategoryTypeChanged: (ArticleCategory) -> Unit
-) {
-    val chipColors = ChipDefaults.filterChipColors(
-        backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
-        contentColor = colorResource(id = R.color.chipNotSelectedContent),
-        selectedBackgroundColor = colorResource(id = R.color.chipSelectedBackground),
-        selectedContentColor = colorResource(id = R.color.chipSelectedContent),
-    )
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.POLITICS,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_politics),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.SPORTS,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_sports),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.BUSINESS,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_business),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.FOOD,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_food),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.CULTURE,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_culture),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.GAMING,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_gaming),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.HEALTH,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_health),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-            CategoryFilterChip(
-                chipCategoryType = ArticleCategory.OTHER,
-                chipText = stringResource(id = R.string.news_list_screen_chip_category_other),
-                chipColors, categoryType, onCategoryTypeChanged
-            )
-        }
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-fun CategoryFilterChip(
-    chipCategoryType: ArticleCategory,
-    chipText: String,
-    chipColors: SelectableChipColors,
-    categoryType: ArticleCategory,
-    onCategoryTypeChanged: (ArticleCategory) -> Unit,
-) {
-    FilterChip(
-        colors = chipColors,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        selected = categoryType == chipCategoryType,
-        onClick = { onCategoryTypeChanged(chipCategoryType) }
-    ) {
-        Text(chipText)
     }
 }

@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,10 +25,10 @@ class NewsListViewModel @Inject constructor(
     val categoryType: StateFlow<ArticleCategory> = _categoryType.asStateFlow()
 
     init {
-        getArticles()
+        onRefresh()
     }
 
-    fun getArticles(
+    fun onRefresh(
         query: String? = null,
         page: Int? = null,
         pageSize: Int? = null,
@@ -47,19 +48,19 @@ class NewsListViewModel @Inject constructor(
                 pageNumber = pageNumber,
                 xRequestId = xRequestId
             )
-            _articles.value = NewsListFactory().create(response)
+            _articles.update { NewsListFactory().create(response) }
         }
     }
 
-    fun filterArticles(filterBy: ArticleCategory) {
+    fun onCategoryTypeChanged(categoryType: ArticleCategory) {
         if (_categoryType.value == ArticleCategory.NONE) {
-            _categoryType.value = filterBy
+            _categoryType.value = categoryType
             _articles.value = _articles.value.copy(
-                data = _articles.value.data?.filter { it.category == filterBy }
+                data = _articles.value.data?.filter { it.category == categoryType }
             )
         } else {
             _categoryType.value = ArticleCategory.NONE
-            getArticles()
+            onRefresh()
         }
     }
 }
