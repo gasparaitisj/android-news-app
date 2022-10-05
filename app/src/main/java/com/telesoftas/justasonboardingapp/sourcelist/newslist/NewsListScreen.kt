@@ -24,6 +24,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
@@ -274,5 +275,9 @@ private fun ArticleItemPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "https://placebear.com/200/300"
     )
-    ArticleItem(item = article, onArticleItemClick = {})
+    JustasOnboardingAppTheme {
+        Surface {
+            ArticleItem(item = article, onArticleItemClick = {})
+        }
+    }
 }
