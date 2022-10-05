@@ -263,7 +263,7 @@ fun CategoryFilterChip(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 private fun ArticleItemPreview() {
     val article = Article(
         id = "1",
@@ -276,8 +276,6 @@ private fun ArticleItemPreview() {
         imageUrl = "https://placebear.com/200/300"
     )
     JustasOnboardingAppTheme {
-        Surface {
-            ArticleItem(item = article, onArticleItemClick = {})
-        }
+        ArticleItem(item = article, onArticleItemClick = {})
     }
 }
