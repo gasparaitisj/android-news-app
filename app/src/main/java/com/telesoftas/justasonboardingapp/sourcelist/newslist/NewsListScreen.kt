@@ -155,9 +155,10 @@ private fun ArticleItem(
             )
         }
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
+                modifier = Modifier.size(200.dp, 140.dp),
                 model = "https://${item.imageUrl}",
                 contentDescription = "Image"
             )
@@ -167,12 +168,18 @@ private fun ArticleItem(
             )
         }
         Text(
+            modifier = Modifier.padding(top = 16.dp),
             text = item.description ?: "",
             style = Typography.body2,
             maxLines = 4,
             overflow = TextOverflow.Ellipsis
         )
     }
+    Divider(
+        modifier = Modifier.padding(top = 8.dp),
+        thickness = 2.dp,
+        color = colorResource(id = R.color.news_list_divider)
+    )
 }
 
 @Composable
@@ -215,6 +222,7 @@ private fun ArticleItem() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AsyncImage(
+                modifier = Modifier.size(200.dp, 140.dp),
                 model = "https://placebear.com/200/300",
                 contentDescription = "Image"
             )
