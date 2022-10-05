@@ -10,8 +10,5 @@ class MainViewModel @Inject constructor(
     private val preferencesStore: PreferencesStore
 ) : ViewModel() {
     val isFirstLaunch = preferencesStore.isFirstLaunch()
-
-    suspend fun updateIsFirstLaunch(isFirstLaunch: Boolean) {
-        preferencesStore.updateIsFirstLaunch(isFirstLaunch)
-    }
+    suspend fun setFirstLaunchCompleted() = preferencesStore.updateIsFirstLaunch(false)
 }
