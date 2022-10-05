@@ -121,6 +121,68 @@ private fun NewsListContent(
     }
 }
 
+@Composable
+private fun ArticleItem(
+    item: Article,
+    onArticleItemClick: (Article) -> Unit
+) {
+    val selected = rememberSaveable { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "${item.author} - ${item.publishedAt}",
+                style = Typography.caption
+            )
+            IconButton(
+                onClick = { selected.value = !selected.value },
+                content = {
+                    Icon(
+                        painter = if (selected.value) {
+                            painterResource(id = R.drawable.btn_favorite_active)
+                        } else {
+                            painterResource(id = R.drawable.btn_favorite)
+                        },
+                        contentDescription = "Favorite"
+                    )
+                }
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            AsyncImage(
+                modifier = Modifier.size(200.dp, 140.dp),
+                model = "https://${item.imageUrl}",
+                contentDescription = "Image"
+            )
+            Text(
+                text = item.title ?: "",
+                style = Typography.subtitle2
+            )
+        }
+        Text(
+            modifier = Modifier.padding(top = 16.dp),
+            text = item.description ?: "",
+            style = Typography.body2,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+    Divider(
+        modifier = Modifier.padding(top = 8.dp),
+        thickness = 2.dp,
+        color = colorResource(id = R.color.news_list_divider)
+    )
+}
+
 @ExperimentalMaterialApi
 @Composable
 fun ChipGroupFilterArticles(
@@ -200,121 +262,17 @@ fun CategoryFilterChip(
 }
 
 @Composable
-private fun ArticleItem(
-    item: Article,
-    onArticleItemClick: (Article) -> Unit
-) {
-    val selected = rememberSaveable { mutableStateOf(false) }
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${item.author} - ${item.publishedAt}",
-                style = Typography.caption
-            )
-            IconButton(
-                onClick = { selected.value = !selected.value },
-                content = {
-                    Icon(
-                        painter = if (selected.value) {
-                            painterResource(id = R.drawable.btn_favorite_active)
-                        } else {
-                            painterResource(id = R.drawable.btn_favorite)
-                        },
-                        contentDescription = "Favorite"
-                    )
-                }
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            AsyncImage(
-                modifier = Modifier.size(200.dp, 140.dp),
-                model = "https://${item.imageUrl}",
-                contentDescription = "Image"
-            )
-            Text(
-                text = item.title ?: "",
-                style = Typography.subtitle2
-            )
-        }
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = item.description ?: "",
-            style = Typography.body2,
-            maxLines = 4,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-    Divider(
-        modifier = Modifier.padding(top = 8.dp),
-        thickness = 2.dp,
-        color = colorResource(id = R.color.news_list_divider)
-    )
-}
-
-@Composable
 @Preview
-private fun ArticleItem() {
-    val selected = remember { mutableStateOf(false) }
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        val author = "justasgasparaitis@one.lt"
-        val publishedAt = "2021-06-03T10:58:55Z"
-        val title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi."
-        val description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi."
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$author - $publishedAt",
-                style = Typography.caption
-            )
-            IconButton(
-                onClick = { selected.value = !selected.value },
-                content = {
-                    Icon(
-                        painter = if (selected.value) {
-                            painterResource(id = R.drawable.btn_favorite_active)
-                        } else {
-                            painterResource(id = R.drawable.btn_favorite)
-                        },
-                        contentDescription = "Favorite"
-                    )
-                }
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            AsyncImage(
-                modifier = Modifier.size(200.dp, 140.dp),
-                model = "https://placebear.com/200/300",
-                contentDescription = "Image"
-            )
-            Text(
-                text = title,
-                style = Typography.subtitle2
-            )
-        }
-        Text(
-            text = description,
-            style = Typography.body2,
-            maxLines = 4,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
+private fun ArticleItemPreview() {
+    val article = Article(
+        id = "1",
+        publishedAt = "2021-06-03T10:58:55Z",
+        source = null,
+        category = ArticleCategory.BUSINESS,
+        author = "justasgasparaitis@one.lt",
+        title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
+        description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
+        imageUrl = "https://placebear.com/200/300"
+    )
+    ArticleItem(item = article, onArticleItemClick = {})
 }
