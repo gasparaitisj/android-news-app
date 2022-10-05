@@ -10,5 +10,5 @@ data class Article(
     val author: String? = null,
     val title: String? = null,
     val description: String? = null,
-    val imageURL: String? = null
+    val imageUrl: String? = null
 )
