@@ -127,8 +127,8 @@ private fun setOnDestinationChangedListener(
 private fun TopBar(title: String) {
     TopAppBar(
         title = { Text(title) },
-        backgroundColor = colorResource(id = R.color.topAppBarBackground),
-        contentColor = colorResource(id = R.color.topAppBarContent)
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
     )
 }
 
@@ -150,8 +150,8 @@ private fun TopBarNewsList(
                 )
             }
         },
-        backgroundColor = colorResource(id = R.color.topAppBarBackground),
-        contentColor = colorResource(id = R.color.topAppBarContent)
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
     )
 }
 

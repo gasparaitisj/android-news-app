@@ -68,9 +68,9 @@ private fun NewsListContent(
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
-                    backgroundColor = colorResource(id = R.color.snackbarBackground),
-                    actionColor = colorResource(id = R.color.snackbarAction),
-                    contentColor = colorResource(id = R.color.snackbarContent),
+                    backgroundColor = colorResource(id = R.color.snackbar_background),
+                    actionColor = colorResource(id = R.color.snackbar_action),
+                    contentColor = colorResource(id = R.color.snackbar_content),
                     snackbarData = data
                 )
             }
@@ -193,10 +193,10 @@ fun ChipGroupFilterArticles(
     onCategoryTypeChanged: (ArticleCategory) -> Unit
 ) {
     val chipColors = ChipDefaults.filterChipColors(
-        backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
-        contentColor = colorResource(id = R.color.chipNotSelectedContent),
-        selectedBackgroundColor = colorResource(id = R.color.chipSelectedBackground),
-        selectedContentColor = colorResource(id = R.color.chipSelectedContent),
+        backgroundColor = colorResource(id = R.color.chip_not_selected_background),
+        contentColor = colorResource(id = R.color.chip_not_selected_content),
+        selectedBackgroundColor = colorResource(id = R.color.chip_selected_background),
+        selectedContentColor = colorResource(id = R.color.chip_selected_content),
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
