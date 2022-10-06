@@ -9,6 +9,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.telesoftas.justasonboardingapp.utils.Screen
 
 @ExperimentalMaterialApi
 @Composable
@@ -24,7 +25,10 @@ fun BottomNavigationBar(
         backgroundColor = colorResource(id = R.color.botNavBar)
     ) {
         items.forEach { item ->
-            val selected = item.route == backStackEntry.value?.destination?.route
+            val selected = handleSelectedBottomNavigationItem(
+                currentRoute = backStackEntry.value?.destination?.route,
+                itemRoute = item.route
+            )
             BottomNavigationItem(
                 selected = selected,
                 onClick = { onItemClick(item) },
@@ -46,5 +50,24 @@ fun BottomNavigationBar(
                 label = { Text(text = item.name) }
             )
         }
+    }
+}
+
+// If screen is child of any bottom navigation screen, the parent item is selected
+private fun handleSelectedBottomNavigationItem(
+    currentRoute: String?,
+    itemRoute: String
+): Boolean {
+    return when (itemRoute) {
+        Screen.SourceList.route -> {
+            (currentRoute == Screen.SourceList.route || currentRoute == Screen.NewsList.route)
+        }
+        Screen.Favorite.route -> {
+            (currentRoute == Screen.Favorite.route)
+        }
+        Screen.About.route -> {
+            (currentRoute == Screen.About.route)
+        }
+        else -> false
     }
 }
