@@ -109,15 +109,15 @@ fun FinishButton(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val backgroundColor = if (isPressed) {
-        colorResource(id = R.color.buttonPressedBackground)
+        colorResource(id = R.color.button_pressed_background)
     } else {
-        colorResource(id = R.color.buttonNotPressedBackground)
+        colorResource(id = R.color.button_not_pressed_background)
     }
 
     val contentColor = if (isPressed) {
-        colorResource(id = R.color.buttonPressedContent)
+        colorResource(id = R.color.button_pressed_content)
     } else {
-        colorResource(id = R.color.buttonNotPressedContent)
+        colorResource(id = R.color.button_not_pressed_content)
     }
 
     Row(

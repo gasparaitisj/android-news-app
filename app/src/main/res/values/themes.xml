@@ -2,14 +2,15 @@
 <resources>
     <!--  Main App Theme  -->
     <style name="Theme.JustasOnboardingApp" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/statusBar</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:navigationBarColor">@color/navigation_bar</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
     <!--  Splash Screen Theme  -->
     <style name="Theme.JustasOnboardingApp.SplashScreen" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">@color/splashScreenBackground</item>
+        <item name="windowSplashScreenBackground">@color/splash_screen_background</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->

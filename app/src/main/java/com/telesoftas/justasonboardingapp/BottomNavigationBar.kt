@@ -9,6 +9,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.telesoftas.justasonboardingapp.utils.Screen
 
 @ExperimentalMaterialApi
 @Composable
@@ -21,15 +22,18 @@ fun BottomNavigationBar(
     val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(
         modifier = modifier,
-        backgroundColor = colorResource(id = R.color.botNavBar)
+        backgroundColor = colorResource(id = R.color.bottom_navigation_bar)
     ) {
         items.forEach { item ->
-            val selected = item.route == backStackEntry.value?.destination?.route
+            val selected = handleSelectedBottomNavigationItem(
+                currentRoute = backStackEntry.value?.destination?.route,
+                itemRoute = item.route
+            )
             BottomNavigationItem(
                 selected = selected,
                 onClick = { onItemClick(item) },
-                selectedContentColor = colorResource(id = R.color.selectedContent),
-                unselectedContentColor = colorResource(id = R.color.unselectedContent),
+                selectedContentColor = colorResource(id = R.color.selected_content),
+                unselectedContentColor = colorResource(id = R.color.unselected_content),
                 alwaysShowLabel = false,
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
@@ -47,4 +51,16 @@ fun BottomNavigationBar(
             )
         }
     }
+}
+
+// If screen is child of any bottom navigation screen, the parent item is selected
+private fun handleSelectedBottomNavigationItem(
+    currentRoute: String?,
+    itemRoute: String
+): Boolean = when (itemRoute) {
+    Screen.SourceList.route ->
+        currentRoute == Screen.SourceList.route || currentRoute == Screen.NewsList.route
+    Screen.Favorite.route -> currentRoute == Screen.Favorite.route
+    Screen.About.route -> currentRoute == Screen.About.route
+    else -> false
 }

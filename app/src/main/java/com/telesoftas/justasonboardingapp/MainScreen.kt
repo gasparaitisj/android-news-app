@@ -3,10 +3,9 @@ package com.telesoftas.justasonboardingapp
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -54,7 +53,13 @@ private fun MainScreenContent(
     bottomNavController: NavHostController
 ) {
     Scaffold(
-        topBar = { TopBar(title = topBarTitle.value) },
+        topBar = {
+            if (bottomNavController.currentBackStackEntry?.destination?.route == Screen.NewsList.route) {
+                TopBarNewsList(topBarTitle.value, bottomNavController)
+            } else {
+                TopBar(topBarTitle.value)
+            }
+        },
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
         content = { paddingValues ->
             Column(
@@ -121,8 +126,31 @@ private fun setOnDestinationChangedListener(
 private fun TopBar(title: String) {
     TopAppBar(
         title = { Text(title) },
-        backgroundColor = colorResource(id = R.color.topAppBarBackground),
-        contentColor = colorResource(id = R.color.topAppBarContent)
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
+    )
+}
+
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
+@Composable
+private fun TopBarNewsList(
+    title: String,
+    navController: NavHostController
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
     )
 }
 

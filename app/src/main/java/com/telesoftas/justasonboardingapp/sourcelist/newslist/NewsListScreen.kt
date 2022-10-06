@@ -24,6 +24,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -67,9 +68,9 @@ private fun NewsListContent(
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
-                    backgroundColor = colorResource(id = R.color.snackbarBackground),
-                    actionColor = colorResource(id = R.color.snackbarAction),
-                    contentColor = colorResource(id = R.color.snackbarContent),
+                    backgroundColor = colorResource(id = R.color.snackbar_background),
+                    actionColor = colorResource(id = R.color.snackbar_action),
+                    contentColor = colorResource(id = R.color.snackbar_content),
                     snackbarData = data
                 )
             }
@@ -140,7 +141,8 @@ private fun ArticleItem(
         ) {
             Text(
                 text = "${item.author} - ${item.publishedAt}",
-                style = Typography.caption
+                style = Typography.caption,
+                color = DarkBlue
             )
             IconButton(
                 onClick = { selected.value = !selected.value },
@@ -191,10 +193,10 @@ fun ChipGroupFilterArticles(
     onCategoryTypeChanged: (ArticleCategory) -> Unit
 ) {
     val chipColors = ChipDefaults.filterChipColors(
-        backgroundColor = colorResource(id = R.color.chipNotSelectedBackground),
-        contentColor = colorResource(id = R.color.chipNotSelectedContent),
-        selectedBackgroundColor = colorResource(id = R.color.chipSelectedBackground),
-        selectedContentColor = colorResource(id = R.color.chipSelectedContent),
+        backgroundColor = colorResource(id = R.color.chip_not_selected_background),
+        contentColor = colorResource(id = R.color.chip_not_selected_content),
+        selectedBackgroundColor = colorResource(id = R.color.chip_selected_background),
+        selectedContentColor = colorResource(id = R.color.chip_selected_content),
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
