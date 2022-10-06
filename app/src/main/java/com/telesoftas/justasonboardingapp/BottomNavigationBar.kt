@@ -57,17 +57,10 @@ fun BottomNavigationBar(
 private fun handleSelectedBottomNavigationItem(
     currentRoute: String?,
     itemRoute: String
-): Boolean {
-    return when (itemRoute) {
-        Screen.SourceList.route -> {
-            (currentRoute == Screen.SourceList.route || currentRoute == Screen.NewsList.route)
-        }
-        Screen.Favorite.route -> {
-            (currentRoute == Screen.Favorite.route)
-        }
-        Screen.About.route -> {
-            (currentRoute == Screen.About.route)
-        }
-        else -> false
-    }
+): Boolean = when (itemRoute) {
+    Screen.SourceList.route ->
+        currentRoute == Screen.SourceList.route || currentRoute == Screen.NewsList.route
+    Screen.Favorite.route -> currentRoute == Screen.Favorite.route
+    Screen.About.route -> currentRoute == Screen.About.route
+    else -> false
 }

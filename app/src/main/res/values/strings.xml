@@ -61,7 +61,6 @@
     <string name="news_list_screen_chip_category_other">Other</string>
     <string name="news_list_screen_chip_category_health">Health</string>
 
-
     <!-- Network error -->
     <string name="network_error">Couldn\'t reach the server. Check your internet connection.</string>
 

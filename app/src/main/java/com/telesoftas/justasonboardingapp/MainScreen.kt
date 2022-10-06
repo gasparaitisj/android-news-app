@@ -114,7 +114,6 @@ private fun setOnDestinationChangedListener(
             Screen.NewsList.route -> {
                 topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
                     ?: newsList
-
             }
         }
     }
