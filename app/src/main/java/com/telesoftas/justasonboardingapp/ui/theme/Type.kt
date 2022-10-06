@@ -19,11 +19,5 @@ val Typography = Typography(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W400,
         fontSize = 12.sp
-    ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W400,
-        fontSize = 12.sp,
-        color = DarkBlue
     )
 )
