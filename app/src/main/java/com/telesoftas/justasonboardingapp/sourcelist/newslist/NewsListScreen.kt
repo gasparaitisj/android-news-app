@@ -24,6 +24,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -140,7 +141,8 @@ private fun ArticleItem(
         ) {
             Text(
                 text = "${item.author} - ${item.publishedAt}",
-                style = Typography.caption
+                style = Typography.caption,
+                color = DarkBlue
             )
             IconButton(
                 onClick = { selected.value = !selected.value },
