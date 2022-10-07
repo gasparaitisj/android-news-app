@@ -3,18 +3,13 @@ package com.telesoftas.justasonboardingapp
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,10 +29,10 @@ import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Screen
 
 @ExperimentalMaterial3Api
+@ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Composable
 fun MainScreen(
     navController: NavHostController,
@@ -52,29 +47,25 @@ fun MainScreen(
     MainScreenContent(topBarTitle, topBarRoute, bottomNavController)
 }
 
+@ExperimentalMaterialApi
 @ExperimentalMaterial3Api
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Composable
 private fun MainScreenContent(
     topBarTitle: MutableState<String>,
     topBarRoute: MutableState<String?>,
     bottomNavController: NavHostController
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     Scaffold(
-        modifier = if (topBarRoute.value == Screen.NewsDetails.route)
-            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-        else Modifier,
         topBar = {
             when (topBarRoute.value) {
                 Screen.NewsList.route -> {
                     TopBarNewsList(topBarTitle.value, bottomNavController)
                 }
                 Screen.NewsDetails.route -> {
-                    TopBarNewsDetails(topBarTitle.value, scrollBehavior)
+                    // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
                 }
                 else -> TopBar(topBarTitle.value)
             }
@@ -143,6 +134,7 @@ private fun setOnDestinationChangedListener(
     }
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -155,6 +147,7 @@ private fun TopBar(title: String) {
     )
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -177,19 +170,6 @@ private fun TopBarNewsList(
         contentColor = colorResource(id = R.color.top_app_bar_content)
     )
 }
-
-@ExperimentalMaterial3Api
-@Composable
-fun TopBarNewsDetails(
-    title: String,
-    scrollBehavior: TopAppBarScrollBehavior
-) {
-    LargeTopAppBar(
-        title = { Text(text = title) },
-        scrollBehavior = scrollBehavior
-    )
-}
-
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
