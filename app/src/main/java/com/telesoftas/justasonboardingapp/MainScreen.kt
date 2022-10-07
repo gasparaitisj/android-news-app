@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -28,7 +26,6 @@ import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Screen
 
-@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -48,7 +45,6 @@ fun MainScreen(
 }
 
 @ExperimentalMaterialApi
-@ExperimentalMaterial3Api
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
@@ -135,7 +131,6 @@ private fun setOnDestinationChangedListener(
     }
 }
 
-@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -148,7 +143,6 @@ private fun TopBar(title: String) {
     )
 }
 
-@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
