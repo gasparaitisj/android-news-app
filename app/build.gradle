@@ -93,6 +93,7 @@ dependencies {
 
     // Material Design
     implementation "androidx.compose.material:material:$material_version"
+    implementation "androidx.compose.material3:material3:$material3_version"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
