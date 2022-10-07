@@ -8,6 +8,7 @@ buildscript {
         // App dependencies
         accompanist_version = "0.25.1"
         coil_version = "2.2.2"
+        collapsing_toolbar_version = "2.3.2"
         compose_activity_version = "1.6.0"
         compose_navigation_version = "2.6.0-alpha01"
         compose_ui_version = "1.2.1"
