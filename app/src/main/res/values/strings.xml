@@ -68,4 +68,5 @@
     <string name="unknown_error">Unknown error</string>
     <string name="top_app_bar_title_news_list">News list</string>
     <string name="top_app_bar_title_news_details">News details</string>
+    <string name="news_details_btn_open_link">Read full article online</string>
 </resources>
