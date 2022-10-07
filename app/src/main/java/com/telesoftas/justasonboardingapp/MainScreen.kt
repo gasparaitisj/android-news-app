@@ -128,7 +128,8 @@ private fun setOnDestinationChangedListener(
                     ?: newsList
             }
             Screen.NewsDetails.route -> {
-                topBarTitle.value = newsDetails
+                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
+                    ?: newsDetails
             }
         }
     }
@@ -189,7 +190,12 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         ) {
             NewsListScreen(navController = navController)
         }
-        composable(Screen.NewsDetails.route) {
+        composable(
+            route = Screen.NewsDetails.route,
+            arguments = listOf(navArgument(Screen.NewsDetails.KEY_ID) {
+                type = NavType.StringType
+            })
+        ) {
             NewsDetailsScreen(navController = navController)
         }
         composable(Screen.Favorite.route) {

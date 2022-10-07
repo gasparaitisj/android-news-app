@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.newsdetails
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -8,10 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +27,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
@@ -46,108 +48,113 @@ fun NewsDetailsScreen(
     navController: NavHostController,
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
-    val item = Article(
-        id = "1",
-        publishedAt = "2021-06-03T10:58:55Z",
-        source = null,
-        category = ArticleCategory.BUSINESS,
-        author = "justasgasparaitis@one.lt",
-        title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-        description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-        imageUrl = "https://placebear.com/200/300"
-    )
-    NewsDetailsContent(item) { navController.navigateUp() }
+    val article by viewModel.article.collectAsState()
+    NewsDetailsContent(article) { navController.navigateUp() }
 }
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
 fun NewsDetailsContent(
-    article: Article,
+    article: Resource<Article>,
     onBackArrowClicked: () -> Boolean
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
     val scrollState = rememberScrollState()
     val progress = state.toolbarState.progress
 
-    CollapsingToolbarScaffold(
-        modifier = Modifier,
-        state = state,
-        scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
-        toolbar = {
-            TopAppBar(
-                modifier = Modifier
-                    .road(
-                        whenCollapsed = Alignment.BottomStart,
-                        whenExpanded = Alignment.BottomStart
-                    )
-                    .pin(),
-                title = {
-                    Text(
-                        modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
-                        text = article.title ?: "",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBackArrowClicked() },
-                        enabled = progress <= 0.5f
-                    ) {
-                        Icon(
-                            modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.top_app_bar_background),
-                contentColor = colorResource(id = R.color.top_app_bar_content)
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(if (progress <= 0.5f) progress * 2 else 1f)
-            ) {
-                AsyncImage(
-                    model = "https://placebear.com/1000/1000",
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(
+            isRefreshing = article.status == Status.LOADING
+        ),
+        swipeEnabled = false,
+        onRefresh = {}
+    ) {
+        CollapsingToolbarScaffold(
+            modifier = Modifier,
+            state = state,
+            scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+            toolbar = {
+                TopAppBar(
                     modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth(),
-                    contentDescription = "Image",
-                    contentScale = ContentScale.Crop,
+                        .road(
+                            whenCollapsed = Alignment.BottomStart,
+                            whenExpanded = Alignment.BottomStart
+                        )
+                        .pin(),
+                    title = {
+                        Text(
+                            modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
+                            text = article.data?.title ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { onBackArrowClicked() },
+                            enabled = progress <= 0.5f
+                        ) {
+                            Icon(
+                                modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.top_app_bar_background),
+                    contentColor = colorResource(id = R.color.top_app_bar_content)
                 )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center
+
+                Box(
+                    modifier = if (article.data?.imageUrl == null) {
+                        Modifier
+                            .fillMaxSize()
+                            .background(colorResource(id = R.color.top_app_bar_background))
+                    } else {
+                        Modifier
+                            .fillMaxSize()
+                            .alpha(if (progress <= 0.5f) progress * 2 else 1f)
+                    }
                 ) {
-                    IconButton(onClick = { onBackArrowClicked() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
+                    AsyncImage(
+                        model = "https://${article.data?.imageUrl}",
+                        modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth(),
+                        contentDescription = "Image",
+                        contentScale = ContentScale.Crop,
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        IconButton(onClick = { onBackArrowClicked() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                        Text(
+                            text = article.data?.title ?: "",
+                            modifier = Modifier.padding(24.dp),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = Typography.h6,
+                            color = Color.White
                         )
                     }
-                    Text(
-                        text = article.title ?: "",
-                        modifier = Modifier.padding(24.dp),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        style = Typography.h6,
-                        color = Color.White
-                    )
                 }
             }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = scrollState)
         ) {
-            NewsDetailsItem(item = article)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = scrollState)
+            ) {
+                article.data?.let { NewsDetailsItem(item = it) }
+            }
         }
     }
 }
@@ -199,7 +206,10 @@ fun NewsDetailsItem(item: Article) {
                 overflow = TextOverflow.Ellipsis
             )
             ReadFullArticleButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 32.dp).fillMaxWidth()
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 32.dp)
+                    .fillMaxWidth()
             )
         }
     }

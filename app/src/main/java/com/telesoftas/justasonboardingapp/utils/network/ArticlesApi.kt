@@ -1,10 +1,12 @@
 package com.telesoftas.justasonboardingapp.utils.network
 
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ArticlesApi {
@@ -19,4 +21,10 @@ interface ArticlesApi {
         @Query("order") pageNumber: Int? = null,
         @Query("x-request-id") xRequestId: String? = null
     ): Response<ArticlesListResponse>
+
+    @Headers("Content-Type: application/json")
+    @GET("articles/{id}")
+    suspend fun getArticleById(
+        @Path("id") id: String,
+    ): Response<ArticlePreviewResponse>
 }
