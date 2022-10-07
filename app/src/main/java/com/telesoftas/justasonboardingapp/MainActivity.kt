@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -19,6 +20,7 @@ import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.utils.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalMaterial3Api
 @ExperimentalLifecycleComposeApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -78,6 +80,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@ExperimentalMaterial3Api
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi

@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.sourcelist.newslist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -47,7 +49,8 @@ fun NewsListScreen(
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
-        onArticleItemClick = { (_) -> }
+        onArticleItemClick = { article ->
+            navController.navigate(Screen.NewsDetails.route) }
     )
 }
 
@@ -133,6 +136,7 @@ private fun ArticleItem(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
+            .clickable { onArticleItemClick(item) }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
