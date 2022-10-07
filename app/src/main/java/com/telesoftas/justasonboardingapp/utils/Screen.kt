@@ -18,6 +18,10 @@ sealed class Screen(val routePattern: String) {
         fun destination(title: String): String = "news-list/${title}"
         const val KEY_TITLE = "title"
     }
+    object NewsDetails : Screen("news-details") {
+        val route: String get() = routePattern
+        fun destination(): String = "news-details"
+    }
     object Favorite : Screen("favorite") {
         val route: String get() = routePattern
         fun destination(): String = routePattern
