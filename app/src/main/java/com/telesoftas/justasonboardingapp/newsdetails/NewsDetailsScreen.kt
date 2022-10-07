@@ -1,16 +1,27 @@
 package com.telesoftas.justasonboardingapp.newsdetails
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,7 +33,11 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.Constants
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -41,15 +56,105 @@ fun NewsDetailsScreen(
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "https://placebear.com/200/300"
     )
-    NewsDetailsContent(item)
+    NewsDetailsContent(item) { navController.navigateUp() }
 }
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
-fun NewsDetailsContent(item: Article) {
-    val selected = rememberSaveable { mutableStateOf(false) }
+fun NewsDetailsContent(
+    article: Article,
+    onBackArrowClicked: () -> Boolean
+) {
+    val state = rememberCollapsingToolbarScaffoldState()
+    val scrollState = rememberScrollState()
+    val progress = state.toolbarState.progress
 
+    CollapsingToolbarScaffold(
+        modifier = Modifier,
+        state = state,
+        scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+        toolbar = {
+            TopAppBar(
+                modifier = Modifier
+                    .road(
+                        whenCollapsed = Alignment.BottomStart,
+                        whenExpanded = Alignment.BottomStart
+                    )
+                    .pin(),
+                title = {
+                    Text(
+                        modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
+                        text = article.title ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onBackArrowClicked() },
+                        enabled = progress <= 0.5f
+                    ) {
+                        Icon(
+                            modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.top_app_bar_background),
+                contentColor = colorResource(id = R.color.top_app_bar_content)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(if (progress <= 0.5f) progress * 2 else 1f)
+            ) {
+                AsyncImage(
+                    model = "https://placebear.com/1000/1000",
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                    contentDescription = "Image",
+                    contentScale = ContentScale.Crop,
+                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    IconButton(onClick = { onBackArrowClicked() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                    Text(
+                        text = article.title ?: "",
+                        modifier = Modifier.padding(24.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = Typography.h6,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = scrollState)
+        ) {
+            NewsDetailsItem(item = article)
+        }
+    }
+}
+
+@Composable
+fun NewsDetailsItem(item: Article) {
+    val selected = rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -61,6 +166,7 @@ fun NewsDetailsContent(item: Article) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.padding(top = 16.dp),
                 text = "${item.author} - ${item.publishedAt}",
                 style = Typography.caption,
                 color = DarkBlue
@@ -79,25 +185,57 @@ fun NewsDetailsContent(item: Article) {
                 }
             )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            AsyncImage(
-                modifier = Modifier.size(200.dp, 140.dp),
-                model = "https://${item.imageUrl}",
-                contentDescription = "Image"
+        Column {
+            Text(
+                modifier = Modifier.padding(top = 32.dp),
+                text = item.title ?: "",
+                style = Typography.h6
             )
             Text(
-                text = item.title ?: "",
-                style = Typography.subtitle2
+                modifier = Modifier.padding(top = 26.dp),
+                text = item.description ?: "",
+                style = Typography.body2,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
+            ReadFullArticleButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 32.dp)
             )
         }
+    }
+}
+
+@Composable
+fun ReadFullArticleButton(
+    modifier: Modifier
+) {
+    val uriHandler = LocalUriHandler.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val backgroundColor = if (isPressed) {
+        colorResource(id = R.color.button_pressed_background)
+    } else {
+        colorResource(id = R.color.button_not_pressed_background)
+    }
+
+    val contentColor = if (isPressed) {
+        colorResource(id = R.color.button_pressed_content)
+    } else {
+        colorResource(id = R.color.button_not_pressed_content)
+    }
+    Button(
+        modifier = modifier,
+        onClick = { uriHandler.openUri(Constants.ORIGINAL_ARTICLE_URL) },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        interactionSource = interactionSource
+    ) {
         Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = item.description ?: "",
-            style = Typography.body2,
-            maxLines = 4,
-            overflow = TextOverflow.Ellipsis
+            text = stringResource(id = R.string.news_details_btn_open_link),
+            style = Typography.button
         )
     }
 }
@@ -106,7 +244,7 @@ fun NewsDetailsContent(item: Article) {
 @ExperimentalMaterialApi
 @Composable
 @Preview(showBackground = true)
-fun NewsDetailsContentPreview() {
+fun NewsDetailsItemPreview() {
     val item = Article(
         id = "1",
         publishedAt = "2021-06-03T10:58:55Z",
@@ -117,5 +255,5 @@ fun NewsDetailsContentPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "placebear.com/200/300"
     )
-    NewsDetailsContent(item)
+    NewsDetailsItem(item = item)
 }
