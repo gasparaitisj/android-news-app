@@ -199,7 +199,7 @@ fun NewsDetailsItem(item: Article) {
                 overflow = TextOverflow.Ellipsis
             )
             ReadFullArticleButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 32.dp)
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 32.dp).fillMaxWidth()
             )
         }
     }
