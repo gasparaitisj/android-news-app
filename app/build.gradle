@@ -94,6 +94,9 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$material_version"
 
+    // Collapsing Toolbar
+    implementation "me.onebone:toolbar-compose:$collapsing_toolbar_version"
+
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
@@ -116,4 +119,8 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+}
+
+kapt {
+    correctErrorTypes true
 }

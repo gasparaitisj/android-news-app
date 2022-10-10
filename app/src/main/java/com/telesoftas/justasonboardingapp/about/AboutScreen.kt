@@ -1,6 +1,8 @@
 package com.telesoftas.justasonboardingapp.about
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +19,7 @@ import com.telesoftas.justasonboardingapp.ui.theme.Typography
 @ExperimentalMaterialApi
 @Composable
 fun AboutScreen(navController: NavHostController) {
+    val scrollState = rememberScrollState()
     Scaffold(
         content = { paddingValues ->
             Column(
@@ -25,7 +28,8 @@ fun AboutScreen(navController: NavHostController) {
                     .padding(
                         horizontal = 16.dp,
                         vertical = 16.dp
-                    ),
+                    )
+                    .verticalScroll(state = scrollState),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Text(

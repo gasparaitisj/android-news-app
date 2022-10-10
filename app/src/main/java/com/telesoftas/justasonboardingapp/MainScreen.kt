@@ -21,43 +21,49 @@ import androidx.navigation.navArgument
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.about.AboutScreen
 import com.telesoftas.justasonboardingapp.favorite.FavoriteScreen
+import com.telesoftas.justasonboardingapp.newsdetails.NewsDetailsScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Screen
-import timber.log.Timber
 
+@ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Composable
 fun MainScreen(
     navController: NavHostController,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val bottomNavController = rememberNavController()
-    val topBarTitle = remember { mutableStateOf("") }
-    setOnDestinationChangedListener(bottomNavController, topBarTitle)
+    val topBarTitle: MutableState<String> = remember { mutableStateOf("") }
+    val topBarRoute: MutableState<String?> = remember { mutableStateOf("") }
+    setOnDestinationChangedListener(bottomNavController, topBarTitle, topBarRoute)
     handleFirstLaunch(viewModel, navController)
 
-    MainScreenContent(topBarTitle, bottomNavController)
+    MainScreenContent(topBarTitle, topBarRoute, bottomNavController)
 }
 
+@ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
 @Composable
 private fun MainScreenContent(
     topBarTitle: MutableState<String>,
+    topBarRoute: MutableState<String?>,
     bottomNavController: NavHostController
 ) {
     Scaffold(
         topBar = {
-            if (bottomNavController.currentBackStackEntry?.destination?.route == Screen.NewsList.route) {
-                TopBarNewsList(topBarTitle.value, bottomNavController)
-            } else {
-                TopBar(topBarTitle.value)
+            when (topBarRoute.value) {
+                Screen.NewsList.route -> {
+                    TopBarNewsList(topBarTitle.value, bottomNavController)
+                }
+                Screen.NewsDetails.route -> {
+                    // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
+                }
+                else -> TopBar(topBarTitle.value)
             }
         },
         bottomBar = { BottomNavigationBar(navController = bottomNavController) },
@@ -92,15 +98,17 @@ private fun handleFirstLaunch(
 @Composable
 private fun setOnDestinationChangedListener(
     bottomNavController: NavHostController,
-    topBarTitle: MutableState<String>
+    topBarTitle: MutableState<String>,
+    topBarRoute: MutableState<String?>
 ) {
     val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
     val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
     val about = stringResource(id = R.string.top_app_bar_title_about)
     val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
+    val newsDetails = stringResource(id = R.string.top_app_bar_title_news_details)
 
-    bottomNavController.addOnDestinationChangedListener { controller, destination, arguments ->
-        Timber.d(destination.route)
+    bottomNavController.addOnDestinationChangedListener { _, destination, arguments ->
+        topBarRoute.value = destination.route
         when (destination.route) {
             Screen.SourceList.route -> {
                 topBarTitle.value = sourceList
@@ -114,6 +122,10 @@ private fun setOnDestinationChangedListener(
             Screen.NewsList.route -> {
                 topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
                     ?: newsList
+            }
+            Screen.NewsDetails.route -> {
+                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
+                    ?: newsDetails
             }
         }
     }
@@ -154,7 +166,6 @@ private fun TopBarNewsList(
     )
 }
 
-
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
@@ -172,6 +183,14 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
             })
         ) {
             NewsListScreen(navController = navController)
+        }
+        composable(
+            route = Screen.NewsDetails.route,
+            arguments = listOf(navArgument(Screen.NewsDetails.KEY_ID) {
+                type = NavType.StringType
+            })
+        ) {
+            NewsDetailsScreen(navController = navController)
         }
         composable(Screen.Favorite.route) {
             FavoriteScreen(navController = navController)

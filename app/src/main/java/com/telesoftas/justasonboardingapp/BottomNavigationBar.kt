@@ -59,7 +59,9 @@ private fun handleSelectedBottomNavigationItem(
     itemRoute: String
 ): Boolean = when (itemRoute) {
     Screen.SourceList.route ->
-        currentRoute == Screen.SourceList.route || currentRoute == Screen.NewsList.route
+        currentRoute == Screen.SourceList.route ||
+        currentRoute == Screen.NewsList.route ||
+        currentRoute == Screen.NewsDetails.route
     Screen.Favorite.route -> currentRoute == Screen.Favorite.route
     Screen.About.route -> currentRoute == Screen.About.route
     else -> false
