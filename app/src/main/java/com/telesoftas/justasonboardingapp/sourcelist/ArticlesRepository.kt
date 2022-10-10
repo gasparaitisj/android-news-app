@@ -1,6 +1,8 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.utils.data.Article
+import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -11,7 +13,8 @@ import javax.inject.Singleton
 
 @Singleton
 class ArticlesRepository @Inject constructor(
-    private val articlesApi: ArticlesApi
+    private val articlesApi: ArticlesApi,
+    private val articleDao: ArticleDao
 ) {
     suspend fun getArticles(
         query: String? = null,
@@ -57,5 +60,9 @@ class ArticlesRepository @Inject constructor(
         } catch (exception: Exception) {
             Resource.error(msgRes = R.string.network_error)
         }
+    }
+
+    suspend fun getArticlesFromDatabase(): List<Article> {
+        return articleDao.getAllArticles()
     }
 }
