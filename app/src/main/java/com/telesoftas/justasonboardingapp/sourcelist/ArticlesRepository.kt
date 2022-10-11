@@ -70,15 +70,15 @@ class ArticlesRepository @Inject constructor(
         return articleDao.getAllArticles()
     }
 
-    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleEntity> {
-        return articleDao.getFavoriteArticles()
-    }
-
-    suspend fun getFavoriteArticleByIdFromDatabase(id: String): ArticleEntity? {
+    suspend fun getArticleByIdFromDatabase(id: String): ArticleEntity? {
         id.toIntOrNull()?.let { idInt ->
-            return articleDao.getFavoriteArticleById(idInt)
+            return articleDao.getArticleById(idInt)
         }
         return null
+    }
+
+    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleEntity> {
+        return articleDao.getFavoriteArticles()
     }
 
     suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {

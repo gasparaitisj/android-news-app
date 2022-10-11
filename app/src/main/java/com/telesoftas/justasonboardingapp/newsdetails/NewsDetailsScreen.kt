@@ -52,7 +52,8 @@ fun NewsDetailsScreen(
     NewsDetailsContent(
         article = article,
         onBackArrowClicked = { navController.navigateUp() },
-        onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) } )
+        onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
+    )
 }
 
 @ExperimentalLifecycleComposeApi

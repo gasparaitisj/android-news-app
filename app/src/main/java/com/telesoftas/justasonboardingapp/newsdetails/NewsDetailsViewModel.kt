@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,8 +32,17 @@ class NewsDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _article.value = Resource.loading()
             val response = articlesRepository.getArticleById(id)
-            val isFavorite = articlesRepository.getFavoriteArticleByIdFromDatabase(id) != null
-            _article.value = NewsDetailsFactory().create(response, isFavorite)
+            val articleFromDatabase = articlesRepository.getArticleByIdFromDatabase(id)
+            val isFavorite = articleFromDatabase?.isFavorite ?: false
+            if (response.status == Status.ERROR) {
+                if (articleFromDatabase != null) {
+                    _article.value = NewsDetailsFactory().mapEntityToResource(articleFromDatabase)
+                } else {
+                    // notify view of empty state
+                }
+            } else {
+                _article.value = NewsDetailsFactory().mapResponseToResource(response, isFavorite)
+            }
         }
     }
 
