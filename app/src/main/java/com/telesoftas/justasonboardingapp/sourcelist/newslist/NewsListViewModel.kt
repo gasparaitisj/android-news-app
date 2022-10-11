@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +34,12 @@ class NewsListViewModel @Inject constructor(
             _articles.value = Resource.loading()
             val response = articlesRepository.getArticles()
             val favoriteArticles = articlesRepository.getFavoriteArticlesFromDatabase()
-            _articles.value = NewsListFactory().mapResponseToResource(response, favoriteArticles)
+            if (response.status == Status.ERROR) {
+                _articles.value = NewsListFactory().mapEntitiesToResource(articlesRepository.getArticlesFromDatabase())
+            } else {
+                _articles.value = NewsListFactory().mapResponseToResource(response, favoriteArticles)
+                cacheArticles()
+            }
         }
     }
 
@@ -58,6 +64,14 @@ class NewsListViewModel @Inject constructor(
             } else {
                 articlesRepository.deleteArticleByIdFromDatabase(article.id)
             }
+        }
+    }
+
+    private fun cacheArticles() {
+        viewModelScope.launch {
+            articlesRepository.insertArticlesToDatabase(
+                NewsListFactory().mapResourceToEntity(articles.value)
+            )
         }
     }
 }
