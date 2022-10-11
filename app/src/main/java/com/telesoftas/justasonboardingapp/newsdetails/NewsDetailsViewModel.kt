@@ -48,11 +48,7 @@ class NewsDetailsViewModel @Inject constructor(
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
         viewModelScope.launch {
-            if (isFavorite) {
-                articlesRepository.insertArticleToDatabase(article.copy(isFavorite = true))
-            } else {
-                articlesRepository.deleteArticleByIdFromDatabase(article.id)
-            }
+            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
         }
     }
 }
