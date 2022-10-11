@@ -32,7 +32,8 @@ class NewsListViewModel @Inject constructor(
         viewModelScope.launch {
             _articles.value = Resource.loading()
             val response = articlesRepository.getArticles()
-            _articles.value = NewsListFactory().mapResponseToResource(response)
+            val favoriteArticles = articlesRepository.getFavoriteArticlesFromDatabase()
+            _articles.value = NewsListFactory().mapResponseToResource(response, favoriteArticles)
         }
     }
 
@@ -50,12 +51,12 @@ class NewsListViewModel @Inject constructor(
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article) {
+    fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
         viewModelScope.launch {
-            if (article.isFavorite) {
-                article.toArticleEntity()?.let { articlesRepository.insertArticleToDatabase(it) }
+            if (isFavorite) {
+                articlesRepository.insertArticleToDatabase(article.copy(isFavorite = true))
             } else {
-                article.id.toIntOrNull()?.let { articlesRepository.deleteArticleFromDatabase(it) }
+                articlesRepository.deleteArticleByIdFromDatabase(article.id)
             }
         }
     }

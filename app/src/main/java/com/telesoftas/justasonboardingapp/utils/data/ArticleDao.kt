@@ -10,6 +10,9 @@ interface ArticleDao {
     @Query("SELECT * FROM article")
     suspend fun getAllArticles(): List<ArticleEntity>
 
+    @Query("SELECT * FROM article WHERE is_favorite")
+    suspend fun getFavoriteArticles(): List<ArticleEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticle(article: ArticleEntity)
 

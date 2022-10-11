@@ -52,7 +52,7 @@ fun NewsListScreen(
         onArticleItemClick = { article ->
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
-        onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) }
+        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
     )
 }
 
@@ -64,7 +64,7 @@ private fun NewsListContent(
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -105,7 +105,7 @@ private fun NewsListContent(
                             ArticleItem(
                                 item = item,
                                 onArticleItemClick = { onArticleItemClick(item) },
-                                onArticleFavoriteChanged = { onArticleFavoriteChanged(item) }
+                                onArticleFavoriteChanged = onArticleFavoriteChanged
                             )
                         }
                     }
@@ -135,9 +135,9 @@ private fun NewsListContent(
 private fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
-    val selected = rememberSaveable { mutableStateOf(false) }
+    val selected = rememberSaveable { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -157,7 +157,7 @@ private fun ArticleItem(
             IconButton(
                 onClick = {
                     selected.value = !selected.value
-                    onArticleFavoriteChanged(item.copy(isFavorite = selected.value))
+                    onArticleFavoriteChanged(item, selected.value)
                 },
                 content = {
                     Icon(
@@ -292,6 +292,6 @@ private fun ArticleItemPreview() {
         imageUrl = "https://placebear.com/200/300"
     )
     JustasOnboardingAppTheme {
-        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {})
+        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
     }
 }

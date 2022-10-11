@@ -1,6 +1,7 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
@@ -69,16 +70,22 @@ class ArticlesRepository @Inject constructor(
         return articleDao.getAllArticles()
     }
 
+    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleEntity> {
+        return articleDao.getFavoriteArticles()
+    }
+
     suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
-        return articleDao.insertArticles(articles)
+        articleDao.insertArticles(articles)
     }
 
-    suspend fun insertArticleToDatabase(article: ArticleEntity) {
-        return articleDao.insertArticle(article)
+    suspend fun insertArticleToDatabase(article: Article?) {
+        article?.toArticleEntity()?.let { articleDao.insertArticle(it) }
     }
 
-    suspend fun deleteArticleFromDatabase(id: Int) {
-        return articleDao.deleteArticleById(id)
+    suspend fun deleteArticleByIdFromDatabase(id: String) {
+        id.toIntOrNull()?.let { idInt ->
+            articleDao.deleteArticleById(idInt)
+        }
     }
 
     suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
@@ -86,6 +93,6 @@ class ArticlesRepository @Inject constructor(
     }
 
     suspend fun insertNewsSourcesToDatabase(newsSources: List<NewsSourceEntity>) {
-        return newsSourceDao.insertNewsSources(newsSources)
+        newsSourceDao.insertNewsSources(newsSources)
     }
 }
