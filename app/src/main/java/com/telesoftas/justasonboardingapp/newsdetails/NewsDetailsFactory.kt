@@ -14,6 +14,7 @@ class NewsDetailsFactory {
                     return Resource.success(
                         data = Article(
                             id = articlePreviewResponse.id,
+                            isFavorite = false,
                             publishedAt = articlePreviewResponse.publishedAt.replace(
                                 "[\$TZ]".toRegex(),
                                 " "

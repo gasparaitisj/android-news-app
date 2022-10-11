@@ -73,6 +73,14 @@ class ArticlesRepository @Inject constructor(
         return articleDao.insertArticles(articles)
     }
 
+    suspend fun insertArticleToDatabase(article: ArticleEntity) {
+        return articleDao.insertArticle(article)
+    }
+
+    suspend fun deleteArticleFromDatabase(id: Int) {
+        return articleDao.deleteArticleById(id)
+    }
+
     suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
         return newsSourceDao.getAllNewsSources()
     }

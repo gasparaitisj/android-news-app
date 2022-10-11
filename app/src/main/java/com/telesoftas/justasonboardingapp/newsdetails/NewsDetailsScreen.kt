@@ -257,6 +257,7 @@ fun ReadFullArticleButton(
 fun NewsDetailsItemPreview() {
     val item = Article(
         id = "1",
+        isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",
         source = null,
         category = ArticleCategory.BUSINESS,

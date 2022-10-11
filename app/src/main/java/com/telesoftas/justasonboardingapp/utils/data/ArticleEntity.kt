@@ -3,6 +3,8 @@ package com.telesoftas.justasonboardingapp.utils.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 
 @Entity(tableName = "article")
 data class ArticleEntity(
@@ -15,4 +17,18 @@ data class ArticleEntity(
     @ColumnInfo(name = "title") val title: String?,
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "image_url") val imageUrl: String?,
-)
+) {
+    fun toArticle(): Article {
+        return Article(
+            id = id.toString(),
+            isFavorite = isFavorite,
+            publishedAt = publishedAt,
+            source = source,
+            category = ArticleCategory.values()[category],
+            author = author,
+            title = title,
+            description = description,
+            imageUrl = imageUrl
+        )
+    }
+}

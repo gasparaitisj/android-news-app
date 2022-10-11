@@ -11,5 +11,11 @@ interface ArticleDao {
     suspend fun getAllArticles(): List<ArticleEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertArticle(article: ArticleEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(article: List<ArticleEntity>)
+
+    @Query("DELETE FROM article WHERE id = :id")
+    suspend fun deleteArticleById(id: Int)
 }

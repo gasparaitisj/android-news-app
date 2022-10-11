@@ -32,21 +32,31 @@ class NewsListViewModel @Inject constructor(
         viewModelScope.launch {
             _articles.value = Resource.loading()
             val response = articlesRepository.getArticles()
-            _articles.value = NewsListFactory().create(response)
+            _articles.value = NewsListFactory().mapResponseToResource(response)
         }
     }
 
     fun onCategoryTypeChanged(categoryType: ArticleCategory) {
         if (_categoryType.value == ArticleCategory.NONE) {
             _categoryType.value = categoryType
-            _articles.update {
-                it.copy(
+            _articles.update { resource ->
+                resource.copy(
                     data = _articles.value.data?.filter { it.category == categoryType }
                 )
             }
         } else {
             _categoryType.value = ArticleCategory.NONE
             onRefresh()
+        }
+    }
+
+    fun onArticleFavoriteChanged(article: Article) {
+        viewModelScope.launch {
+            if (article.isFavorite) {
+                article.toArticleEntity()?.let { articlesRepository.insertArticleToDatabase(it) }
+            } else {
+                article.id.toIntOrNull()?.let { articlesRepository.deleteArticleFromDatabase(it) }
+            }
         }
     }
 }
