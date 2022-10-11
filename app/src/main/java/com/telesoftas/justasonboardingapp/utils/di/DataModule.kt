@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.telesoftas.justasonboardingapp.utils.Constants
 import com.telesoftas.justasonboardingapp.utils.data.AppDatabase
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
+import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
 import com.telesoftas.justasonboardingapp.utils.preferences.PreferencesStore
 import dagger.Module
 import dagger.Provides
@@ -35,4 +36,8 @@ class DataModule {
     @Singleton
     @Provides
     fun provideArticleDao(database: AppDatabase): ArticleDao = database.articleDao()
+
+    @Singleton
+    @Provides
+    fun provideNewsSourceDao(database: AppDatabase): NewsSourceDao = database.newsSourceDao()
 }

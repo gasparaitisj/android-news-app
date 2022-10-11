@@ -1,8 +1,10 @@
 package com.telesoftas.justasonboardingapp.sourcelist
 
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.utils.data.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
+import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
+import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
+import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -14,7 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class ArticlesRepository @Inject constructor(
     private val articlesApi: ArticlesApi,
-    private val articleDao: ArticleDao
+    private val articleDao: ArticleDao,
+    private val newsSourceDao: NewsSourceDao
 ) {
     suspend fun getArticles(
         query: String? = null,
@@ -62,7 +65,19 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
-    suspend fun getArticlesFromDatabase(): List<Article> {
+    suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
         return articleDao.getAllArticles()
+    }
+
+    suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
+        return articleDao.insertArticles(articles)
+    }
+
+    suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
+        return newsSourceDao.getAllNewsSources()
+    }
+
+    suspend fun insertNewsSourcesToDatabase(newsSources: List<NewsSourceEntity>) {
+        return newsSourceDao.insertNewsSources(newsSources)
     }
 }
