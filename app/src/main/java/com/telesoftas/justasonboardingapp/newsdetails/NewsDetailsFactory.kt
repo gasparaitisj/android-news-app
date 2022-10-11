@@ -7,14 +7,17 @@ import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 
 class NewsDetailsFactory {
-    fun create(response: Resource<ArticlePreviewResponse>): Resource<Article> {
+    fun create(
+        response: Resource<ArticlePreviewResponse>,
+        isFavorite: Boolean
+    ): Resource<Article> {
         when (response.status) {
             Status.SUCCESS -> {
                 response.data?.let { articlePreviewResponse ->
                     return Resource.success(
                         data = Article(
                             id = articlePreviewResponse.id,
-                            isFavorite = false,
+                            isFavorite = isFavorite,
                             publishedAt = articlePreviewResponse.publishedAt.replace(
                                 "[\$TZ]".toRegex(),
                                 " "

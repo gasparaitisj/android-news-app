@@ -49,7 +49,10 @@ fun NewsDetailsScreen(
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
     val article by viewModel.article.collectAsState()
-    NewsDetailsContent(article) { navController.navigateUp() }
+    NewsDetailsContent(
+        article = article,
+        onBackArrowClicked = { navController.navigateUp() },
+        onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) } )
 }
 
 @ExperimentalLifecycleComposeApi
@@ -57,7 +60,8 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
-    onBackArrowClicked: () -> Boolean
+    onBackArrowClicked: () -> Boolean,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
     val scrollState = rememberScrollState()
@@ -153,15 +157,18 @@ fun NewsDetailsContent(
                     .fillMaxSize()
                     .verticalScroll(state = scrollState)
             ) {
-                article.data?.let { NewsDetailsItem(item = it) }
+                article.data?.let { article ->  NewsDetailsItem(article, onArticleFavoriteChanged) }
             }
         }
     }
 }
 
 @Composable
-fun NewsDetailsItem(item: Article) {
-    val selected = rememberSaveable { mutableStateOf(false) }
+fun NewsDetailsItem(
+    item: Article,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+) {
+    val selected = rememberSaveable { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -179,7 +186,10 @@ fun NewsDetailsItem(item: Article) {
                 color = DarkBlue
             )
             IconButton(
-                onClick = { selected.value = !selected.value },
+                onClick = {
+                    selected.value = !selected.value
+                    onArticleFavoriteChanged(item, selected.value)
+                },
                 content = {
                     Icon(
                         painter = if (selected.value) {
@@ -266,5 +276,5 @@ fun NewsDetailsItemPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "placebear.com/200/300"
     )
-    NewsDetailsItem(item = item)
+    NewsDetailsItem(item = item, {_, _ ->})
 }

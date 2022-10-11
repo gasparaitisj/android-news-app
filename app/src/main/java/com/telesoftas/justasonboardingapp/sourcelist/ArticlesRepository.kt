@@ -74,6 +74,13 @@ class ArticlesRepository @Inject constructor(
         return articleDao.getFavoriteArticles()
     }
 
+    suspend fun getFavoriteArticleByIdFromDatabase(id: String): ArticleEntity? {
+        id.toIntOrNull()?.let { idInt ->
+            return articleDao.getFavoriteArticleById(idInt)
+        }
+        return null
+    }
+
     suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
         articleDao.insertArticles(articles)
     }

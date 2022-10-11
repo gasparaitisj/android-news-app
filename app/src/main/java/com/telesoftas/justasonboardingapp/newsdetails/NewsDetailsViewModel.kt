@@ -31,7 +31,18 @@ class NewsDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _article.value = Resource.loading()
             val response = articlesRepository.getArticleById(id)
-            _article.value = NewsDetailsFactory().create(response)
+            val isFavorite = articlesRepository.getFavoriteArticleByIdFromDatabase(id) != null
+            _article.value = NewsDetailsFactory().create(response, isFavorite)
+        }
+    }
+
+    fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
+        viewModelScope.launch {
+            if (isFavorite) {
+                articlesRepository.insertArticleToDatabase(article.copy(isFavorite = true))
+            } else {
+                articlesRepository.deleteArticleByIdFromDatabase(article.id)
+            }
         }
     }
 }
