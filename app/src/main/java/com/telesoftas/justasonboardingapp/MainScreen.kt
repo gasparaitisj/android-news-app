@@ -12,6 +12,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,6 +26,7 @@ import com.telesoftas.justasonboardingapp.newsdetails.NewsDetailsScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Screen
+import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
@@ -107,26 +109,33 @@ private fun setOnDestinationChangedListener(
     val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
     val newsDetails = stringResource(id = R.string.top_app_bar_title_news_details)
 
-    bottomNavController.addOnDestinationChangedListener { _, destination, arguments ->
-        topBarRoute.value = destination.route
-        when (destination.route) {
-            Screen.SourceList.route -> {
-                topBarTitle.value = sourceList
+    DisposableEffect(bottomNavController) {
+        val callback = NavController.OnDestinationChangedListener { _, destination, arguments ->
+            topBarRoute.value = destination.route
+            when (destination.route) {
+                Screen.SourceList.route -> {
+                    topBarTitle.value = sourceList
+                }
+                Screen.Favorite.route -> {
+                    topBarTitle.value = favorite
+                }
+                Screen.About.route -> {
+                    topBarTitle.value = about
+                }
+                Screen.NewsList.route -> {
+                    topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
+                        ?: newsList
+                }
+                Screen.NewsDetails.route -> {
+                    topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
+                        ?: newsDetails
+                }
             }
-            Screen.Favorite.route -> {
-                topBarTitle.value = favorite
-            }
-            Screen.About.route -> {
-                topBarTitle.value = about
-            }
-            Screen.NewsList.route -> {
-                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
-                    ?: newsList
-            }
-            Screen.NewsDetails.route -> {
-                topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
-                    ?: newsDetails
-            }
+        }
+        bottomNavController.addOnDestinationChangedListener(callback)
+        onDispose {
+            Timber.d("disposed!")
+            bottomNavController.removeOnDestinationChangedListener(callback)
         }
     }
 }
