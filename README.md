@@ -15,9 +15,9 @@
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [ ] Smooth screen transition when navigated from news list screen
-- [ ] Favorite screen
-    - [ ] Display all articles, marked as favorite
-    - [ ] Search for a particular article by title in toolbar
+- [x]] Favorite screen
+    - [x] Display all articles, marked as favorite
+    - [x] Search for a particular article by title in toolbar
 - [x] About screen
 
 ### Other
