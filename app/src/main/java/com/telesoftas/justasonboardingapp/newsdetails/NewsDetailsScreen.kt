@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.newsdetails
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -10,7 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +34,7 @@ import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -49,7 +50,26 @@ fun NewsDetailsScreen(
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
     val article by viewModel.article.collectAsState()
-    NewsDetailsContent(article) { navController.navigateUp() }
+    NewsDetailsContent(
+        article = article,
+        onBackArrowClicked = { navigateBack(navController, viewModel.source) },
+        onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
+    )
+    BackHandler { navigateBack(navController, viewModel.source) }
+}
+
+private fun navigateBack(
+    navController: NavHostController,
+    source: String
+) {
+    when (navController.previousBackStackEntry?.destination?.route) {
+        Screen.NewsList.route -> {
+            navController.navigate(Screen.NewsList.destination(source)) {
+                popUpTo(Screen.NewsList.route) { inclusive = true }
+            }
+        }
+        else -> navController.navigateUp()
+    }
 }
 
 @ExperimentalLifecycleComposeApi
@@ -57,7 +77,8 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
-    onBackArrowClicked: () -> Boolean
+    onBackArrowClicked: () -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
     val scrollState = rememberScrollState()
@@ -153,15 +174,18 @@ fun NewsDetailsContent(
                     .fillMaxSize()
                     .verticalScroll(state = scrollState)
             ) {
-                article.data?.let { NewsDetailsItem(item = it) }
+                article.data?.let { article ->  NewsDetailsItem(article, onArticleFavoriteChanged) }
             }
         }
     }
 }
 
 @Composable
-fun NewsDetailsItem(item: Article) {
-    val selected = rememberSaveable { mutableStateOf(false) }
+fun NewsDetailsItem(
+    item: Article,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+) {
+    val selected = remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -179,7 +203,10 @@ fun NewsDetailsItem(item: Article) {
                 color = DarkBlue
             )
             IconButton(
-                onClick = { selected.value = !selected.value },
+                onClick = {
+                    selected.value = !selected.value
+                    onArticleFavoriteChanged(item, selected.value)
+                },
                 content = {
                     Icon(
                         painter = if (selected.value) {
@@ -257,6 +284,7 @@ fun ReadFullArticleButton(
 fun NewsDetailsItemPreview() {
     val item = Article(
         id = "1",
+        isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",
         source = null,
         category = ArticleCategory.BUSINESS,
@@ -265,5 +293,5 @@ fun NewsDetailsItemPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "placebear.com/200/300"
     )
-    NewsDetailsItem(item = item)
+    NewsDetailsItem(item = item, {_, _ ->})
 }

@@ -49,8 +49,8 @@ fun NewsListScreen(
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
-        onArticleItemClick = { article ->
-            navController.navigate(Screen.NewsDetails.destination(article.id)) }
+        onArticleItemClick = { article -> navController.navigate(Screen.NewsDetails.destination(article.id, viewModel.sourceTitle)) },
+        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
     )
 }
 
@@ -61,7 +61,8 @@ private fun NewsListContent(
     categoryType: ArticleCategory,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
-    onArticleItemClick: (Article) -> Unit
+    onArticleItemClick: (Article) -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -101,7 +102,8 @@ private fun NewsListContent(
                         items(articles.getSuccessDataOrNull().orEmpty()) { item ->
                             ArticleItem(
                                 item = item,
-                                onArticleItemClick = { onArticleItemClick(item) }
+                                onArticleItemClick = { onArticleItemClick(item) },
+                                onArticleFavoriteChanged = onArticleFavoriteChanged
                             )
                         }
                     }
@@ -126,12 +128,14 @@ private fun NewsListContent(
     }
 }
 
+
 @Composable
 private fun ArticleItem(
     item: Article,
-    onArticleItemClick: (Article) -> Unit
+    onArticleItemClick: (Article) -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
-    val selected = rememberSaveable { mutableStateOf(false) }
+    val selected = rememberSaveable { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -149,7 +153,10 @@ private fun ArticleItem(
                 color = DarkBlue
             )
             IconButton(
-                onClick = { selected.value = !selected.value },
+                onClick = {
+                    selected.value = !selected.value
+                    onArticleFavoriteChanged(item, selected.value)
+                },
                 content = {
                     Icon(
                         painter = if (selected.value) {
@@ -273,6 +280,7 @@ fun CategoryFilterChip(
 private fun ArticleItemPreview() {
     val article = Article(
         id = "1",
+        isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",
         source = null,
         category = ArticleCategory.BUSINESS,
@@ -282,6 +290,6 @@ private fun ArticleItemPreview() {
         imageUrl = "https://placebear.com/200/300"
     )
     JustasOnboardingAppTheme {
-        ArticleItem(item = article, onArticleItemClick = {})
+        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
     }
 }

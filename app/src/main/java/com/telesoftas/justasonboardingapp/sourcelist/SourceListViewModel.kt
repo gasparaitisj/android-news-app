@@ -3,6 +3,7 @@ package com.telesoftas.justasonboardingapp.sourcelist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,14 +48,21 @@ class SourceListViewModel @Inject constructor(
                 pageNumber = pageNumber,
                 xRequestId = xRequestId
             )
-            _newsSources.value = SourceListFactory().create(response)
+            if (response.status == Status.ERROR) {
+                _newsSources.value = SourceListFactory().mapEntitiesToResource(
+                    articlesRepository.getNewsSourcesFromDatabase()
+                )
+            } else {
+                _newsSources.value = SourceListFactory().mapResponseToResource(response)
+                cacheNewsSources()
+            }
         }
     }
 
     fun sortArticles(sortBy: SortBy) {
         if (_sortType.value == SortBy.NONE) {
             _sortType.value = sortBy
-            when(sortBy.ordinal) {
+            when (sortBy.ordinal) {
                 SortBy.ASCENDING.ordinal -> {
                     _newsSources.value = _newsSources.value.copy(
                         data = _newsSources.value.data?.sortedBy { it.title }
@@ -69,6 +77,14 @@ class SourceListViewModel @Inject constructor(
         } else {
             _sortType.value = SortBy.NONE
             getArticles()
+        }
+    }
+
+    private fun cacheNewsSources() {
+        viewModelScope.launch {
+            articlesRepository.insertNewsSourcesToDatabase(
+                SourceListFactory().mapResourceToEntity(newsSources.value)
+            )
         }
     }
 }

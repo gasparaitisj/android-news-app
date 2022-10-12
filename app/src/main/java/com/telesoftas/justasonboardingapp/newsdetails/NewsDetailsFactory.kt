@@ -2,18 +2,24 @@ package com.telesoftas.justasonboardingapp.newsdetails
 
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
+import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 
 class NewsDetailsFactory {
-    fun create(response: Resource<ArticlePreviewResponse>): Resource<Article> {
+    fun mapResponseToResource(
+        response: Resource<ArticlePreviewResponse>,
+        isFavorite: Boolean
+    ): Resource<Article> {
         when (response.status) {
             Status.SUCCESS -> {
                 response.data?.let { articlePreviewResponse ->
                     return Resource.success(
                         data = Article(
                             id = articlePreviewResponse.id,
+                            isFavorite = isFavorite,
                             publishedAt = articlePreviewResponse.publishedAt.replace(
                                 "[\$TZ]".toRegex(),
                                 " "
@@ -28,13 +34,29 @@ class NewsDetailsFactory {
                     )
                 }
             }
-        Status.LOADING -> {
-            return Resource.loading()
+            Status.LOADING -> {
+                return Resource.loading()
+            }
+            Status.ERROR -> {
+                return Resource.error(msgRes = R.string.network_error)
+            }
         }
-        Status.ERROR -> {
-            return Resource.error(msgRes = R.string.network_error)
-        }
+        return Resource.error(msgRes = R.string.unknown_error)
     }
-    return Resource.error(msgRes = R.string.unknown_error)
-}
+
+    fun mapEntityToResource(entity: ArticleEntity): Resource<Article> {
+        return Resource.success(
+            Article(
+                id = entity.id.toString(),
+                isFavorite = entity.isFavorite,
+                publishedAt = entity.publishedAt,
+                source = entity.source,
+                category = ArticleCategory.values()[entity.category],
+                author = entity.author,
+                title = entity.title,
+                description = entity.description,
+                imageUrl = entity.imageUrl
+            )
+        )
+    }
 }
