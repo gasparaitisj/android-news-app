@@ -28,7 +28,7 @@ class FavoriteViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),
-        started = SharingStarted.WhileSubscribed(5000)
+        started = SharingStarted.WhileSubscribed()
     )
 
     private val _filteredArticles: MutableStateFlow<List<Article>> = MutableStateFlow(emptyList())

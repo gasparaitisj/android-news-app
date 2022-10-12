@@ -24,7 +24,7 @@ class NewsListViewModel @Inject constructor(
         articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
             scope = viewModelScope,
             initialValue = listOf(),
-            started = SharingStarted.WhileSubscribed(5000)
+            started = SharingStarted.WhileSubscribed()
         )
 
     private val _categoryType: MutableStateFlow<ArticleCategory> = MutableStateFlow(ArticleCategory.NONE)
