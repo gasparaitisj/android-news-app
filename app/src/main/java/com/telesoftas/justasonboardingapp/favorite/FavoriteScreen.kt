@@ -98,11 +98,7 @@ fun FavoriteScreenContent(
                         onRefresh = {  },
                     ) {
                         Column {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                            ) {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
                                 items(articles, { it.id }) { item ->
                                     ArticleItem(
                                         item = item,
