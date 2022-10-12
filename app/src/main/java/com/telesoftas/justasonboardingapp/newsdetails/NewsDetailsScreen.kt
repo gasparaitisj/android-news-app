@@ -68,6 +68,11 @@ private fun navigateBack(
                 popUpTo(Screen.NewsList.route) { inclusive = true }
             }
         }
+        Screen.Favorite.route -> {
+            navController.navigate(Screen.Favorite.route) {
+                popUpTo(Screen.Favorite.route) { inclusive = true }
+            }
+        }
         else -> navController.navigateUp()
     }
 }
