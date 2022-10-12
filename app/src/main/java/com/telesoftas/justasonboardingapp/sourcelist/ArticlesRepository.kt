@@ -11,6 +11,7 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -77,7 +78,7 @@ class ArticlesRepository @Inject constructor(
         return null
     }
 
-    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleEntity> {
+    fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
         return articleDao.getFavoriteArticles()
     }
 

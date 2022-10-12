@@ -1,47 +1,51 @@
 package com.telesoftas.justasonboardingapp.sourcelist.newslist
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
+import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
-    private val articlesRepository: ArticlesRepository,
-    savedStateHandle: SavedStateHandle
+    private val articlesRepository: ArticlesRepository
 ) : ViewModel() {
-    val sourceTitle: String = checkNotNull(savedStateHandle["title"])
-
     private val _articles: MutableStateFlow<Resource<List<Article>>> =
         MutableStateFlow(Resource.loading())
     val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
+
+    private val favoriteArticles: StateFlow<List<ArticleEntity>> =
+        articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
+            scope = viewModelScope,
+            initialValue = listOf(),
+            started = SharingStarted.WhileSubscribed(5000)
+        )
 
     private val _categoryType: MutableStateFlow<ArticleCategory> = MutableStateFlow(ArticleCategory.NONE)
     val categoryType: StateFlow<ArticleCategory> = _categoryType.asStateFlow()
 
     init {
-        onRefresh()
+        viewModelScope.launch {
+            favoriteArticles.collectLatest {
+                onRefresh()
+            }
+        }
     }
 
     fun onRefresh() {
         viewModelScope.launch {
             _articles.value = Resource.loading()
             val response = articlesRepository.getArticles()
-            val favoriteArticles = articlesRepository.getFavoriteArticlesFromDatabase()
             if (response.status == Status.ERROR) {
-                _articles.value = NewsListFactory().mapEntitiesToResource(articlesRepository.getArticlesFromDatabase())
+                _articles.update { NewsListFactory().mapEntitiesToResource(articlesRepository.getArticlesFromDatabase()) }
             } else {
-                _articles.value = NewsListFactory().mapResponseToResource(response, favoriteArticles)
+                _articles.update { NewsListFactory().mapResponseToResource(response, favoriteArticles.value) }
                 cacheArticles()
             }
         }

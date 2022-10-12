@@ -30,8 +30,6 @@ import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -48,12 +46,11 @@ fun FavoriteScreen(
     FavoriteScreenContent(
         articles = articles,
         filteredArticles = filteredArticles,
-        onRefresh = { viewModel.onRefresh() },
         onArticleFavoriteChanged = { article, isFavorite ->
             viewModel.onArticleFavoriteChanged(article, isFavorite)
         },
         onArticleItemClick = { article ->
-            navController.navigate(Screen.NewsDetails.destination(article.id, "source"))
+            navController.navigate(Screen.NewsDetails.destination(article.id))
         },
         searchWidgetState = searchWidgetState,
         searchTextState = searchTextState,
@@ -66,11 +63,10 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteScreenContent(
-    articles: Resource<List<Article>>,
+    articles: List<Article>,
     filteredArticles: List<Article>,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
-    onRefresh: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
@@ -97,9 +93,9 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = articles.status == Status.LOADING
+                            isRefreshing = false
                         ),
-                        onRefresh = { onRefresh() },
+                        onRefresh = {  },
                     ) {
                         Column {
                             LazyColumn(
@@ -107,7 +103,7 @@ fun FavoriteScreenContent(
                                     .fillMaxWidth()
                                     .fillMaxHeight()
                             ) {
-                                items(articles.getSuccessDataOrNull().orEmpty(), { it.id }) { item ->
+                                items(articles, { it.id }) { item ->
                                     ArticleItem(
                                         item = item,
                                         onArticleItemClick = { onArticleItemClick(item) },
