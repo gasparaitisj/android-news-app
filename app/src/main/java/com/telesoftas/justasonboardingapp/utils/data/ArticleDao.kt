@@ -12,7 +12,7 @@ interface ArticleDao {
     suspend fun getAllArticles(): List<ArticleEntity>
 
     @Query("SELECT * FROM article WHERE id = :id")
-    suspend fun getArticleById(id: Int): ArticleEntity?
+    fun getArticleById(id: Int): Flow<ArticleEntity?>
 
     @Query("SELECT * FROM article WHERE is_favorite")
     fun getFavoriteArticles(): Flow<List<ArticleEntity>>
