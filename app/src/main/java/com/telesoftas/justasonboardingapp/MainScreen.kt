@@ -65,6 +65,9 @@ private fun MainScreenContent(
                 Screen.NewsDetails.route -> {
                     // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
                 }
+                Screen.Favorite.route -> {
+                    // Toolbar w/ Search is implemented in FavoriteScreen.kt
+                }
                 else -> TopBar(topBarTitle.value)
             }
         },
