@@ -1,8 +1,10 @@
 package com.telesoftas.justasonboardingapp.favorite
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -10,12 +12,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -138,8 +140,8 @@ fun MainAppBar(
                 text = searchTextState,
                 onArticleItemClick = onArticleItemClick,
                 onTextChange = onTextChange,
-                onCloseClicked = onCloseClick,
-                onSearchClicked = onSearchClick
+                onCloseClick = onCloseClick,
+                onSearchClick = onSearchClick
             )
         }
     }
@@ -175,8 +177,8 @@ fun SearchAppBar(
     text: String,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit,
+    onCloseClick: () -> Unit,
+    onSearchClick: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -188,82 +190,97 @@ fun SearchAppBar(
         color = colorResource(id = R.color.top_app_bar_background),
         contentColor = colorResource(id = R.color.top_app_bar_content)
     ) {
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = text,
-            onValueChange = { onTextChange(it) },
-            placeholder = {
-                Text(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
-                    text = "Search here...",
-                    color = Color.White
-                )
-            },
-            textStyle = TextStyle(fontSize = MaterialTheme.typography.subtitle1.fontSize),
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
-                    onClick = {}
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        tint = Color.White
+        Box {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.8f)
+                    .align(Alignment.Center),
+                value = text,
+                onValueChange = { onTextChange(it) },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.favorite_screen_search_text_field_placeholder),
+                        color = colorResource(id = R.color.favorite_search_label),
+                        style = Typography.caption
                     )
-                }
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            onCloseClicked()
-                            expanded = false
-                        }
+                },
+                textStyle = Typography.caption,
+                singleLine = true,
+                leadingIcon = {
+                    IconButton(
+                        modifier = Modifier.alpha(ContentAlpha.medium),
+                        onClick = {}
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon",
+                            tint = colorResource(id = R.color.favorite_search_icon),
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                        tint = Color.White
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
-                    expanded = true
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
-                cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            if (text.isNotEmpty()) {
+                                onTextChange("")
+                            } else {
+                                onCloseClick()
+                                expanded = false
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close Icon",
+                            tint = colorResource(id = R.color.favorite_search_icon),
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearchClick(text)
+                        if (filteredArticles.isNotEmpty()) expanded = true
+                    }
+                ),
+                shape = RoundedCornerShape(4.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = colorResource(id = R.color.favorite_search_background),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    textColor = colorResource(id = R.color.favorite_search_text),
+                )
             )
-        )
-        DropdownMenu(
-            modifier = Modifier.fillMaxWidth(),
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            filteredArticles.forEach { article ->
-                article.title?.let { title ->
-                    DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
-                        Column {
-                            Text(
-                                text = title,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = Typography.subtitle2
-                            )
-                            Text(
-                                text = article.source ?: "",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = Typography.overline
-                            )
+            DropdownMenu(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = R.color.favorite_search_background)),
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                filteredArticles.forEach { article ->
+                    article.title?.let { title ->
+                        DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
+                            Column {
+                                Text(
+                                    text = title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = Typography.subtitle2
+                                )
+                                Text(
+                                    text = article.source ?: "",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = Typography.caption
+                                )
+                                Divider(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    color = colorResource(id = R.color.favorite_search_divider)
+                                )
+                            }
                         }
                     }
                 }
