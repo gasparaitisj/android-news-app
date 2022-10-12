@@ -68,7 +68,7 @@ private fun navigateBack(
                 popUpTo(Screen.NewsList.route) { inclusive = true }
             }
         }
-        null -> navController.navigateUp()
+        else -> navController.navigateUp()
     }
 }
 
