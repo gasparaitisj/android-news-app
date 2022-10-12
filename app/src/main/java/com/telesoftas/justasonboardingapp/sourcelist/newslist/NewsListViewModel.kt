@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.sourcelist.newslist
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
@@ -16,8 +17,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
-    private val articlesRepository: ArticlesRepository
+    private val articlesRepository: ArticlesRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val sourceTitle: String = checkNotNull(savedStateHandle["title"])
+
     private val _articles: MutableStateFlow<Resource<List<Article>>> =
         MutableStateFlow(Resource.loading())
     val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()

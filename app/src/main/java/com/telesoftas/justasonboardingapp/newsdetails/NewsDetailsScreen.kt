@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.newsdetails
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -10,7 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +34,7 @@ import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Constants
+import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -51,9 +52,24 @@ fun NewsDetailsScreen(
     val article by viewModel.article.collectAsState()
     NewsDetailsContent(
         article = article,
-        onBackArrowClicked = { navController.navigateUp() },
+        onBackArrowClicked = { navigateBack(navController, viewModel.source) },
         onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
     )
+    BackHandler { navigateBack(navController, viewModel.source) }
+}
+
+private fun navigateBack(
+    navController: NavHostController,
+    source: String
+) {
+    when (navController.previousBackStackEntry?.destination?.route) {
+        Screen.NewsList.route -> {
+            navController.navigate(Screen.NewsList.destination(source)) {
+                popUpTo(Screen.NewsList.route) { inclusive = true }
+            }
+        }
+        null -> navController.navigateUp()
+    }
 }
 
 @ExperimentalLifecycleComposeApi
@@ -61,7 +77,7 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
-    onBackArrowClicked: () -> Boolean,
+    onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
@@ -169,7 +185,7 @@ fun NewsDetailsItem(
     item: Article,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
-    val selected = rememberSaveable { mutableStateOf(item.isFavorite) }
+    val selected = remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)

@@ -21,9 +21,14 @@ class NewsDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val id: String = checkNotNull(savedStateHandle["id"])
-    private val _article: MutableStateFlow<Resource<Article>> =
-        MutableStateFlow(Resource.loading())
+    val source: String = checkNotNull(savedStateHandle["source"])
+
+    private val _article: MutableStateFlow<Resource<Article>> = MutableStateFlow(Resource.loading())
     val article: StateFlow<Resource<Article>> = _article.asStateFlow()
+
+    private val _isRefreshNeeded: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRefreshNeeded: StateFlow<Boolean> = _isRefreshNeeded.asStateFlow()
+
     init {
         getArticle(id)
     }

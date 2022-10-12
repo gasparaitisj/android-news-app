@@ -187,9 +187,7 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         }
         composable(
             route = Screen.NewsList.route,
-            arguments = listOf(navArgument(Screen.NewsList.KEY_TITLE) {
-                type = NavType.StringType
-            })
+            arguments = listOf(navArgument(Screen.NewsList.KEY_TITLE) { type = NavType.StringType })
         ) {
             NewsListScreen(navController = navController)
         }

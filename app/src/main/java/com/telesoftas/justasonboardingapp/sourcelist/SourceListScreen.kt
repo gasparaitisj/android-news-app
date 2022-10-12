@@ -42,9 +42,7 @@ fun SourceListScreen(
         sortType = sortType,
         onRefresh = { viewModel.getArticles() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
-        onSourceItemClick = { item ->
-            navController.navigate(Screen.NewsList.destination(item.title))
-        }
+        onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )
 }
 

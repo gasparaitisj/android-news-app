@@ -49,9 +49,7 @@ fun NewsListScreen(
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
-        onArticleItemClick = { article ->
-            navController.navigate(Screen.NewsDetails.destination(article.id))
-        },
+        onArticleItemClick = { article -> navController.navigate(Screen.NewsDetails.destination(article.id, viewModel.sourceTitle)) },
         onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
     )
 }
