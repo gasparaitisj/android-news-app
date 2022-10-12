@@ -58,6 +58,12 @@ class FavoriteViewModel @Inject constructor(
             article.title?.lowercase()?.contains(text.lowercase()) == true
         } ?: listOf()
     }
+
+    fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
+        viewModelScope.launch {
+            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+        }
+    }
 }
 
 enum class SearchWidgetState {

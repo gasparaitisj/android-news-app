@@ -32,7 +32,6 @@ import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
-import timber.log.Timber
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -46,13 +45,13 @@ fun FavoriteScreen(
     val searchWidgetState by viewModel.searchWidgetState
     val searchTextState by viewModel.searchTextState
 
-    Timber.d("searchWidgetState = $searchWidgetState")
-    Timber.d("searchTextState = $searchTextState")
-
     FavoriteScreenContent(
         articles = articles,
         filteredArticles = filteredArticles,
         onRefresh = { viewModel.onRefresh() },
+        onArticleFavoriteChanged = { article, isFavorite ->
+            viewModel.onArticleFavoriteChanged(article, isFavorite)
+        },
         onArticleItemClick = { article ->
             navController.navigate(Screen.NewsDetails.destination(article.id, "source"))
         },
@@ -72,6 +71,7 @@ fun FavoriteScreenContent(
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onRefresh: () -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
@@ -107,11 +107,11 @@ fun FavoriteScreenContent(
                                     .fillMaxWidth()
                                     .fillMaxHeight()
                             ) {
-                                items(articles.getSuccessDataOrNull().orEmpty()) { item ->
+                                items(articles.getSuccessDataOrNull().orEmpty(), { it.id }) { item ->
                                     ArticleItem(
                                         item = item,
                                         onArticleItemClick = { onArticleItemClick(item) },
-                                        onArticleFavoriteChanged = { _, _ -> }
+                                        onArticleFavoriteChanged = onArticleFavoriteChanged
                                     )
                                 }
                             }
