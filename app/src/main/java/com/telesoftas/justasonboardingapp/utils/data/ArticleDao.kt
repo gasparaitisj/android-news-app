@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArticleDao {
@@ -14,7 +15,7 @@ interface ArticleDao {
     suspend fun getArticleById(id: Int): ArticleEntity?
 
     @Query("SELECT * FROM article WHERE is_favorite")
-    suspend fun getFavoriteArticles(): List<ArticleEntity>
+    fun getFavoriteArticles(): Flow<List<ArticleEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticle(article: ArticleEntity)

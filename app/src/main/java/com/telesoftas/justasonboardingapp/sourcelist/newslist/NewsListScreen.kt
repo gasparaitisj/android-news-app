@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -49,7 +48,7 @@ fun NewsListScreen(
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
-        onArticleItemClick = { article -> navController.navigate(Screen.NewsDetails.destination(article.id, viewModel.sourceTitle)) },
+        onArticleItemClick = { article -> navController.navigate(Screen.NewsDetails.destination(article.id)) },
         onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
     )
 }
@@ -94,12 +93,11 @@ private fun NewsListContent(
                         categoryType = categoryType,
                         onCategoryTypeChanged = onCategoryTypeChanged
                     )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                    ) {
-                        items(articles.getSuccessDataOrNull().orEmpty()) { item ->
+                    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                        items(
+                            items = articles.getSuccessDataOrNull().orEmpty(),
+                            key = { it.id }
+                        ) { item ->
                             ArticleItem(
                                 item = item,
                                 onArticleItemClick = { onArticleItemClick(item) },
@@ -130,12 +128,12 @@ private fun NewsListContent(
 
 
 @Composable
-private fun ArticleItem(
+fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
-    val selected = rememberSaveable { mutableStateOf(item.isFavorite) }
+    val selected = remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)

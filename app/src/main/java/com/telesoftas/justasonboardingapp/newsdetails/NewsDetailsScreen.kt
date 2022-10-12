@@ -1,6 +1,5 @@
 package com.telesoftas.justasonboardingapp.newsdetails
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -34,7 +33,6 @@ import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Constants
-import com.telesoftas.justasonboardingapp.utils.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -52,24 +50,9 @@ fun NewsDetailsScreen(
     val article by viewModel.article.collectAsState()
     NewsDetailsContent(
         article = article,
-        onBackArrowClicked = { navigateBack(navController, viewModel.source) },
+        onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
     )
-    BackHandler { navigateBack(navController, viewModel.source) }
-}
-
-private fun navigateBack(
-    navController: NavHostController,
-    source: String
-) {
-    when (navController.previousBackStackEntry?.destination?.route) {
-        Screen.NewsList.route -> {
-            navController.navigate(Screen.NewsList.destination(source)) {
-                popUpTo(Screen.NewsList.route) { inclusive = true }
-            }
-        }
-        else -> navController.navigateUp()
-    }
 }
 
 @ExperimentalLifecycleComposeApi

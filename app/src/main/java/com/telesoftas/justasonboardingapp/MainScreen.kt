@@ -26,7 +26,6 @@ import com.telesoftas.justasonboardingapp.newsdetails.NewsDetailsScreen
 import com.telesoftas.justasonboardingapp.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.Screen
-import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
@@ -64,6 +63,9 @@ private fun MainScreenContent(
                 }
                 Screen.NewsDetails.route -> {
                     // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
+                }
+                Screen.Favorite.route -> {
+                    // Toolbar w/ Search is implemented in FavoriteScreen.kt
                 }
                 else -> TopBar(topBarTitle.value)
             }
@@ -134,7 +136,6 @@ private fun setOnDestinationChangedListener(
         }
         bottomNavController.addOnDestinationChangedListener(callback)
         onDispose {
-            Timber.d("disposed!")
             bottomNavController.removeOnDestinationChangedListener(callback)
         }
     }
