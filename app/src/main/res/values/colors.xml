@@ -31,5 +31,10 @@
     <color name="chip_not_selected_content">#6A6A6A</color>
     <color name="news_list_caption">#4A6572</color>
     <color name="news_list_divider">#A4B2B8</color>
+    <color name="favorite_search_background">#FAFAFA</color>
+    <color name="favorite_search_divider">#ECEFF0</color>
+    <color name="favorite_search_text">#061D28</color>
+    <color name="favorite_search_label">#8E8E93</color>
+    <color name="favorite_search_icon">#666666</color>
 
 </resources>
