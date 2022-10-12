@@ -130,7 +130,7 @@ private fun NewsListContent(
 
 
 @Composable
-private fun ArticleItem(
+fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
