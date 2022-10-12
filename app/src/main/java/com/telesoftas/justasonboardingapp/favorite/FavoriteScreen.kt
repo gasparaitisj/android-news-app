@@ -193,8 +193,7 @@ fun SearchAppBar(
         Box {
             TextField(
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.8f)
+                    .fillMaxWidth(0.95f)
                     .align(Alignment.Center),
                 value = text,
                 onValueChange = { onTextChange(it) },
@@ -202,10 +201,10 @@ fun SearchAppBar(
                     Text(
                         text = stringResource(id = R.string.favorite_screen_search_text_field_placeholder),
                         color = colorResource(id = R.color.favorite_search_label),
-                        style = Typography.caption
+                        style = Typography.subtitle1
                     )
                 },
-                textStyle = Typography.caption,
+                textStyle = Typography.subtitle1,
                 singleLine = true,
                 leadingIcon = {
                     IconButton(
