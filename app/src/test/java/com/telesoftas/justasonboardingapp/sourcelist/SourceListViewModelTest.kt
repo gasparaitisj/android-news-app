@@ -1,8 +1,6 @@
-package com.telesoftas.justasonboardingapp
+package com.telesoftas.justasonboardingapp.sourcelist
 
-import com.telesoftas.justasonboardingapp.sourcelist.ArticlesRepository
-import com.telesoftas.justasonboardingapp.sourcelist.NewsSource
-import com.telesoftas.justasonboardingapp.sourcelist.SourceListViewModel
+import com.telesoftas.justasonboardingapp.MainCoroutineRule
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
