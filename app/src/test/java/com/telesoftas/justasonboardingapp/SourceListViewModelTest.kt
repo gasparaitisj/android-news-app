@@ -80,10 +80,10 @@ class SourceListViewModelTest {
     fun getArticles_loadsArticlesCorrectly() = runTest {
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("D Title", "D Description"),
-            NewsSource("A Title", "A Description"),
-            NewsSource("B Title", "B Description"),
-            NewsSource("C Title", "C Description"),
+            NewsSource("4", "D Title", "D Description"),
+            NewsSource("1", "A Title", "A Description"),
+            NewsSource("2", "B Title", "B Description"),
+            NewsSource("3", "C Title", "C Description"),
         )
 
         viewModel.getArticles()
@@ -95,10 +95,10 @@ class SourceListViewModelTest {
     fun sortArticles_sortsArticlesAscendingCorrectly() = runTest {
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("A Title", "A Description"),
-            NewsSource("B Title", "B Description"),
-            NewsSource("C Title", "C Description"),
-            NewsSource("D Title", "D Description"),
+            NewsSource("1", "A Title", "A Description"),
+            NewsSource("2", "B Title", "B Description"),
+            NewsSource("3", "C Title", "C Description"),
+            NewsSource("4", "D Title", "D Description"),
         )
 
         viewModel.sortArticles(SortBy.ASCENDING)
@@ -110,10 +110,10 @@ class SourceListViewModelTest {
     fun sortArticles_sortsArticlesDescendingCorrectly() = runTest {
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("D Title", "D Description"),
-            NewsSource("C Title", "C Description"),
-            NewsSource("B Title", "B Description"),
-            NewsSource("A Title", "A Description"),
+            NewsSource("4", "D Title", "D Description"),
+            NewsSource("3", "C Title", "C Description"),
+            NewsSource("2", "B Title", "B Description"),
+            NewsSource("1", "A Title", "A Description"),
         )
 
         viewModel.sortArticles(SortBy.DESCENDING)
