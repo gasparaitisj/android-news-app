@@ -3,6 +3,8 @@ plugins {
     id "org.jetbrains.kotlin.android"
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 android {
@@ -111,7 +113,11 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-
+    
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
+    implementation "com.google.firebase:firebase-crashlytics-ktx"
+    implementation "com.google.firebase:firebase-analytics-ktx"
 
     // JUnit
     testImplementation "junit:junit:$junit_version"
