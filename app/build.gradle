@@ -132,6 +132,9 @@ dependencies {
 
     // Espresso
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+
+    // LeakCanary
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
 }
 
 kapt {
