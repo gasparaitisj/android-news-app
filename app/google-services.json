@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "27253560579",
+    "project_id": "justas-onboarding-app",
+    "storage_bucket": "justas-onboarding-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27253560579:android:757b9eeed0562d65054536",
+        "android_client_info": {
+          "package_name": "com.telesoftas.justasonboardingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27253560579-as080b31e176lordehvc3lcec4in0eu2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKzkfQbvgHFyqVnU6EEYqPTfOxj0aw0Q4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27253560579-as080b31e176lordehvc3lcec4in0eu2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
