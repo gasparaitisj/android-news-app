@@ -15,7 +15,7 @@
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [ ] Smooth screen transition when navigated from news list screen
-- [x]] Favorite screen
+- [x] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
 - [x] About screen
@@ -25,6 +25,8 @@
 - [ ] Handle empty states
 - [ ] View and navigation animations
 - [ ] Handle errors (show Snackbar)
+- [ ] Unit tests
+- [ ] UI tests
 
 ### Requirements (libraries, tools, versions)
 
