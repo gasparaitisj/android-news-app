@@ -65,7 +65,7 @@ class NewsDetailsViewModelTest {
     }
 
     @Test
-    fun getArticle_getsArticleCorrectly() = runTest {
+    fun onViewModelInitialized_articleIsLoadedCorrectly() = runTest {
         advanceUntilIdle()
         val answer = Resource.success(
             Article(
@@ -80,7 +80,6 @@ class NewsDetailsViewModelTest {
                 imageUrl = null
             )
         )
-        viewModel.getArticle()
         assertEquals(answer, viewModel.article.value)
     }
 }
