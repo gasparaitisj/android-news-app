@@ -12,6 +12,7 @@ import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,11 +72,11 @@ class ArticlesRepository @Inject constructor(
         return articleDao.getAllArticles()
     }
 
-    suspend fun getArticleByIdFromDatabase(id: String): ArticleEntity? {
+    fun getArticleByIdFromDatabase(id: String): Flow<ArticleEntity?> {
         id.toIntOrNull()?.let { idInt ->
             return articleDao.getArticleById(idInt)
         }
-        return null
+        return flow { emit(null) }
     }
 
     fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
