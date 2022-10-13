@@ -39,7 +39,7 @@ class DiaryEntryDaoTest {
     }
 
     @Test
-    fun insertArticle() = runTest {
+    fun insertArticle_insertsArticleCorrectly() = runTest {
         val article = ArticleEntity(
             id = 1,
             isFavorite = false,
@@ -58,7 +58,7 @@ class DiaryEntryDaoTest {
     }
 
     @Test
-    fun deleteArticleById() = runTest {
+    fun deleteArticleById_deletesArticleCorrectly() = runTest {
         val article = ArticleEntity(
             id = 1,
             isFavorite = false,
@@ -78,7 +78,7 @@ class DiaryEntryDaoTest {
     }
 
     @Test
-    fun getFavoriteArticles() = runTest {
+    fun getFavoriteArticles_getsArticlesCorrectly() = runTest {
         val article = ArticleEntity(
             id = 1,
             isFavorite = false,
