@@ -19,6 +19,9 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class FavoriteViewModelTest {
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
+
     private lateinit var viewModel: FavoriteViewModel
     private val favoriteArticles = listOf(
         ArticleEntity(
@@ -56,9 +59,6 @@ class FavoriteViewModelTest {
         )
     )
     private val articlesRepository: ArticlesRepository = mockk()
-
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
 
     @Before
     fun setUp() {

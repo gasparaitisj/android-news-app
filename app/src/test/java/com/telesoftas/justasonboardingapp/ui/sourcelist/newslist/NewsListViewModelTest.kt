@@ -20,6 +20,9 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class NewsListViewModelTest {
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
+
     private lateinit var viewModel: NewsListViewModel
     private val articlesListResponse = Resource.success(
         data = ArticlesListResponse(
@@ -77,9 +80,6 @@ class NewsListViewModelTest {
         )
     )
     private val articlesRepository: ArticlesRepository = mockk()
-
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
 
     @Before
     fun setUp() {

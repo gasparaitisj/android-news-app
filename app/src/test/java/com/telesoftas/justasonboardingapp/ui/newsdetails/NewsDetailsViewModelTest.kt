@@ -22,6 +22,9 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class NewsDetailsViewModelTest {
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
+
     private lateinit var viewModel: NewsDetailsViewModel
     private val article = Resource.success(
         ArticlePreviewResponse(
@@ -46,9 +49,6 @@ class NewsDetailsViewModelTest {
     )
     private val articlesRepository: ArticlesRepository = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
-
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
 
     @Before
     fun setUp() {
