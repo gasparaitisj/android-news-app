@@ -71,11 +71,11 @@ class SourceListViewModelTest {
         coEvery {
             articlesRepository.getArticles()
         } returns articlesListResponse
-        viewModel = SourceListViewModel(articlesRepository)
     }
 
     @Test
     fun getArticles_loadsArticlesCorrectly() = runTest {
+        viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             NewsSource("4", "D Title", "D Description"),
@@ -91,6 +91,7 @@ class SourceListViewModelTest {
 
     @Test
     fun sortArticles_sortsArticlesAscendingCorrectly() = runTest {
+        viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             NewsSource("1", "A Title", "A Description"),
@@ -106,6 +107,7 @@ class SourceListViewModelTest {
 
     @Test
     fun sortArticles_sortsArticlesDescendingCorrectly() = runTest {
+        viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             NewsSource("4", "D Title", "D Description"),

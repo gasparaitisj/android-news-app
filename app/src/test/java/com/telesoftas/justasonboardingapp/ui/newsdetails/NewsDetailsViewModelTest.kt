@@ -61,11 +61,11 @@ class NewsDetailsViewModelTest {
         coEvery {
             articlesRepository.getArticleByIdFromDatabase(article.data!!.id)
         } returns flow { emit(articleFromDatabase) }
-        viewModel = NewsDetailsViewModel(articlesRepository, savedStateHandle)
     }
 
     @Test
     fun onViewModelInitialized_articleIsLoadedCorrectly() = runTest {
+        viewModel = NewsDetailsViewModel(articlesRepository, savedStateHandle)
         advanceUntilIdle()
         val answer = Resource.success(
             Article(

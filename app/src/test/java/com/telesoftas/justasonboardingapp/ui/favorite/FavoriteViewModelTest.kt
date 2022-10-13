@@ -65,12 +65,12 @@ class FavoriteViewModelTest {
         coEvery {
             articlesRepository.getFavoriteArticlesFromDatabase()
         } returns flow { emit(favoriteArticles) }
-        viewModel = FavoriteViewModel(articlesRepository)
     }
 
     @Ignore("articles from FavoriteViewModel is empty, therefore test fails, reason unknown")
     @Test
     fun onFilterArticles_filtersArticlesCorrectly() = runTest {
+        viewModel = FavoriteViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             Article(

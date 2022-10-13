@@ -93,11 +93,11 @@ class NewsListViewModelTest {
             articlesRepository.insertArticleToDatabase(any())
             articlesRepository.insertArticlesToDatabase(any())
         } returns Unit
-        viewModel = NewsListViewModel(articlesRepository)
     }
 
     @Test
     fun onRefresh_updatesArticlesCorrectly() = runTest {
+        viewModel = NewsListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             Article(
@@ -153,6 +153,7 @@ class NewsListViewModelTest {
 
     @Test
     fun onCategoryTypeChanged_filtersArticlesCorrectly() = runTest {
+        viewModel = NewsListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
             Article(
