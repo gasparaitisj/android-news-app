@@ -80,7 +80,7 @@ class SourceListViewModel @Inject constructor(
         }
     }
 
-    private fun cacheNewsSources() {
+    fun cacheNewsSources() {
         viewModelScope.launch {
             articlesRepository.insertNewsSourcesToDatabase(
                 SourceListFactory().mapResourceToEntity(newsSources.value)
