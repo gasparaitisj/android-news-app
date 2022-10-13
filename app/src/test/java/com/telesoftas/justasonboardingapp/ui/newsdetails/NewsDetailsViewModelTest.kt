@@ -80,6 +80,7 @@ class NewsDetailsViewModelTest {
                 imageUrl = null
             )
         )
+
         assertEquals(answer, viewModel.article.value)
     }
 }

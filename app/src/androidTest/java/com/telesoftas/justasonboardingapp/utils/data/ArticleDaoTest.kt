@@ -51,9 +51,10 @@ class DiaryEntryDaoTest {
             description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
             imageUrl = "placebear.com/200/300"
         )
-        dao.insertArticle(article)
 
+        dao.insertArticle(article)
         val allArticles = dao.getAllArticles()
+
         assertTrue(allArticles.contains(article))
     }
 
@@ -70,10 +71,11 @@ class DiaryEntryDaoTest {
             description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
             imageUrl = "placebear.com/200/300"
         )
+
         dao.insertArticle(article)
         dao.deleteArticleById(article.id)
-
         val allArticles = dao.getAllArticles()
+
         assertFalse(allArticles.contains(article))
     }
 
@@ -100,8 +102,8 @@ class DiaryEntryDaoTest {
                 favoriteArticle
             )
         )
-
         val allFavoriteArticles = dao.getFavoriteArticles().first()
+
         assertTrue(allFavoriteArticles == answer)
     }
 }

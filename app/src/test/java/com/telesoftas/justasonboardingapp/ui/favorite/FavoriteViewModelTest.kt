@@ -96,7 +96,9 @@ class FavoriteViewModelTest {
                 source = null
             )
         )
+
         viewModel.onFilterArticles("D")
+
         assertEquals(answer, viewModel.filteredArticles.value)
     }
 }
