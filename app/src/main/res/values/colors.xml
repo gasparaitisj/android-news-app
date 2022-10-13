@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
     <color name="splash_screen_background">#344955</color>
     <color name="status_bar">#232F34</color>
-    <color name="tool_bar">#232F34</color>
     <color name="navigation_bar">#232F34</color>
     <color name="bottom_navigation_bar">#232F34</color>
     <color name="selected_content">#F9AA33</color>
@@ -29,7 +21,6 @@
     <color name="chip_selected_content">#FFFFFF</color>
     <color name="chip_not_selected_background">#EAEAEA</color>
     <color name="chip_not_selected_content">#6A6A6A</color>
-    <color name="news_list_caption">#4A6572</color>
     <color name="news_list_divider">#A4B2B8</color>
     <color name="favorite_search_background">#FAFAFA</color>
     <color name="favorite_search_divider">#ECEFF0</color>

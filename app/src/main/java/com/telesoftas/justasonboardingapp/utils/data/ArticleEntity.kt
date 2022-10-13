@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.utils.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.telesoftas.justasonboardingapp.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 
 @Entity(tableName = "article")
