@@ -39,7 +39,7 @@ class NewsDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun getArticle() {
+    fun getArticle() {
         viewModelScope.launch {
             _article.value = Resource.loading()
             val response = articlesRepository.getArticleById(id)
