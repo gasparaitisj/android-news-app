@@ -153,9 +153,12 @@ fun ArticleItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.weight(1f),
                 text = "${item.author} - ${item.publishedAt}",
                 style = Typography.caption,
-                color = DarkBlue
+                color = DarkBlue,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             IconButton(
                 onClick = {
@@ -175,6 +178,7 @@ fun ArticleItem(
             )
         }
         Row(
+            modifier = Modifier.padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
