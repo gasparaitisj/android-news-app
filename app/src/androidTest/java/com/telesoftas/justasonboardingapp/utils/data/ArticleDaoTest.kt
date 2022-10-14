@@ -18,7 +18,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @SmallTest
 @HiltAndroidTest
-class DiaryEntryDaoTest {
+class ArticleDaoTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
