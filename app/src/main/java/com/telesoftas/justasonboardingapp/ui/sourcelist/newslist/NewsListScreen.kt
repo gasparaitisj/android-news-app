@@ -1,12 +1,9 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,7 +90,24 @@ private fun NewsListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                Column {
+                val list = articles.getSuccessDataOrNull().orEmpty()
+                if (list.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(0.5f),
+                            painter = painterResource(id = R.drawable.img_empty_state_black),
+                            contentDescription = "Empty news image"
+                        )
+                        Text(
+                            text = stringResource(id = R.string.empty_state),
+                            style = Typography.body2
+                        )
+                    }
+                } else {
                     ChipGroupFilterArticles(
                         categoryType = categoryType,
                         onCategoryTypeChanged = onCategoryTypeChanged
@@ -102,7 +116,7 @@ private fun NewsListContent(
                         .fillMaxWidth()
                         .fillMaxHeight()) {
                         items(
-                            items = articles.getSuccessDataOrNull().orEmpty(),
+                            items = list,
                             key = { it.id }
                         ) { item ->
                             ArticleItem(
