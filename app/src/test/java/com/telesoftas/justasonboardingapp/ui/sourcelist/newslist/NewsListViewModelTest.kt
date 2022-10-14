@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
@@ -80,6 +81,7 @@ class NewsListViewModelTest {
         )
     )
     private val articlesRepository: ArticlesRepository = mockk()
+    private val firebaseAnalytics: FirebaseAnalytics = mockk()
 
     @Before
     fun setUp() {
@@ -97,7 +99,7 @@ class NewsListViewModelTest {
 
     @Test
     fun onRefresh_updatesArticlesCorrectly() = runTest {
-        viewModel = NewsListViewModel(articlesRepository)
+        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
         advanceUntilIdle()
         val answer = listOf(
             Article(
@@ -153,7 +155,7 @@ class NewsListViewModelTest {
 
     @Test
     fun onCategoryTypeChanged_filtersArticlesCorrectly() = runTest {
-        viewModel = NewsListViewModel(articlesRepository)
+        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
         advanceUntilIdle()
         val answer = listOf(
             Article(

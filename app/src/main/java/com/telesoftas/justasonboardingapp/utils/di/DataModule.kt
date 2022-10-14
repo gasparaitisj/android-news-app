@@ -26,7 +26,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideAnalytics(@ApplicationContext context: Context): FirebaseAnalytics = Firebase.analytics
+    fun provideAnalytics(): FirebaseAnalytics = Firebase.analytics
 
     @Singleton
     @Provides

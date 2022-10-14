@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.utils.network.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,11 +24,11 @@ class FavoriteViewModel @Inject constructor(
     private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
 
-    val articles: StateFlow<List<Article>> = articlesRepository.getFavoriteArticlesFromDatabase().map {
-        it.map { articleEntity -> articleEntity.toArticle() }
+    val articles: StateFlow<Resource<List<Article>>> = articlesRepository.getFavoriteArticlesFromDatabase().map {
+        Resource.success(it.map { articleEntity -> articleEntity.toArticle() })
     }.stateIn(
         scope = viewModelScope,
-        initialValue = listOf(),
+        initialValue = Resource.loading(),
         started = SharingStarted.WhileSubscribed()
     )
 
@@ -43,9 +44,9 @@ class FavoriteViewModel @Inject constructor(
     }
 
     fun onFilterArticles(text: String) {
-        _filteredArticles.value = articles.value.filter { article ->
+        _filteredArticles.value = articles.value.getSuccessDataOrNull()?.filter { article ->
             article.title?.lowercase()?.contains(text.lowercase()) == true
-        }
+        } ?: listOf()
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {

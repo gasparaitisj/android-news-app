@@ -10,9 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JustasOnboardingAppTheme {
-                val navController = rememberNavController()
+                val navController = rememberAnimatedNavController()
                 Navigation(navController = navController)
             }
         }
@@ -85,7 +85,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.Main.route) {
+    AnimatedNavHost(navController = navController, startDestination = Screen.Main.route) {
         composable(Screen.Tutorial.route) {
             TutorialScreen(navController = navController)
         }

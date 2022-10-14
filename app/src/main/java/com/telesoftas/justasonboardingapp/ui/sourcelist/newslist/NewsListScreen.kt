@@ -1,15 +1,14 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -91,14 +90,33 @@ private fun NewsListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                Column {
+                val list = articles.getSuccessDataOrNull().orEmpty()
+                if (list.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(0.5f),
+                            painter = painterResource(id = R.drawable.img_empty_state_black),
+                            contentDescription = "Empty news image"
+                        )
+                        Text(
+                            text = stringResource(id = R.string.empty_state),
+                            style = Typography.body2
+                        )
+                    }
+                } else {
                     ChipGroupFilterArticles(
                         categoryType = categoryType,
                         onCategoryTypeChanged = onCategoryTypeChanged
                     )
-                    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                    LazyColumn(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()) {
                         items(
-                            items = articles.getSuccessDataOrNull().orEmpty(),
+                            items = list,
                             key = { it.id }
                         ) { item ->
                             ArticleItem(
@@ -149,9 +167,12 @@ fun ArticleItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.weight(1f),
                 text = "${item.author} - ${item.publishedAt}",
                 style = Typography.caption,
-                color = DarkBlue
+                color = DarkBlue,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             IconButton(
                 onClick = {
@@ -171,12 +192,19 @@ fun ArticleItem(
             )
         }
         Row(
+            modifier = Modifier.padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
-                modifier = Modifier.size(200.dp, 140.dp),
+                modifier = Modifier.size(width = 100.dp, height = 70.dp),
                 model = "https://${item.imageUrl}",
-                contentDescription = "Image"
+                contentDescription = "Image",
+                error = if (isSystemInDarkTheme()) {
+                    painterResource(R.drawable.img_placeholder_dark)
+                } else {
+                    painterResource(R.drawable.img_placeholder)
+                },
+                contentScale = ContentScale.Crop
             )
             Text(
                 text = item.title ?: "",

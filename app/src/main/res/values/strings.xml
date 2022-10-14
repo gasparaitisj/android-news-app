@@ -70,4 +70,5 @@
     <string name="news_details_btn_open_link">Read full article online</string>
     <string name="favorite_screen_search_text_field_placeholder">Search for articles</string>
     <string name="default_notification_channel_id">FIREBASE_DEFAULT</string>
+    <string name="empty_state">This page didn\'t load the content correctly.</string>
 </resources>
