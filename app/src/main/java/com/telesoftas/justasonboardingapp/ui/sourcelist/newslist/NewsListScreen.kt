@@ -2,6 +2,7 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -96,7 +98,9 @@ private fun NewsListContent(
                         categoryType = categoryType,
                         onCategoryTypeChanged = onCategoryTypeChanged
                     )
-                    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                    LazyColumn(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()) {
                         items(
                             items = articles.getSuccessDataOrNull().orEmpty(),
                             key = { it.id }
@@ -174,9 +178,15 @@ fun ArticleItem(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
-                modifier = Modifier.size(200.dp, 140.dp),
+                modifier = Modifier.size(width = 100.dp, height = 70.dp),
                 model = "https://${item.imageUrl}",
-                contentDescription = "Image"
+                contentDescription = "Image",
+                error = if (isSystemInDarkTheme()) {
+                    painterResource(R.drawable.img_placeholder_dark)
+                } else {
+                    painterResource(R.drawable.img_placeholder)
+                },
+                contentScale = ContentScale.Crop
             )
             Text(
                 text = item.title ?: "",
