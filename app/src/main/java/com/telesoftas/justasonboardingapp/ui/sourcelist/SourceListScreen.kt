@@ -95,7 +95,7 @@ private fun SourceListContent(
                             contentDescription = "Empty sources image"
                         )
                         Text(
-                            text = "You need an internet connection to view sources.",
+                            text = stringResource(id = R.string.empty_state),
                             style = Typography.body2
                         )
                     }
