@@ -104,36 +104,33 @@ fun FavoriteScreenContent(
                         onRefresh = {},
                         swipeEnabled = false
                     ) {
-                        Column {
-                            val list = articles.getSuccessDataOrNull().orEmpty()
-                            if (list.isEmpty()) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Image(
-                                        modifier = Modifier.fillMaxSize(0.5f),
-                                        painter = painterResource(id = R.drawable.img_empty_state_white),
-                                        contentDescription = "Empty favorites image"
+                        val list = articles.getSuccessDataOrNull().orEmpty()
+                        if (list.isEmpty()) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(0.5f),
+                                    painter = painterResource(id = R.drawable.img_empty_state_white),
+                                    contentDescription = "Empty favorites image"
+                                )
+                                Text(
+                                    text = "You don't have any favorite articles yet",
+                                    style = Typography.body2
+                                )
+                            }
+                        } else {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                items(list, { it.id }) { item ->
+                                    ArticleItem(
+                                        item = item,
+                                        onArticleItemClick = { onArticleItemClick(item) },
+                                        onArticleFavoriteChanged = onArticleFavoriteChanged
                                     )
-                                    Text(
-                                        text = "You don't have any favorite articles yet",
-                                        style = Typography.body2
-                                    )
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    items(list, { it.id }) { item ->
-                                        ArticleItem(
-                                            item = item,
-                                            onArticleItemClick = { onArticleItemClick(item) },
-                                            onArticleFavoriteChanged = onArticleFavoriteChanged
-                                        )
-                                    }
                                 }
                             }
-
                         }
                     }
                 }
