@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -80,21 +82,40 @@ private fun SourceListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                Column {
-                    ChipGroupSortArticles(
-                        sortType = sortType,
-                        onSortTypeChanged = onSortTypeChanged
-                    )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+                val list = newsSources.getSuccessDataOrNull().orEmpty()
+                if (list.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
-                            SourceItem(
-                                item = item,
-                                onSourceItemClick = { onSourceItemClick(item) }
-                            )
+                        Image(
+                            modifier = Modifier.fillMaxSize(0.5f),
+                            painter = painterResource(id = R.drawable.img_empty_state_pink),
+                            contentDescription = "Empty sources image"
+                        )
+                        Text(
+                            text = "You need an internet connection to view sources.",
+                            style = Typography.body2
+                        )
+                    }
+                } else {
+                    Column {
+                        ChipGroupSortArticles(
+                            sortType = sortType,
+                            onSortTypeChanged = onSortTypeChanged
+                        )
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                        ) {
+                            items(list) { item ->
+                                SourceItem(
+                                    item = item,
+                                    onSourceItemClick = { onSourceItemClick(item) }
+                                )
+                            }
                         }
                     }
                 }
