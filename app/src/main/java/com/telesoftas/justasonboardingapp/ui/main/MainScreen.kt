@@ -15,10 +15,10 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.AboutScreen
@@ -37,7 +37,7 @@ fun MainScreen(
     navController: NavHostController,
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    val bottomNavController = rememberNavController()
+    val bottomNavController = rememberAnimatedNavController()
     val topBarTitle: MutableState<String> = remember { mutableStateOf("") }
     val topBarRoute: MutableState<String?> = remember { mutableStateOf("") }
     setOnDestinationChangedListener(bottomNavController, topBarTitle, topBarRoute)
@@ -183,7 +183,7 @@ private fun TopBarNewsList(
 @ExperimentalPagerApi
 @Composable
 private fun BottomNavigationBarNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.SourceList.route) {
+    AnimatedNavHost(navController = navController, startDestination = Screen.SourceList.route) {
         composable(Screen.SourceList.route) {
             SourceListScreen(navController = navController)
         }
