@@ -22,9 +22,9 @@
 
 ### Other
 - [x] Cache items to display in offline mode
-- [ ] Handle empty states
-- [ ] View and navigation animations
-- [ ] Handle errors (show Snackbar)
+- [x] Handle empty states
+- [x] Navigation animations
+- [x] Handle errors (show Snackbar)
 - [x] Unit tests
 - [ ] UI tests
 
