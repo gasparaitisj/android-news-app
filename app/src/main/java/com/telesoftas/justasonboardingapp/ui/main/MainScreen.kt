@@ -1,6 +1,9 @@
 package com.telesoftas.justasonboardingapp.ui.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -195,9 +198,9 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         }
         composable(
             route = Screen.NewsDetails.route,
-            arguments = listOf(navArgument(Screen.NewsDetails.KEY_ID) {
-                type = NavType.StringType
-            })
+            arguments = listOf(navArgument(Screen.NewsDetails.KEY_ID) { type = NavType.StringType }),
+            enterTransition = { scaleIn(animationSpec = tween(500)) },
+            exitTransition = { scaleOut(animationSpec = tween(500)) },
         ) {
             NewsDetailsScreen(navController = navController)
         }
