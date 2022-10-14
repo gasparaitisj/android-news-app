@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.ui.favorite
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,6 +34,8 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -65,7 +69,7 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteScreenContent(
-    articles: List<Article>,
+    articles: Resource<List<Article>>,
     filteredArticles: List<Article>,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
@@ -95,20 +99,41 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = false
+                            isRefreshing = articles.status == Status.LOADING
                         ),
-                        onRefresh = {  },
+                        onRefresh = {},
+                        swipeEnabled = false
                     ) {
                         Column {
-                            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                items(articles, { it.id }) { item ->
-                                    ArticleItem(
-                                        item = item,
-                                        onArticleItemClick = { onArticleItemClick(item) },
-                                        onArticleFavoriteChanged = onArticleFavoriteChanged
+                            val list = articles.getSuccessDataOrNull().orEmpty()
+                            if (list.isEmpty()) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        modifier = Modifier.fillMaxSize(0.5f),
+                                        painter = painterResource(id = R.drawable.img_favorite_empty_state),
+                                        contentDescription = "Empty favorites image"
+                                    )
+                                    Text(
+                                        text = "You don't have any favorite articles yet",
+                                        style = Typography.body2
                                     )
                                 }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    items(list, { it.id }) { item ->
+                                        ArticleItem(
+                                            item = item,
+                                            onArticleItemClick = { onArticleItemClick(item) },
+                                            onArticleFavoriteChanged = onArticleFavoriteChanged
+                                        )
+                                    }
+                                }
                             }
+
                         }
                     }
                 }
