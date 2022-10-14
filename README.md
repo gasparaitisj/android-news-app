@@ -10,11 +10,11 @@
     - [x] Display articles of one particular source
     - [x] Add/remove article to/from favorites
     - [x] Filter articles by article category (politics, sports, business...)
-- [ ] News details screen
+- [x] News details screen
     - [x] Display one particular article
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
-    - [ ] Smooth screen transition when navigated from news list screen
+    - [x] Smooth screen transition when navigated from news list screen
 - [x] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
@@ -25,7 +25,7 @@
 - [ ] Handle empty states
 - [ ] View and navigation animations
 - [ ] Handle errors (show Snackbar)
-- [ ] Unit tests
+- [x] Unit tests
 - [ ] UI tests
 
 ### Requirements (libraries, tools, versions)
@@ -59,7 +59,7 @@
 - Logging
     - [x] [Timber](https://github.com/JakeWharton/timber)
 - Other
-    - [ ] [LeakCanary](https://github.com/square/leakcanary/)
-    - [ ] [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
-    - [ ] [Google Analytics for Firebase](https://firebase.google.com/docs/analytics/)
-    - [ ] [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) 
+    - [x] [LeakCanary](https://github.com/square/leakcanary/)
+    - [x] [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
+    - [x] [Google Analytics for Firebase](https://firebase.google.com/docs/analytics/)
+    - [x] [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) 
