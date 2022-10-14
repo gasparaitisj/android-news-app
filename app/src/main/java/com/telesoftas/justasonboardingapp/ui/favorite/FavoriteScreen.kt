@@ -117,7 +117,7 @@ fun FavoriteScreenContent(
                                     contentDescription = "Empty favorites image"
                                 )
                                 Text(
-                                    text = "You don't have any favorite articles yet.",
+                                    text = stringResource(R.string.favorite_screen_empty_state),
                                     style = Typography.body2
                                 )
                             }
