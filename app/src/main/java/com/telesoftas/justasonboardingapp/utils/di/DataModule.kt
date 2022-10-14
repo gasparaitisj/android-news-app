@@ -2,6 +2,9 @@ package com.telesoftas.justasonboardingapp.utils.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.telesoftas.justasonboardingapp.utils.Constants
 import com.telesoftas.justasonboardingapp.utils.data.AppDatabase
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
@@ -19,9 +22,11 @@ import javax.inject.Singleton
 class DataModule {
     @Singleton
     @Provides
-    fun providePrefsStore(@ApplicationContext context: Context): PreferencesStore {
-        return PreferencesStore(context)
-    }
+    fun providePrefsStore(@ApplicationContext context: Context): PreferencesStore = PreferencesStore(context)
+
+    @Singleton
+    @Provides
+    fun provideAnalytics(@ApplicationContext context: Context): FirebaseAnalytics = Firebase.analytics
 
     @Singleton
     @Provides
