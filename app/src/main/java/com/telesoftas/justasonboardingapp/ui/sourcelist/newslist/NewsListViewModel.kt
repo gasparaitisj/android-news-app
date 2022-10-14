@@ -2,6 +2,8 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
-    private val articlesRepository: ArticlesRepository
+    private val articlesRepository: ArticlesRepository,
+    private val firebaseAnalytics: FirebaseAnalytics
 ) : ViewModel() {
     private val _articles: MutableStateFlow<Resource<List<Article>>> =
         MutableStateFlow(Resource.loading())
@@ -68,6 +71,15 @@ class NewsListViewModel @Inject constructor(
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
         viewModelScope.launch {
             articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+        }
+    }
+
+    fun onArticleClicked(article: Article) {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+            param(FirebaseAnalytics.Param.ITEM_ID, article.id)
+            param(FirebaseAnalytics.Param.ITEM_NAME, article.title ?: "")
+            param(FirebaseAnalytics.Param.CONTENT_TYPE, "news article")
+            param(FirebaseAnalytics.Param.ITEM_CATEGORY, article.category.value)
         }
     }
 
