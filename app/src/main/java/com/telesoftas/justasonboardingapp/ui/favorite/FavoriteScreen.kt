@@ -114,7 +114,7 @@ fun FavoriteScreenContent(
                                 ) {
                                     Image(
                                         modifier = Modifier.fillMaxSize(0.5f),
-                                        painter = painterResource(id = R.drawable.img_favorite_empty_state),
+                                        painter = painterResource(id = R.drawable.img_empty_state_white),
                                         contentDescription = "Empty favorites image"
                                     )
                                     Text(
