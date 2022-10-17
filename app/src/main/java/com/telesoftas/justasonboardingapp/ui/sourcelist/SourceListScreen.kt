@@ -82,8 +82,7 @@ private fun SourceListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                val list = newsSources.getSuccessDataOrNull().orEmpty()
-                if (list.isEmpty()) {
+                if (newsSources.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -110,7 +109,7 @@ private fun SourceListContent(
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                         ) {
-                            items(list) { item ->
+                            items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
                                 SourceItem(
                                     item = item,
                                     onSourceItemClick = { onSourceItemClick(item) }
