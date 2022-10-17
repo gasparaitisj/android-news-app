@@ -10,15 +10,18 @@
     - [x] Display articles of one particular source
     - [x] Add/remove article to/from favorites
     - [x] Filter articles by article category (politics, sports, business...)
-- [x] News details screen
+- [ ] News details screen
     - [x] Display one particular article
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
+    - [ ] Small map with clustering pins
 - [x] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
 - [x] About screen
+- [ ] Maps screen
+    - [ ] Large map with clustering pins
 
 ### Other
 - [x] Cache items to display in offline mode
