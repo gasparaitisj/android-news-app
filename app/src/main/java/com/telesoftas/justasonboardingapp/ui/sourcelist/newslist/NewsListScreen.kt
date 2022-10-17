@@ -90,8 +90,7 @@ private fun NewsListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                val list = articles.getSuccessDataOrNull().orEmpty()
-                if (list.isEmpty()) {
+                if (articles.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -108,22 +107,24 @@ private fun NewsListContent(
                         )
                     }
                 } else {
-                    ChipGroupFilterArticles(
-                        categoryType = categoryType,
-                        onCategoryTypeChanged = onCategoryTypeChanged
-                    )
-                    LazyColumn(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()) {
-                        items(
-                            items = list,
-                            key = { it.id }
-                        ) { item ->
-                            ArticleItem(
-                                item = item,
-                                onArticleItemClick = { onArticleItemClick(item) },
-                                onArticleFavoriteChanged = onArticleFavoriteChanged
-                            )
+                    Column {
+                        ChipGroupFilterArticles(
+                            categoryType = categoryType,
+                            onCategoryTypeChanged = onCategoryTypeChanged
+                        )
+                        LazyColumn(modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()) {
+                            items(
+                                items = articles.getSuccessDataOrNull().orEmpty(),
+                                key = { it.id }
+                            ) { item ->
+                                ArticleItem(
+                                    item = item,
+                                    onArticleItemClick = { onArticleItemClick(item) },
+                                    onArticleFavoriteChanged = onArticleFavoriteChanged
+                                )
+                            }
                         }
                     }
                 }
