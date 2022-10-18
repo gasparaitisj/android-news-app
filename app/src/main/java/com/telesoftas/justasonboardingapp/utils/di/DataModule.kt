@@ -5,10 +5,10 @@ import androidx.room.Room
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import com.telesoftas.justasonboardingapp.utils.Constants
 import com.telesoftas.justasonboardingapp.utils.data.AppDatabase
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
+import com.telesoftas.justasonboardingapp.utils.other.Constants
 import com.telesoftas.justasonboardingapp.utils.preferences.PreferencesStore
 import dagger.Module
 import dagger.Provides

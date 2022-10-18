@@ -1,4 +1,4 @@
-package com.telesoftas.justasonboardingapp.utils
+package com.telesoftas.justasonboardingapp.utils.other
 
 object Constants {
     const val DATABASE_NAME = "database"
