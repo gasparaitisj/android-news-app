@@ -1,16 +1,22 @@
 <resources>
     <!-- General -->
     <string name="app_name">Justas Onboarding App</string>
+    <string name="default_notification_channel_id">FIREBASE_DEFAULT</string>
 
     <!-- Top app bar -->
     <string name="top_app_bar_title_source_list">Source list</string>
     <string name="top_app_bar_title_favorite">Favorite</string>
     <string name="top_app_bar_title_about">About</string>
+    <string name="top_app_bar_title_news_list">News list</string>
+    <string name="top_app_bar_title_news_details">News details</string>
+    <string name="top_app_bar_title_map">Map</string>
 
     <!-- Bottom navigation -->
     <string name="bottom_navigation_source_list">Source list</string>
     <string name="bottom_navigation_favorite">Favorite</string>
     <string name="bottom_navigation_about">About</string>
+    <string name="bottom_navigation_map">Map</string>
+
 
     <!-- About screen -->
     <string name="about_screen_paragraph_1">Vision</string>
@@ -60,15 +66,15 @@
     <string name="news_list_screen_chip_category_other">Other</string>
     <string name="news_list_screen_chip_category_health">Health</string>
 
-    <!-- Network error -->
-    <string name="network_error">Couldn\'t reach the server. Check your internet connection.</string>
-
-    <!-- Other errors -->
-    <string name="unknown_error">Unknown error</string>
-    <string name="top_app_bar_title_news_list">News list</string>
-    <string name="top_app_bar_title_news_details">News details</string>
-    <string name="news_details_btn_open_link">Read full article online</string>
+    <!-- Favorite screen -->
     <string name="favorite_screen_search_text_field_placeholder">Search for articles</string>
-    <string name="default_notification_channel_id">FIREBASE_DEFAULT</string>
+    <string name="favorite_screen_empty_state">You don\'t have any favorite articles yet.</string>
+
+    <!-- News details screen -->
+    <string name="news_details_btn_open_link">Read full article online</string>
+
+    <!-- Errors -->
+    <string name="network_error">Couldn\'t reach the server. Check your internet connection.</string>
+    <string name="unknown_error">Unknown error</string>
     <string name="empty_state">This page didn\'t load the content correctly.</string>
 </resources>
