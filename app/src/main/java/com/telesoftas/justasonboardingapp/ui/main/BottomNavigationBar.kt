@@ -10,7 +10,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
 @ExperimentalMaterialApi
 @Composable
@@ -64,6 +64,7 @@ private fun handleSelectedBottomNavigationItem(
         currentRoute == Screen.NewsList.route ||
         currentRoute == Screen.NewsDetails.route
     Screen.Favorite.route -> currentRoute == Screen.Favorite.route
+    Screen.Map.route -> currentRoute == Screen.Map.route
     Screen.About.route -> currentRoute == Screen.About.route
     else -> false
 }
