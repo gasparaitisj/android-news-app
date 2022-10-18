@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.ui.newsdetails
 
+import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -11,9 +12,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
@@ -28,7 +31,11 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
 import com.telesoftas.justasonboardingapp.ui.map.LocationItem
@@ -43,6 +50,7 @@ import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
+@ExperimentalComposeUiApi
 @MapsComposeExperimentalApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -56,10 +64,16 @@ fun NewsDetailsScreen(
         article = article,
         locations = viewModel.locations,
         onBackArrowClicked = { navController.navigateUp() },
-        onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
+        onArticleFavoriteChanged = { item, isFavorite ->
+            viewModel.onArticleFavoriteChanged(
+                article = item,
+                isFavorite = isFavorite
+            )
+        }
     )
 }
 
+@ExperimentalComposeUiApi
 @MapsComposeExperimentalApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -71,7 +85,6 @@ fun NewsDetailsContent(
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
-    val scrollState = rememberScrollState()
     val progress = state.toolbarState.progress
 
     SwipeRefresh(
@@ -159,17 +172,18 @@ fun NewsDetailsContent(
                 }
             }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = scrollState)
-            ) {
-                article.data?.let { article ->  NewsDetailsItem(article, locations, onArticleFavoriteChanged) }
+            article.data?.let { article ->
+                NewsDetailsItem(
+                    article,
+                    locations,
+                    onArticleFavoriteChanged
+                )
             }
         }
     }
 }
 
+@ExperimentalComposeUiApi
 @MapsComposeExperimentalApi
 @Composable
 fun NewsDetailsItem(
@@ -178,10 +192,26 @@ fun NewsDetailsItem(
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val selected = remember { mutableStateOf(item.isFavorite) }
+
+    val defaultCameraPosition = CameraPosition.fromLatLngZoom(
+        LatLng(55.92930340811748, 23.306731553438404), 11f
+    )
+    val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+    var columnScrollingEnabled by remember { mutableStateOf(true) }
+    LaunchedEffect(cameraPositionState.isMoving) {
+        if (!cameraPositionState.isMoving) {
+            columnScrollingEnabled = true
+        }
+    }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()
+            .fillMaxSize()
+            .verticalScroll(
+                rememberScrollState(),
+                columnScrollingEnabled
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -211,7 +241,7 @@ fun NewsDetailsItem(
                 }
             )
         }
-        Column() {
+        Column {
             Text(
                 modifier = Modifier.padding(top = 32.dp),
                 text = item.title ?: "",
@@ -230,14 +260,48 @@ fun NewsDetailsItem(
                     .padding(top = 32.dp)
                     .fillMaxWidth()
             )
-            GoogleMapClustering(
-                items = locations,
+            MapInColumn(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .height(256.dp)
-                    .padding(top = 32.dp)
+                    .fillMaxWidth()
+                    .height((256+128).dp)
+                    .padding(top = 32.dp),
+                locations = locations,
+                cameraPositionState = cameraPositionState,
+                onMapTouched = {
+                    columnScrollingEnabled = false
+                }
             )
         }
+    }
+}
+
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
+@Composable
+fun MapInColumn(
+    modifier: Modifier = Modifier,
+    locations: List<LocationItem>,
+    cameraPositionState: CameraPositionState,
+    onMapTouched: () -> Unit,
+) {
+    Box(modifier = modifier) {
+        GoogleMapClustering(
+            items = locations,
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInteropFilter(
+                    onTouchEvent = {
+                        when (it.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                onMapTouched()
+                                false
+                            }
+                            else -> true
+                        }
+                    }
+                ),
+            cameraPositionState = cameraPositionState,
+        )
     }
 }
 
