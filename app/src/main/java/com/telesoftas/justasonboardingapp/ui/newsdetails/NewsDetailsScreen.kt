@@ -28,7 +28,10 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
+import com.telesoftas.justasonboardingapp.ui.map.LocationItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -40,6 +43,7 @@ import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
+@MapsComposeExperimentalApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
@@ -50,16 +54,19 @@ fun NewsDetailsScreen(
     val article by viewModel.article.collectAsState()
     NewsDetailsContent(
         article = article,
+        locations = viewModel.locations,
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item, isFavorite -> viewModel.onArticleFavoriteChanged(item, isFavorite) }
     )
 }
 
+@MapsComposeExperimentalApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
+    locations: List<LocationItem>,
     onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
@@ -157,15 +164,17 @@ fun NewsDetailsContent(
                     .fillMaxSize()
                     .verticalScroll(state = scrollState)
             ) {
-                article.data?.let { article ->  NewsDetailsItem(article, onArticleFavoriteChanged) }
+                article.data?.let { article ->  NewsDetailsItem(article, locations, onArticleFavoriteChanged) }
             }
         }
     }
 }
 
+@MapsComposeExperimentalApi
 @Composable
 fun NewsDetailsItem(
     item: Article,
+    locations: List<LocationItem>,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val selected = remember { mutableStateOf(item.isFavorite) }
@@ -202,7 +211,7 @@ fun NewsDetailsItem(
                 }
             )
         }
-        Column {
+        Column() {
             Text(
                 modifier = Modifier.padding(top = 32.dp),
                 text = item.title ?: "",
@@ -220,6 +229,13 @@ fun NewsDetailsItem(
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 32.dp)
                     .fillMaxWidth()
+            )
+            GoogleMapClustering(
+                items = locations,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(256.dp)
+                    .padding(top = 32.dp)
             )
         }
     }
@@ -276,5 +292,5 @@ fun NewsDetailsItemPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "placebear.com/200/300"
     )
-    NewsDetailsItem(item = item) { _, _ -> }
+    //NewsDetailsItem(item = item) { _, _ -> }
 }
