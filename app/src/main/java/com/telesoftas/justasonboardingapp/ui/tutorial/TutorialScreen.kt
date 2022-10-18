@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.pager.*
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
 @ExperimentalAnimationApi
 @Composable
