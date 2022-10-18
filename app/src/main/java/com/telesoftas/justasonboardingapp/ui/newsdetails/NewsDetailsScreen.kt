@@ -340,6 +340,7 @@ fun ReadFullArticleButton(
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
@@ -356,5 +357,5 @@ fun NewsDetailsItemPreview() {
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "placebear.com/200/300"
     )
-    //NewsDetailsItem(item = item) { _, _ -> }
+    NewsDetailsItem(item = item, locations = listOf()) { _, _ -> }
 }
