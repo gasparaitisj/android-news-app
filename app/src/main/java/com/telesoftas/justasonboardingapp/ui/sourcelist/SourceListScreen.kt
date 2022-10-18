@@ -24,7 +24,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
@@ -82,8 +82,7 @@ private fun SourceListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                val list = newsSources.getSuccessDataOrNull().orEmpty()
-                if (list.isEmpty()) {
+                if (newsSources.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -110,7 +109,7 @@ private fun SourceListContent(
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                         ) {
-                            items(list) { item ->
+                            items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
                                 SourceItem(
                                     item = item,
                                     onSourceItemClick = { onSourceItemClick(item) }

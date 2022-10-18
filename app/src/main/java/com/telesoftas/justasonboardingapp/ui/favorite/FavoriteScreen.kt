@@ -33,7 +33,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 
@@ -117,7 +117,7 @@ fun FavoriteScreenContent(
                                     contentDescription = "Empty favorites image"
                                 )
                                 Text(
-                                    text = "You don't have any favorite articles yet.",
+                                    text = stringResource(R.string.favorite_screen_empty_state),
                                     style = Typography.body2
                                 )
                             }

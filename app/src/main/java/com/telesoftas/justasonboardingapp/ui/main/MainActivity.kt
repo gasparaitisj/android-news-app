@@ -17,7 +17,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.tutorial.TutorialScreen
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalLifecycleComposeApi
@@ -55,6 +55,12 @@ fun BottomNavigationBar(navController: NavHostController) {
                 route = Screen.Favorite.route,
                 iconInactiveResId = R.drawable.btn_favorite,
                 iconActiveResId = R.drawable.btn_favorite_active
+            ),
+            BottomNavItem(
+                name = stringResource(id = R.string.bottom_navigation_map),
+                route = Screen.Map.route,
+                iconInactiveResId = R.drawable.btn_map,
+                iconActiveResId = R.drawable.btn_map_active
             ),
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_about),

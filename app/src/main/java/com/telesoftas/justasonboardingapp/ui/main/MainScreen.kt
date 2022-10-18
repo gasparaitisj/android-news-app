@@ -26,10 +26,11 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.AboutScreen
 import com.telesoftas.justasonboardingapp.ui.favorite.FavoriteScreen
+import com.telesoftas.justasonboardingapp.ui.map.MapScreen
 import com.telesoftas.justasonboardingapp.ui.newsdetails.NewsDetailsScreen
 import com.telesoftas.justasonboardingapp.ui.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.NewsListScreen
-import com.telesoftas.justasonboardingapp.utils.Screen
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
@@ -112,6 +113,7 @@ private fun setOnDestinationChangedListener(
     val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
     val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
     val about = stringResource(id = R.string.top_app_bar_title_about)
+    val map = stringResource(id = R.string.top_app_bar_title_map)
     val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
     val newsDetails = stringResource(id = R.string.top_app_bar_title_news_details)
 
@@ -127,6 +129,9 @@ private fun setOnDestinationChangedListener(
                 }
                 Screen.About.route -> {
                     topBarTitle.value = about
+                }
+                Screen.Map.route -> {
+                    topBarTitle.value = map
                 }
                 Screen.NewsList.route -> {
                     topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
@@ -206,6 +211,9 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         }
         composable(Screen.Favorite.route) {
             FavoriteScreen(navController = navController)
+        }
+        composable(Screen.Map.route) {
+            MapScreen(navController = navController)
         }
         composable(Screen.About.route) {
             AboutScreen(navController = navController)

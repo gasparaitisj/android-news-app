@@ -1,4 +1,4 @@
-package com.telesoftas.justasonboardingapp.utils
+package com.telesoftas.justasonboardingapp.utils.navigation
 
 sealed class Screen(val routePattern: String) {
     object Main : Screen("main") {
@@ -24,6 +24,10 @@ sealed class Screen(val routePattern: String) {
         const val KEY_ID = "id"
     }
     object Favorite : Screen("favorite") {
+        val route: String get() = routePattern
+        fun destination(): String = routePattern
+    }
+    object Map : Screen("map") {
         val route: String get() = routePattern
         fun destination(): String = routePattern
     }

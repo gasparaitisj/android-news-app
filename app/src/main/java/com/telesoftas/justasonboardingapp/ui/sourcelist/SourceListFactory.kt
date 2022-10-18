@@ -47,7 +47,8 @@ class SourceListFactory {
     }
 
     fun mapEntitiesToResource(entities: List<NewsSourceEntity>): Resource<List<NewsSource>> {
-        return Resource.success(
+        return if (entities.isEmpty()) Resource.error(msgRes = R.string.network_error)
+        else Resource.success(
             entities.map { entity ->
                 NewsSource(
                     id = entity.id.toString(),
