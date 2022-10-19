@@ -25,8 +25,8 @@
     - [ ] Display votes
 - [ ] About screen
     - [ ] Take and display a camera selfie
-- [x] Maps screen
-    - [x] Large map with all locations (custom marker, cluster & tooltip)
+- [ ] Maps screen
+    - [ ] Large map with all locations (custom marker, cluster & tooltip)
 
 ### Other
 - [ ] Dark mode (missing: maps, captions)
