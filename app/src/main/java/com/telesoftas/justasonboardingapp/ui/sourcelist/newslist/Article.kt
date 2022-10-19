@@ -12,7 +12,8 @@ data class Article(
     val author: String?,
     val title: String?,
     val description: String?,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val votes: Long
 ) {
     fun toArticleEntity(): ArticleEntity? {
         id.toIntOrNull()?.let { idInt ->
@@ -25,7 +26,8 @@ data class Article(
                 author = author,
                 title = title,
                 description = description,
-                imageUrl = imageUrl
+                imageUrl = imageUrl,
+                votes = votes
             )
         }
         return null

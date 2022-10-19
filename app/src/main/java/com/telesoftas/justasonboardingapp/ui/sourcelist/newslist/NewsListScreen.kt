@@ -317,7 +317,8 @@ private fun ArticleItemPreview() {
         author = "justasgasparaitis@one.lt",
         title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-        imageUrl = "https://placebear.com/200/300"
+        imageUrl = "https://placebear.com/200/300",
+        votes = 52
     )
     JustasOnboardingAppTheme {
         ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
