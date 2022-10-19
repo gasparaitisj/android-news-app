@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -14,12 +15,15 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -85,6 +89,8 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
