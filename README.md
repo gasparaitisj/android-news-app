@@ -6,24 +6,30 @@
 - [x] Source list screen
     - [x] Display news sources
     - [x] Sort news sources by ascending, descending orders
-- [x] News list screen
+- [ ] News list screen
     - [x] Display articles of one particular source
     - [x] Add/remove article to/from favorites
     - [x] Filter articles by article category (politics, sports, business...)
-- [x] News details screen
+    - [ ] Display votes
+- [ ] News details screen
     - [x] Display one particular article
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
-    - [x] Small map with clustering pins
-- [x] Favorite screen
+    - [ ] Display votes
+    - [ ] Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
+    - [ ] Save article as .pdf to external storage
+- [ ] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
-- [x] About screen
+    - [ ] Display votes
+- [ ] About screen
+    - [ ] Take and display a camera selfie
 - [x] Maps screen
-    - [x] Large map with clustering pins
+    - [x] Large map with all locations (custom marker, cluster & tooltip)
 
 ### Other
+- [ ] Dark mode (missing: maps, captions)
 - [x] Cache items to display in offline mode
 - [x] Handle empty states
 - [x] Navigation animations
