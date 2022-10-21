@@ -50,7 +50,7 @@ class NewsDetailsViewModelTest {
         votes = 10
     )
     private val articlesRepository: ArticlesRepository = mockk()
-    private val locationRepository: LocationRepository = mockk()
+    private val locationRepository: LocationRepository = LocationRepository()
     private val savedStateHandle: SavedStateHandle = mockk()
 
     @Before
@@ -58,6 +58,7 @@ class NewsDetailsViewModelTest {
         every {
             checkNotNull(savedStateHandle.get("id")) as String
         } returns article.data!!.id
+
         coEvery {
             articlesRepository.getArticleById(article.data!!.id)
         } returns article
