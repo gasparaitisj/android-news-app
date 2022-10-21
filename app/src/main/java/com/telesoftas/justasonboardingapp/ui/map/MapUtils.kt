@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
@@ -26,25 +27,49 @@ import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.LightPrimary
 import com.telesoftas.justasonboardingapp.ui.theme.LightSecondary
 
-// Extended ClusterManager with a custom ClusterRenderer and InfoWindow
-class LocationClusterManager(
+class ClusterManager(
     context: Context,
     viewGroup: ViewGroup,
     compositionContext: CompositionContext,
     map: GoogleMap,
     items: List<ClusterItem>,
-    infoWindowContent: @Composable (Marker) -> Unit
+    clusterInfoWindowContent: @Composable (Marker) -> Unit,
+    clusterItemInfoWindowContent: @Composable (Marker) -> Unit,
+    onClusterInfoWindowClicked: (Cluster<ClusterItem>) -> Unit = {},
+    onClusterItemInfoWindowClicked: (ClusterItem) -> Unit = {}
 ) : ClusterManager<ClusterItem>(context, map) {
+    var clickedCluster: Cluster<ClusterItem>? = null
     init {
         addItems(items)
-        renderer = LocationClusterRenderer(context, map, this)
-        markerCollection.setInfoWindowAdapter(
-            LocationInfoWindowAdapter(
+        renderer = ClusterRenderer(
+            context = context,
+            map = map,
+            clusterManager = this
+        )
+        clusterMarkerCollection.setInfoWindowAdapter(
+            ClusterInfoWindowAdapter(
                 viewGroup = viewGroup,
                 compositionContext = compositionContext,
-                content = infoWindowContent
+                content = clusterInfoWindowContent
             )
         )
+        setOnClusterClickListener { cluster ->
+            clickedCluster = cluster
+            false
+        }
+        setOnClusterInfoWindowClickListener { cluster ->
+            onClusterInfoWindowClicked(cluster)
+        }
+        markerCollection.setInfoWindowAdapter(
+            ClusterInfoWindowAdapter(
+                viewGroup = viewGroup,
+                compositionContext = compositionContext,
+                content = clusterItemInfoWindowContent
+            )
+        )
+        setOnClusterItemInfoWindowClickListener { clusterItem ->
+            onClusterItemInfoWindowClicked(clusterItem)
+        }
     }
 }
 
@@ -62,9 +87,11 @@ class LocationClusterManager(
  *
  * Eventually when info windows are no longer implemented this way, this
  * implementation should be updated.
+ *
+ * Read here:
  * https://github.com/googlemaps/android-maps-compose/blob/main/maps-compose/src/main/java/com/google/maps/android/compose/ComposeInfoWindowAdapter.kt
  */
-class LocationInfoWindowAdapter(
+class ClusterInfoWindowAdapter(
     private val viewGroup: ViewGroup,
     private val compositionContext: CompositionContext,
     private val content: @Composable (Marker) -> Unit
@@ -96,7 +123,7 @@ class LocationInfoWindowAdapter(
 }
 
 // Customization of both clusters and markers happens here
-class LocationClusterRenderer(
+class ClusterRenderer(
     private val context: Context,
     map: GoogleMap,
     clusterManager: ClusterManager<ClusterItem>?,

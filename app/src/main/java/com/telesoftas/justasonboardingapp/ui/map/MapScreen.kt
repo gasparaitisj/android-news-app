@@ -2,7 +2,6 @@ package com.telesoftas.justasonboardingapp.ui.map
 
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.Marker
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.compose.*
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -49,7 +50,8 @@ fun GoogleMapClustering(
     modifier: Modifier,
     cameraPositionState: CameraPositionState
 ) {
-    var clusterManager by remember { mutableStateOf<LocationClusterManager?>(null) }
+    val uriHandler = LocalUriHandler.current
+    var clusterManager by remember { mutableStateOf<ClusterManager?>(null) }
     val context = LocalContext.current
     val viewGroup = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
@@ -59,14 +61,20 @@ fun GoogleMapClustering(
         cameraPositionState = cameraPositionState
     ) {
         MapEffect(items) { map ->
-            clusterManager = LocationClusterManager(
+            clusterManager = ClusterManager(
                 context = context,
                 viewGroup = viewGroup,
                 compositionContext = compositionContext,
                 map = map,
                 items = items,
-                infoWindowContent = { marker ->
-                    InfoWindow(marker)
+                clusterItemInfoWindowContent = { marker ->
+                    ClusterItemInfoWindow(marker)
+                },
+                clusterInfoWindowContent = {
+                    ClusterInfoWindow(clusterManager?.clickedCluster)
+                },
+                onClusterItemInfoWindowClicked = { clusterItem ->
+                    clusterItem.snippet?.let { link -> uriHandler.openUri(link) }
                 }
             )
         }
@@ -79,8 +87,50 @@ fun GoogleMapClustering(
 }
 
 @Composable
-fun InfoWindow(marker: Marker) {
-    val uriHandler = LocalUriHandler.current
+fun ClusterInfoWindow(
+    cluster: Cluster<ClusterItem>?
+) {
+    val locationText = if (cluster?.size != null) {
+        "Gintarinė vaistinė (${cluster.size} locations)"
+    } else "Gintarinė vaistinė"
+
+    Surface(
+        elevation = 3.dp,
+        shape = RoundedCornerShape(24.dp),
+        color = Color.White.copy(alpha = 0.8f)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_gintarine_logo),
+                contentDescription = "Gintarinė vaistinė"
+            )
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = locationText,
+                style = Typography.subtitle1,
+                color = Color.Black
+            )
+            cluster?.position?.let { latLng ->
+                Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = String.format(
+                        "%.5f, %.5f",
+                        latLng.latitude, latLng.longitude
+                    ),
+                    style = Typography.subtitle2,
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ClusterItemInfoWindow(marker: Marker) {
     Surface(
         elevation = 3.dp,
         shape = RoundedCornerShape(24.dp),
@@ -102,9 +152,7 @@ fun InfoWindow(marker: Marker) {
                 color = Color.Black
             )
             Text(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clickable { marker.snippet?.let { uriHandler.openUri(it) } },
+                modifier = Modifier.padding(4.dp),
                 text = marker.snippet ?: "",
                 style = Typography.subtitle1,
                 color = Color.Black
@@ -124,7 +172,7 @@ fun InfoWindow(marker: Marker) {
 
 @Preview(showBackground = true)
 @Composable
-fun InfoWindowPreview() {
+fun ClusterItemInfoWindowPreview() {
     Surface(
         shape = RoundedCornerShape(24.dp),
         color = Color.White
