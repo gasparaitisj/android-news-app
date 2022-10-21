@@ -26,6 +26,7 @@ import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.LightPrimary
 import com.telesoftas.justasonboardingapp.ui.theme.LightSecondary
 
+// Extended ClusterManager with a custom ClusterRenderer and InfoWindow
 class LocationClusterManager(
     context: Context,
     viewGroup: ViewGroup,
@@ -36,7 +37,7 @@ class LocationClusterManager(
 ) : ClusterManager<ClusterItem>(context, map) {
     init {
         addItems(items)
-        renderer = LocationRenderer(context, map, this)
+        renderer = LocationClusterRenderer(context, map, this)
         markerCollection.setInfoWindowAdapter(
             LocationInfoWindowAdapter(
                 viewGroup = viewGroup,
@@ -47,6 +48,22 @@ class LocationClusterManager(
     }
 }
 
+/**
+ * An InfoWindowAdapter that returns a [ComposeView] for drawing a marker's
+ * info window.
+ *
+ * Note: As of version 18.0.2 of the Maps SDK, info windows are drawn by
+ * creating a bitmap of the [View]s returned in the [GoogleMap.InfoWindowAdapter]
+ * interface methods. The returned views are never attached to a window,
+ * instead, they are drawn to a bitmap canvas. This breaks the assumption
+ * [ComposeView] makes where it must eventually be attached to a window. As a
+ * workaround, the contained window is temporarily attached to the MapView so
+ * that the contents of the ComposeViews are rendered.
+ *
+ * Eventually when info windows are no longer implemented this way, this
+ * implementation should be updated.
+ * https://github.com/googlemaps/android-maps-compose/blob/main/maps-compose/src/main/java/com/google/maps/android/compose/ComposeInfoWindowAdapter.kt
+ */
 class LocationInfoWindowAdapter(
     private val viewGroup: ViewGroup,
     private val compositionContext: CompositionContext,
@@ -78,7 +95,8 @@ class LocationInfoWindowAdapter(
     }
 }
 
-class LocationRenderer(
+// Customization of both clusters and markers happens here
+class LocationClusterRenderer(
     private val context: Context,
     map: GoogleMap,
     clusterManager: ClusterManager<ClusterItem>?,
