@@ -33,7 +33,8 @@ class FavoriteViewModelTest {
             description = "B Description",
             author = null,
             imageUrl = null,
-            source = null
+            source = null,
+            votes = 10
         ),
         ArticleEntity(
             id = 4,
@@ -44,7 +45,8 @@ class FavoriteViewModelTest {
             description = "D Description",
             author = null,
             imageUrl = null,
-            source = null
+            source = null,
+            votes = 10
         ),
         ArticleEntity(
             id = 1,
@@ -55,7 +57,8 @@ class FavoriteViewModelTest {
             description = "A Description",
             author = null,
             imageUrl = null,
-            source = null
+            source = null,
+            votes = 10
         )
     )
     private val articlesRepository: ArticlesRepository = mockk()
@@ -82,7 +85,8 @@ class FavoriteViewModelTest {
                 description = "D Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             ),
             Article(
                 id = "1",
@@ -93,7 +97,8 @@ class FavoriteViewModelTest {
                 description = "A Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             )
         )
 

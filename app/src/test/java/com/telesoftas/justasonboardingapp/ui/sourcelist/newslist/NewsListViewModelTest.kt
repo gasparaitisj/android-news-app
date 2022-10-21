@@ -34,7 +34,7 @@ class NewsListViewModelTest {
             articles = listOf(
                 ArticlePreviewResponse(
                     id = "4",
-                    votes = 1,
+                    votes = 10,
                     publishedAt = "2022-10-03",
                     category = ArticleCategory.POLITICS,
                     title = "D Title",
@@ -42,7 +42,7 @@ class NewsListViewModelTest {
                 ),
                 ArticlePreviewResponse(
                     id = "1",
-                    votes = 1,
+                    votes = 10,
                     publishedAt = "2022-10-03",
                     category = ArticleCategory.BUSINESS,
                     title = "A Title",
@@ -50,7 +50,7 @@ class NewsListViewModelTest {
                 ),
                 ArticlePreviewResponse(
                     id = "2",
-                    votes = 1,
+                    votes = 10,
                     publishedAt = "2022-10-03",
                     category = ArticleCategory.SPORTS,
                     title = "B Title",
@@ -58,7 +58,7 @@ class NewsListViewModelTest {
                 ),
                 ArticlePreviewResponse(
                     id = "3",
-                    votes = 1,
+                    votes = 10,
                     publishedAt = "2022-10-03",
                     category = ArticleCategory.POLITICS,
                     title = "C Title",
@@ -77,7 +77,8 @@ class NewsListViewModelTest {
             description = "B Description",
             author = null,
             imageUrl = null,
-            source = null
+            source = null,
+            votes = 10
         )
     )
     private val articlesRepository: ArticlesRepository = mockk()
@@ -111,7 +112,8 @@ class NewsListViewModelTest {
                 description = "D Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             ),
             Article(
                 id = "1",
@@ -122,7 +124,8 @@ class NewsListViewModelTest {
                 description = "A Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             ),
             Article(
                 id = "2",
@@ -133,7 +136,8 @@ class NewsListViewModelTest {
                 description = "B Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             ),
             Article(
                 id = "3",
@@ -144,7 +148,8 @@ class NewsListViewModelTest {
                 description = "C Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             )
         )
 
@@ -167,7 +172,8 @@ class NewsListViewModelTest {
                 description = "D Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             ),
             Article(
                 id = "3",
@@ -178,7 +184,8 @@ class NewsListViewModelTest {
                 description = "C Description",
                 author = null,
                 imageUrl = null,
-                source = null
+                source = null,
+                votes = 10
             )
         )
 
