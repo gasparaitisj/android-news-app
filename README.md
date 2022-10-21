@@ -16,8 +16,8 @@
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
-    - [ ] Display votes
     - [x] Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
+    - [ ] Display votes
     - [ ] Save article as .pdf to external storage
 - [ ] Favorite screen
     - [x] Display all articles, marked as favorite
@@ -25,17 +25,17 @@
     - [ ] Display votes
 - [ ] About screen
     - [ ] Take and display a camera selfie
-- [ ] Maps screen
-    - [ ] Large map with all locations (custom marker, cluster & tooltip)
+- [x] Maps screen
+    - [x] Large map with all locations (custom marker, cluster & tooltip)
 
 ### Other tasks
-- [ ] Dark mode (missing: maps, captions)
 - [x] Cache items to display in offline mode
 - [x] Handle empty states
 - [x] Navigation animations
 - [x] Handle errors (show Snackbar)
 - [x] Unit tests
 - [ ] UI tests
+- [ ] Full dark mode support (missing: maps, captions)
 - [ ] Add Google Maps with full customization
 - [ ] Migrate to Rx (separate branch)
 - [ ] Utilize GraphQL with SpaceX API
@@ -45,7 +45,6 @@
     - [ ] Clickable link to wiki page that opens browser 
 
 ### Requirements (libraries, tools, versions)
-
 - Correct SDKs
     - [x] Minimum SDK is 24
     - [x] Target SDK is 33 [(the latest available, as of October 2022)](https://developer.android.com/studio/releases/platforms)
@@ -53,7 +52,7 @@
     - [x] [Material Design](https://material.io/)
     - [x] [Material Design Guidelines](https://material.io/design)
     - [x] [Jetpack Compose](https://developer.android.com/jetpack/compose)
-    - [x] Accompanist
+    - [x] [Accompanist](https://google.github.io/accompanist/)
 - [Architecture](https://developer.android.com/topic/architecture)
     - [x] [MVVM](https://developer.android.com/topic/libraries/architecture/viewmodel)
 - Concurrency
