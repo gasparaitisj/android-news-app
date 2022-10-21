@@ -28,7 +28,7 @@
 - [ ] Maps screen
     - [ ] Large map with all locations (custom marker, cluster & tooltip)
 
-### Other
+### Other tasks
 - [ ] Dark mode (missing: maps, captions)
 - [x] Cache items to display in offline mode
 - [x] Handle empty states
@@ -36,6 +36,13 @@
 - [x] Handle errors (show Snackbar)
 - [x] Unit tests
 - [ ] UI tests
+- [ ] Add Google Maps with full customization
+- [ ] Migrate to Rx (separate branch)
+- [ ] Utilize GraphQL with SpaceX API
+    - [ ] Get a `landpads` list from the API
+    - [ ] Show the `landpads` list on a map using `latitude`, `longitude` variables
+    - [ ] Show additional info on `landpad` pin clicked (`name`, `successfulLandings`, `attemptedLandings`, `successRatio`)
+    - [ ] Clickable link to wiki page that opens browser 
 
 ### Requirements (libraries, tools, versions)
 
@@ -52,12 +59,18 @@
 - Concurrency
     - [x] [Flow](https://developer.android.com/kotlin/flow)
     - [x] [Coroutines](https://developer.android.com/kotlin/coroutines)
+    - [ ] [Rx](https://github.com/ReactiveX/RxKotlin)
 - [Dependency Injection](https://developer.android.com/training/dependency-injection)
     - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - Network
-    - [x] [Retrofit](https://square.github.io/retrofit/)
-    - [x] [Moshi](https://github.com/square/moshi)
-    - [x] [Coil](https://coil-kt.github.io/coil/)
+    - REST
+        - [x] [Retrofit](https://square.github.io/retrofit/)
+        - [x] [Moshi](https://github.com/square/moshi)
+        - [x] [Coil](https://coil-kt.github.io/coil/)
+    - GraphQL
+        - [ ] [Apollo](https://www.apollographql.com/docs/kotlin/)
+        - [ ] [GraphQL plugin for Android Studio](https://plugins.jetbrains.com/plugin/8097-graphql)
+        - [ ] [GraphQL SpaceX API](https://studio.apollographql.com/public/SpaceX-pxxbxen/explorer)
 - [Testing](https://developer.android.com/training/testing/local-tests)
     - [x] JUnit
     - [x] [MockK](https://mockk.io/ANDROID.html)
@@ -67,6 +80,9 @@
     - [x] [Preferences DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
 - Logging
     - [x] [Timber](https://github.com/JakeWharton/timber)
+- Maps
+    - [x] [Google Maps Compose](https://github.com/googlemaps/android-maps-compose)
+    - [x] [Google Maps Utils](https://github.com/googlemaps/android-maps-utils)
 - Other
     - [x] [LeakCanary](https://github.com/square/leakcanary/)
     - [x] [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
