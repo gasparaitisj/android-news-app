@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.ui.map
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 
-data class LocationItem(
+data class LocationClusterItem(
     val itemPosition: LatLng,
     val itemTitle: String,
     val itemSnippet: String,

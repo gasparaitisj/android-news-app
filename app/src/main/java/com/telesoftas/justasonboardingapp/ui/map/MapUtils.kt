@@ -19,7 +19,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
-import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.telesoftas.justasonboardingapp.R
@@ -32,13 +31,13 @@ class ClusterManager(
     viewGroup: ViewGroup,
     compositionContext: CompositionContext,
     map: GoogleMap,
-    items: List<ClusterItem>,
+    items: List<LocationClusterItem>,
     clusterInfoWindowContent: @Composable (Marker) -> Unit,
     clusterItemInfoWindowContent: @Composable (Marker) -> Unit,
-    onClusterInfoWindowClicked: (Cluster<ClusterItem>) -> Unit = {},
-    onClusterItemInfoWindowClicked: (ClusterItem) -> Unit = {}
-) : ClusterManager<ClusterItem>(context, map) {
-    var clickedCluster: Cluster<ClusterItem>? = null
+    onClusterInfoWindowClicked: (Cluster<LocationClusterItem>) -> Unit = {},
+    onClusterItemInfoWindowClicked: (LocationClusterItem) -> Unit = {}
+) : ClusterManager<LocationClusterItem>(context, map) {
+    var clickedCluster: Cluster<LocationClusterItem>? = null
     init {
         addItems(items)
         renderer = ClusterRenderer(
@@ -126,9 +125,9 @@ class ClusterInfoWindowAdapter(
 class ClusterRenderer(
     private val context: Context,
     map: GoogleMap,
-    clusterManager: ClusterManager<ClusterItem>?,
+    clusterManager: ClusterManager<LocationClusterItem>?,
     private val clusterColors: ClusterColors = ClusterColors()
-) : DefaultClusterRenderer<ClusterItem>(context, map, clusterManager) {
+) : DefaultClusterRenderer<LocationClusterItem>(context, map, clusterManager) {
     override fun getColor(clusterSize: Int): Int {
         return when (clusterSize) {
             in 0 .. 9 -> clusterColors.small.toArgb()
@@ -136,7 +135,7 @@ class ClusterRenderer(
             else -> clusterColors.large.toArgb()
         }
     }
-    override fun onBeforeClusterItemRendered(item: ClusterItem, markerOptions: MarkerOptions) {
+    override fun onBeforeClusterItemRendered(item: LocationClusterItem, markerOptions: MarkerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions)
         markerOptions.icon(getBitmapDescriptorFromVector(context, R.drawable.img_marker))
     }

@@ -23,7 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
-import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.compose.*
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -46,9 +45,10 @@ fun MapScreen(
 @MapsComposeExperimentalApi
 @Composable
 fun GoogleMapClustering(
-    items: List<LocationItem>,
+    items: List<LocationClusterItem>,
     modifier: Modifier,
-    cameraPositionState: CameraPositionState
+    cameraPositionState: CameraPositionState,
+    uiSettings: MapUiSettings = MapUiSettings()
 ) {
     val uriHandler = LocalUriHandler.current
     var clusterManager by remember { mutableStateOf<ClusterManager?>(null) }
@@ -58,7 +58,8 @@ fun GoogleMapClustering(
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        uiSettings = uiSettings
     ) {
         MapEffect(items) { map ->
             clusterManager = ClusterManager(
@@ -74,7 +75,7 @@ fun GoogleMapClustering(
                     ClusterInfoWindow(clusterManager?.clickedCluster)
                 },
                 onClusterItemInfoWindowClicked = { clusterItem ->
-                    clusterItem.snippet?.let { link -> uriHandler.openUri(link) }
+                    uriHandler.openUri(clusterItem.snippet)
                 }
             )
         }
@@ -88,7 +89,7 @@ fun GoogleMapClustering(
 
 @Composable
 fun ClusterInfoWindow(
-    cluster: Cluster<ClusterItem>?
+    cluster: Cluster<LocationClusterItem>?
 ) {
     val locationText = if (cluster?.size != null) {
         "Gintarinė vaistinė (${cluster.size} locations)"

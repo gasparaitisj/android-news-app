@@ -35,11 +35,12 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
-import com.telesoftas.justasonboardingapp.ui.map.LocationItem
+import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -63,7 +64,7 @@ fun NewsDetailsScreen(
     val article by viewModel.article.collectAsState()
     NewsDetailsContent(
         article = article,
-        locations = viewModel.locations,
+        location = viewModel.location,
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item, isFavorite ->
             viewModel.onArticleFavoriteChanged(
@@ -81,7 +82,7 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
-    locations: List<LocationItem>,
+    location: LocationClusterItem,
     onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
@@ -181,7 +182,7 @@ fun NewsDetailsContent(
             article.data?.let { article ->
                 NewsDetailsItem(
                     article,
-                    locations,
+                    location,
                     onArticleFavoriteChanged
                 )
             }
@@ -194,14 +195,12 @@ fun NewsDetailsContent(
 @Composable
 fun NewsDetailsItem(
     item: Article,
-    locations: List<LocationItem>,
+    location: LocationClusterItem,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
     val selected = remember { mutableStateOf(item.isFavorite) }
 
-    val defaultCameraPosition = CameraPosition.fromLatLngZoom(
-        LatLng(55.92930340811748, 23.306731553438404), 11f
-    )
+    val defaultCameraPosition = CameraPosition.fromLatLngZoom(location.position, 10f)
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
     var columnScrollingEnabled by remember { mutableStateOf(true) }
     LaunchedEffect(cameraPositionState.isMoving) {
@@ -215,8 +214,8 @@ fun NewsDetailsItem(
             .padding(16.dp)
             .fillMaxSize()
             .verticalScroll(
-                rememberScrollState(),
-                columnScrollingEnabled
+                state = rememberScrollState(),
+                enabled = columnScrollingEnabled
             ),
     ) {
         Row(
@@ -271,7 +270,7 @@ fun NewsDetailsItem(
                     .fillMaxWidth()
                     .height((256+128).dp)
                     .padding(top = 32.dp),
-                locations = locations,
+                location = location,
                 cameraPositionState = cameraPositionState,
                 onMapTouched = {
                     columnScrollingEnabled = false
@@ -286,13 +285,13 @@ fun NewsDetailsItem(
 @Composable
 fun MapInColumn(
     modifier: Modifier = Modifier,
-    locations: List<LocationItem>,
+    location: LocationClusterItem,
     cameraPositionState: CameraPositionState,
-    onMapTouched: () -> Unit,
+    onMapTouched: () -> Unit
 ) {
     Box(modifier = modifier) {
         GoogleMapClustering(
-            items = locations,
+            items = listOf(location),
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter(
@@ -307,6 +306,17 @@ fun MapInColumn(
                     }
                 ),
             cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(
+                compassEnabled = false,
+                indoorLevelPickerEnabled = false,
+                mapToolbarEnabled = false,
+                myLocationButtonEnabled = false,
+                rotationGesturesEnabled = false,
+                scrollGesturesEnabledDuringRotateOrZoom = false,
+                tiltGesturesEnabled = false,
+                zoomControlsEnabled = false,
+                zoomGesturesEnabled = false
+            )
         )
     }
 }
@@ -365,5 +375,5 @@ fun NewsDetailsItemPreview() {
         imageUrl = "placebear.com/200/300",
         votes = 52
     )
-    NewsDetailsItem(item = item, locations = listOf()) { _, _ -> }
+    NewsDetailsItem(item = item, location = LocationClusterItem(LatLng(0.0, 0.0), "", "")) { _, _ -> }
 }
