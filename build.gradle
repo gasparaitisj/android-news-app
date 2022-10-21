@@ -17,7 +17,6 @@ buildscript {
         // https://github.com/googlemaps/android-maps-compose/issues/207
         compose_maps_version = "2.7.0"
 
-        
         compose_maps_utils_version = "2.4.0"
         compose_navigation_version = "2.6.0-alpha02"
         compose_ui_version = "1.2.1"
@@ -25,7 +24,6 @@ buildscript {
         coroutines_test_version = "1.6.0"
         crashlytics_version = "2.9.2"
         data_store_preferences_version = "1.0.0"
-        espresso_version = "3.4.0"
         firebase_bom_version = "30.5.0"
         gms_maps_version = "18.1.0"
         gms_services_version = "4.3.14"
@@ -43,6 +41,7 @@ buildscript {
         room_version = "2.4.3"
         splash_screen_version = "1.0.0"
         testing_version = "2.1.0"
+        test_runner_version = "1.4.0"
         timber_version = "5.0.1"
     }
 
