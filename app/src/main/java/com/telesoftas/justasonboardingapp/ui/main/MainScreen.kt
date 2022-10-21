@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +24,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.AboutScreen
 import com.telesoftas.justasonboardingapp.ui.favorite.FavoriteScreen
@@ -32,6 +34,8 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -50,6 +54,8 @@ fun MainScreen(
     MainScreenContent(topBarTitle, topBarRoute, bottomNavController)
 }
 
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
@@ -66,7 +72,8 @@ private fun MainScreenContent(
                 Screen.NewsList.route -> {
                     TopBarNewsList(topBarTitle.value, bottomNavController)
                 }
-                Screen.NewsDetails.route -> {
+                Screen.NewsDetails.route,
+                Screen.FavoriteNewsDetails.route -> {
                     // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
                 }
                 Screen.Favorite.route -> {
@@ -185,6 +192,8 @@ private fun TopBarNewsList(
     )
 }
 
+@MapsComposeExperimentalApi
+@ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
@@ -204,6 +213,14 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
         composable(
             route = Screen.NewsDetails.route,
             arguments = listOf(navArgument(Screen.NewsDetails.KEY_ID) { type = NavType.StringType }),
+            enterTransition = { scaleIn(animationSpec = tween(500)) },
+            exitTransition = { scaleOut(animationSpec = tween(500)) },
+        ) {
+            NewsDetailsScreen(navController = navController)
+        }
+        composable(
+            route = Screen.FavoriteNewsDetails.route,
+            arguments = listOf(navArgument(Screen.FavoriteNewsDetails.KEY_ID) { type = NavType.StringType }),
             enterTransition = { scaleIn(animationSpec = tween(500)) },
             exitTransition = { scaleOut(animationSpec = tween(500)) },
         ) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="splash_screen_background">#344955</color>
     <color name="status_bar">#232F34</color>
     <color name="navigation_bar">#232F34</color>
@@ -27,5 +26,5 @@
     <color name="favorite_search_text">#061D28</color>
     <color name="favorite_search_label">#8E8E93</color>
     <color name="favorite_search_icon">#666666</color>
-
+    <color name="marker">#F9AA33</color>
 </resources>

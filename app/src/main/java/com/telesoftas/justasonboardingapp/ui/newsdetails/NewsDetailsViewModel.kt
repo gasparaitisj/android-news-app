@@ -33,7 +33,7 @@ class NewsDetailsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed()
         )
 
-    val locations = locationRepository.getLocations()
+    val location = locationRepository.getLocations()[0]
 
     init {
         viewModelScope.launch {

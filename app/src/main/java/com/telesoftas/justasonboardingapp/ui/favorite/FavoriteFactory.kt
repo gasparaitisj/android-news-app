@@ -18,7 +18,8 @@ class FavoriteFactory {
                     author = entity.author,
                     title = entity.title,
                     description = entity.description,
-                    imageUrl = entity.imageUrl
+                    imageUrl = entity.imageUrl,
+                    votes = entity.votes
                 )
             }
         )

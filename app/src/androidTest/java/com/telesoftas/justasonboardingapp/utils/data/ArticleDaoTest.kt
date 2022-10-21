@@ -49,7 +49,8 @@ class ArticleDaoTest {
             author = "justasgasparaitis@one.lt",
             title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
             description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-            imageUrl = "placebear.com/200/300"
+            imageUrl = "placebear.com/200/300",
+            votes = 10
         )
 
         dao.insertArticle(article)
@@ -69,7 +70,8 @@ class ArticleDaoTest {
             author = "justasgasparaitis@one.lt",
             title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
             description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-            imageUrl = "placebear.com/200/300"
+            imageUrl = "placebear.com/200/300",
+            votes = 10
         )
 
         dao.insertArticle(article)
@@ -90,7 +92,8 @@ class ArticleDaoTest {
             author = "justasgasparaitis@one.lt",
             title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
             description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
-            imageUrl = "placebear.com/200/300"
+            imageUrl = "placebear.com/200/300",
+            votes = 10
         )
         val favoriteArticle = article.copy(id = 2, isFavorite = true)
         val answer = listOf(favoriteArticle)

@@ -63,7 +63,9 @@ private fun handleSelectedBottomNavigationItem(
         currentRoute == Screen.SourceList.route ||
         currentRoute == Screen.NewsList.route ||
         currentRoute == Screen.NewsDetails.route
-    Screen.Favorite.route -> currentRoute == Screen.Favorite.route
+    Screen.Favorite.route ->
+        currentRoute == Screen.Favorite.route ||
+        currentRoute == Screen.FavoriteNewsDetails.route
     Screen.Map.route -> currentRoute == Screen.Map.route
     Screen.About.route -> currentRoute == Screen.About.route
     else -> false

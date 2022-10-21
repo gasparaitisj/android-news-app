@@ -6,7 +6,7 @@ import javax.inject.Singleton
 
 @Singleton
 class LocationRepository @Inject constructor() {
-    fun getLocations(): List<LocationItem> {
+    fun getLocations(): List<LocationClusterItem> {
         // Hardcoded locations of Gintarine Vaistine :D
         return listOf(
             LatLng(54.685581219627494, 25.204550482478087),
@@ -42,7 +42,7 @@ class LocationRepository @Inject constructor() {
             LatLng(55.95218370817552, 23.32589567479717),
             LatLng(55.91788108510149, 23.357698519925183)
         ).map { latLng ->
-            LocationItem(
+            LocationClusterItem(
                 itemPosition = latLng,
                 itemTitle = "Gintarinė vaistinė",
                 itemSnippet = "https://gintarine.lt"

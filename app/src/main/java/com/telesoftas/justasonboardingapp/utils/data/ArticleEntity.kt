@@ -17,6 +17,7 @@ data class ArticleEntity(
     @ColumnInfo(name = "title") val title: String?,
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "image_url") val imageUrl: String?,
+    @ColumnInfo(name = "votes") val votes: Long
 ) {
     fun toArticle(): Article {
         return Article(
@@ -28,7 +29,8 @@ data class ArticleEntity(
             author = author,
             title = title,
             description = description,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            votes = votes
         )
     }
 }

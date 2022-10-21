@@ -56,7 +56,7 @@ fun FavoriteScreen(
             viewModel.onArticleFavoriteChanged(article, isFavorite)
         },
         onArticleItemClick = { article ->
-            navController.navigate(Screen.NewsDetails.destination(article.id))
+            navController.navigate(Screen.FavoriteNewsDetails.destination(article.id))
         },
         searchWidgetState = searchWidgetState,
         searchTextState = searchTextState,

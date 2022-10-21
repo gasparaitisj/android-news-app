@@ -29,7 +29,8 @@ class NewsDetailsFactory {
                             author = articlePreviewResponse.author,
                             title = articlePreviewResponse.title,
                             description = articlePreviewResponse.description,
-                            imageUrl = articlePreviewResponse.imageUrl
+                            imageUrl = articlePreviewResponse.imageUrl,
+                            votes = articlePreviewResponse.votes
                         )
                     )
                 }
@@ -55,7 +56,8 @@ class NewsDetailsFactory {
                 author = entity.author,
                 title = entity.title,
                 description = entity.description,
-                imageUrl = entity.imageUrl
+                imageUrl = entity.imageUrl,
+                votes = entity.votes
             )
         )
     }

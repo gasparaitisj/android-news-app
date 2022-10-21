@@ -17,7 +17,7 @@
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
     - [ ] Display votes
-    - [ ] Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
+    - [x] Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
     - [ ] Save article as .pdf to external storage
 - [ ] Favorite screen
     - [x] Display all articles, marked as favorite

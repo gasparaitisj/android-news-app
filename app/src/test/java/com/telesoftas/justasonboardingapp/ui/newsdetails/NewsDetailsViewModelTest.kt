@@ -2,6 +2,7 @@ package com.telesoftas.justasonboardingapp.ui.newsdetails
 
 import androidx.lifecycle.SavedStateHandle
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
+import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
@@ -29,7 +30,7 @@ class NewsDetailsViewModelTest {
     private val article = Resource.success(
         ArticlePreviewResponse(
             id = "4",
-            votes = 1,
+            votes = 10,
             publishedAt = "2022-10-03",
             category = ArticleCategory.POLITICS,
             title = "D Title",
@@ -45,9 +46,11 @@ class NewsDetailsViewModelTest {
         description = "D Description",
         source = null,
         author = null,
-        imageUrl = null
+        imageUrl = null,
+        votes = 10
     )
     private val articlesRepository: ArticlesRepository = mockk()
+    private val locationRepository: LocationRepository = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
 
     @Before
@@ -65,7 +68,7 @@ class NewsDetailsViewModelTest {
 
     @Test
     fun onViewModelInitialized_articleIsLoadedCorrectly() = runTest {
-        viewModel = NewsDetailsViewModel(articlesRepository, savedStateHandle)
+        viewModel = NewsDetailsViewModel(articlesRepository, locationRepository, savedStateHandle)
         advanceUntilIdle()
         val answer = Resource.success(
             Article(
@@ -77,7 +80,8 @@ class NewsDetailsViewModelTest {
                 description = "D Description",
                 source = null,
                 author = null,
-                imageUrl = null
+                imageUrl = null,
+                votes = 10
             )
         )
 
