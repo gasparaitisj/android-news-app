@@ -34,9 +34,13 @@
 - [x] Navigation animations
 - [x] Handle errors (show Snackbar)
 - [x] Unit tests
-- [ ] UI tests
+- [x] UI tests
+
+### Bonus tasks
+- [x] Add Google Maps with full customization
 - [ ] Full dark mode support (missing: maps, captions)
-- [ ] Add Google Maps with full customization
+- [ ] Save article as .pdf to external storage in News Details Screen
+- [ ] Take and display a camera selfie in About Screen
 - [ ] Migrate to Rx (separate branch)
 - [ ] Utilize GraphQL with SpaceX API
     - [ ] Get a `landpads` list from the API
@@ -73,7 +77,6 @@
 - [Testing](https://developer.android.com/training/testing/local-tests)
     - [x] JUnit
     - [x] [MockK](https://mockk.io/ANDROID.html)
-    - [ ] [Espresso](https://developer.android.com/training/testing/espresso)
 - [Data storage](https://developer.android.com/training/data-storage)
     - [x] [Room](https://developer.android.com/training/data-storage/room)
     - [x] [Preferences DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
