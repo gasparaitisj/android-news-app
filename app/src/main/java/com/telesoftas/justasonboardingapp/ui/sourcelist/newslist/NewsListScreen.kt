@@ -155,7 +155,29 @@ fun ArticleItem(
     onArticleItemClick: (Article) -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
 ) {
-    val selected = remember { mutableStateOf(item.isFavorite) }
+    val isFavoriteClicked = remember { mutableStateOf(item.isFavorite) }
+    Column {
+        ArticleItemDetailsContent(
+            onArticleItemClick,
+            item,
+            isFavoriteClicked,
+            onArticleFavoriteChanged
+        )
+        Divider(
+            modifier = Modifier.padding(top = 8.dp),
+            thickness = 2.dp,
+            color = colorResource(id = R.color.news_list_divider)
+        )
+    }
+}
+
+@Composable
+private fun ArticleItemDetailsContent(
+    onArticleItemClick: (Article) -> Unit,
+    item: Article,
+    isFavoriteClicked: MutableState<Boolean>,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -167,6 +189,9 @@ fun ArticleItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            ArticleItemVoteContent(
+                item,
+                modifier = Modifier.padding(end = 8.dp))
             Text(
                 modifier = Modifier.weight(1f),
                 text = "${item.author} - ${item.publishedAt}",
@@ -177,12 +202,12 @@ fun ArticleItem(
             )
             IconButton(
                 onClick = {
-                    selected.value = !selected.value
-                    onArticleFavoriteChanged(item, selected.value)
+                    isFavoriteClicked.value = !isFavoriteClicked.value
+                    onArticleFavoriteChanged(item, isFavoriteClicked.value)
                 },
                 content = {
                     Icon(
-                        painter = if (selected.value) {
+                        painter = if (isFavoriteClicked.value) {
                             painterResource(id = R.drawable.btn_favorite_active)
                         } else {
                             painterResource(id = R.drawable.btn_favorite)
@@ -220,11 +245,33 @@ fun ArticleItem(
             overflow = TextOverflow.Ellipsis
         )
     }
-    Divider(
-        modifier = Modifier.padding(top = 8.dp),
-        thickness = 2.dp,
-        color = colorResource(id = R.color.news_list_divider)
-    )
+}
+
+@Composable
+fun ArticleItemVoteContent(
+    item: Article,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.img_arrow_up),
+            contentDescription = "Vote up"
+        )
+        Text(
+            text = item.votes.toString(),
+            style = Typography.subtitle2,
+            maxLines = 1,
+            overflow = TextOverflow.Visible
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.img_arrow_down),
+            contentDescription = "Vote down"
+        )
+    }
 }
 
 @ExperimentalMaterialApi
@@ -318,7 +365,7 @@ private fun ArticleItemPreview() {
         title = "Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         description = "Democrats have found as issue that unites their new majority and strengthens the position of Senate Minority Leader Chuck Schumer and House Speaker Nancy Polosi.",
         imageUrl = "https://placebear.com/200/300",
-        votes = 52
+        votes = 50491
     )
     JustasOnboardingAppTheme {
         ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
