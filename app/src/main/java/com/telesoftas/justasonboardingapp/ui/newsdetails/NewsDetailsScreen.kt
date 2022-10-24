@@ -42,6 +42,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
 import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItemVoteContent
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -223,11 +224,16 @@ fun NewsDetailsItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            ArticleItemVoteContent(
+                item,
+                modifier = Modifier.padding(end = 8.dp)
+            )
             Text(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.weight(1f),
                 text = "${item.author} - ${item.publishedAt}",
                 style = Typography.caption,
-                color = DarkBlue
+                color = DarkBlue,
+                maxLines = 3
             )
             IconButton(
                 onClick = {
