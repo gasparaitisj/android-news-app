@@ -6,26 +6,27 @@
 - [x] Source list screen
     - [x] Display news sources
     - [x] Sort news sources by ascending, descending orders
-- [ ] News list screen
+- [x] News list screen
     - [x] Display articles of one particular source
     - [x] Add/remove article to/from favorites
     - [x] Filter articles by article category (politics, sports, business...)
-    - [ ] Display votes
-- [ ] News details screen
+    - [ ] Bonus: Display votes
+- [x] News details screen
     - [x] Display one particular article
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
-    - [x] Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
-    - [ ] Display votes
-    - [ ] Save article as .pdf to external storage
-- [ ] Favorite screen
+    - [x] Bonus: Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
+    - [ ] Bonus: Display votes
+    - [ ] Bonus: Save article as .pdf to external storage
+- [x] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
-    - [ ] Display votes
-- [ ] About screen
-    - [ ] Take and display a camera selfie
-- [x] Maps screen
+    - [ ] Bonus: Display votes
+- [x] About screen
+    - [x] Display app version, developer’s full name and/or company name.
+    - [ ] Bonus: Take and display a camera selfie
+- [x] Bonus: Maps screen
     - [x] Large map with all locations (custom marker, cluster & tooltip)
 
 ### Other tasks
@@ -35,14 +36,12 @@
 - [x] Handle errors (show Snackbar)
 - [x] Unit tests
 - [x] UI tests
-
-### Bonus tasks
-- [x] Add Google Maps with full customization
 - [ ] Full dark mode support (missing: maps, captions)
-- [ ] Save article as .pdf to external storage in News Details Screen
-- [ ] Take and display a camera selfie in About Screen
-- [ ] Migrate to Rx (separate branch)
-- [ ] Utilize GraphQL with SpaceX API
+- [x] Bonus: Add Google Maps with full customization
+- [ ] Bonus: Save article as .pdf to external storage in News Details Screen
+- [ ] Bonus: Take and display a camera selfie in About Screen
+- [ ] Bonus: Migrate to Rx (separate branch)
+- [ ] Bonus: Utilize GraphQL with SpaceX API
     - [ ] Get a `landpads` list from the API
     - [ ] Show the `landpads` list on a map using `latitude`, `longitude` variables
     - [ ] Show additional info on `landpad` pin clicked (`name`, `successfulLandings`, `attemptedLandings`, `successRatio`)
