@@ -24,6 +24,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.AboutScreen
@@ -34,6 +35,7 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.SourceListScreen
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.NewsListScreen
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -54,6 +56,7 @@ fun MainScreen(
     MainScreenContent(topBarTitle, topBarRoute, bottomNavController)
 }
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -192,6 +195,7 @@ private fun TopBarNewsList(
     )
 }
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi

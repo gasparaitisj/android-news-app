@@ -15,6 +15,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
@@ -22,6 +23,7 @@ import com.telesoftas.justasonboardingapp.ui.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
@@ -89,6 +91,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalLifecycleComposeApi
