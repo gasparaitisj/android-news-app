@@ -237,7 +237,7 @@ private fun BottomNavigationBarNavigation(navController: NavHostController) {
             MapScreen(navController = navController)
         }
         composable(Screen.About.route) {
-            AboutScreen(navController = navController)
+            AboutScreen()
         }
     }
 }
