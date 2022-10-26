@@ -12,8 +12,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavController
@@ -72,16 +72,10 @@ private fun MainScreenContent(
     Scaffold(
         topBar = {
             when (topBarRoute.value) {
-                Screen.NewsList.route -> {
-                    TopBarNewsList(topBarTitle.value, bottomNavController)
-                }
+                Screen.NewsList.route -> TopBarNewsList(topBarTitle.value, bottomNavController)
                 Screen.NewsDetails.route,
-                Screen.FavoriteNewsDetails.route -> {
-                    // Collapsing Toolbar is implemented in NewsDetailsScreen.kt
-                }
-                Screen.Favorite.route -> {
-                    // Toolbar w/ Search is implemented in FavoriteScreen.kt
-                }
+                Screen.FavoriteNewsDetails.route,
+                Screen.Favorite.route -> { /* Custom toolbars used here */ }
                 else -> TopBar(topBarTitle.value)
             }
         },
@@ -120,36 +114,30 @@ private fun setOnDestinationChangedListener(
     topBarTitle: MutableState<String>,
     topBarRoute: MutableState<String?>
 ) {
-    val sourceList = stringResource(id = R.string.top_app_bar_title_source_list)
-    val favorite = stringResource(id = R.string.top_app_bar_title_favorite)
-    val about = stringResource(id = R.string.top_app_bar_title_about)
-    val map = stringResource(id = R.string.top_app_bar_title_map)
-    val newsList = stringResource(id = R.string.top_app_bar_title_news_list)
-    val newsDetails = stringResource(id = R.string.top_app_bar_title_news_details)
-
+    val context = LocalContext.current
     DisposableEffect(bottomNavController) {
         val callback = NavController.OnDestinationChangedListener { _, destination, arguments ->
             topBarRoute.value = destination.route
             when (destination.route) {
                 Screen.SourceList.route -> {
-                    topBarTitle.value = sourceList
+                    topBarTitle.value = context.resources.getString(Screen.SourceList.titleResId)
                 }
                 Screen.Favorite.route -> {
-                    topBarTitle.value = favorite
+                    topBarTitle.value = context.resources.getString(Screen.Favorite.titleResId)
                 }
                 Screen.About.route -> {
-                    topBarTitle.value = about
+                    topBarTitle.value = context.resources.getString(Screen.About.titleResId)
                 }
                 Screen.Map.route -> {
-                    topBarTitle.value = map
+                    topBarTitle.value = context.resources.getString(Screen.Map.titleResId)
                 }
                 Screen.NewsList.route -> {
                     topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
-                        ?: newsList
+                        ?: context.resources.getString(Screen.NewsList.titleResId)
                 }
                 Screen.NewsDetails.route -> {
                     topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
-                        ?: newsDetails
+                        ?: context.resources.getString(Screen.NewsDetails.titleResId)
                 }
             }
         }
