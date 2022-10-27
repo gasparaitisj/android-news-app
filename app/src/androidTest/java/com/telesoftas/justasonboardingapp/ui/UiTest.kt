@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.ui.main.MainActivity
 import com.telesoftas.justasonboardingapp.ui.main.MainScreen
@@ -30,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+@ExperimentalPermissionsApi
 @MapsComposeExperimentalApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi

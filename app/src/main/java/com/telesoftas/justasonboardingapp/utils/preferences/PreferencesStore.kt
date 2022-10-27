@@ -1,9 +1,12 @@
 package com.telesoftas.justasonboardingapp.utils.preferences
 
 import android.content.Context
+import android.net.Uri
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -34,8 +37,25 @@ class PreferencesStore @Inject constructor(
         }
     }
 
+    fun getSavedPhotoUri(): Flow<Uri> = context.dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }.map { preferences ->
+        preferences[ABOUT_SELFIE_URI]?.toUri() ?: Uri.EMPTY
+    }
+
+    suspend fun updateSavedPhotoUri(uri: Uri) {
+        context.dataStore.edit { preferences ->
+            preferences[ABOUT_SELFIE_URI] = uri.toString()
+        }
+    }
+
     companion object {
         private const val SETTINGS_PREFERENCE_NAME = "settings"
         private val FIRST_LAUNCH = booleanPreferencesKey("FIRST_LAUNCH")
+        private val ABOUT_SELFIE_URI = stringPreferencesKey("ABOUT_SELFIE_URI")
     }
 }
