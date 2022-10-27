@@ -1,16 +1,17 @@
 package com.telesoftas.justasonboardingapp.ui.newsdetails
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
+import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,41 +24,41 @@ class NewsDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val id: String = checkNotNull(savedStateHandle["id"])
 
-    private val _article: MutableStateFlow<Resource<Article>> = MutableStateFlow(Resource.loading())
-    val article: StateFlow<Resource<Article>> = _article.asStateFlow()
+    private val _article: MutableLiveData<Article> = MutableLiveData()
+    val article: LiveData<Article> = _article
 
-    private val articleFromDatabase: StateFlow<ArticleEntity?> =
-        articlesRepository.getArticleByIdFromDatabase(id).stateIn(
-            scope = viewModelScope,
-            initialValue = null,
-            started = SharingStarted.WhileSubscribed()
-        )
+    private val articleFromDatabase: Flow<ArticleEntity?> = articlesRepository.getArticleByIdFromDatabase(id)
 
     val location = locationRepository.getLocations()[0]
+
+    private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
+    val loadingState: LiveData<LoadingState> = _loadingState
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
         viewModelScope.launch {
             articleFromDatabase.collectLatest {
-                getArticle()
+                getArticle(it)
             }
         }
     }
 
-    private fun getArticle() {
-        viewModelScope.launch {
-            _article.value = Resource.loading()
-            val response = articlesRepository.getArticleById(id)
-            if (response.status == Status.ERROR) {
-                articleFromDatabase.value?.let { articleEntity ->
-                    _article.value = NewsDetailsFactory().mapEntityToResource(articleEntity)
-                }
-            } else {
-                _article.value = NewsDetailsFactory().mapResponseToResource(
-                    response = response,
-                    isFavorite = articleFromDatabase.value?.isFavorite ?: false
-                )
-            }
-        }
+    private fun getArticle(articleEntity: ArticleEntity?) {
+        articlesRepository
+            .getArticleByIdRx(id)
+            .map { it.copy(isFavorite = articleEntity?.isFavorite ?: false) }
+            .subscribeOn(Schedulers.io())
+            .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
+            .subscribe({ onGetArticleSuccess(it) }, { onGetArticleError(articleEntity) })
+            .addTo(compositeDisposable)
+    }
+
+    private fun onGetArticleError(articleEntity: ArticleEntity?) {
+        _article.postValue(articleEntity?.toArticle())
+    }
+
+    private fun onGetArticleSuccess(article: Article) {
+        _article.postValue(article)
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {

@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -41,11 +42,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
 import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
+import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -61,9 +61,11 @@ fun NewsDetailsScreen(
     navController: NavHostController,
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
-    val article by viewModel.article.collectAsState()
+    val article by viewModel.article.observeAsState()
+    val loadingState by viewModel.loadingState.observeAsState(initial = LoadingState.LOADING)
     NewsDetailsContent(
         article = article,
+        loadingState = loadingState,
         location = viewModel.location,
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item, isFavorite ->
@@ -81,7 +83,8 @@ fun NewsDetailsScreen(
 @ExperimentalMaterialApi
 @Composable
 fun NewsDetailsContent(
-    article: Resource<Article>,
+    article: Article?,
+    loadingState: LoadingState,
     location: LocationClusterItem,
     onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
@@ -91,7 +94,7 @@ fun NewsDetailsContent(
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = article.status == Status.LOADING
+            isRefreshing = loadingState == LoadingState.LOADING
         ),
         swipeEnabled = false,
         onRefresh = {}
@@ -111,7 +114,7 @@ fun NewsDetailsContent(
                     title = {
                         Text(
                             modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
-                            text = article.data?.title ?: "",
+                            text = article?.title ?: "",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -133,7 +136,7 @@ fun NewsDetailsContent(
                 )
 
                 Box(
-                    modifier = if (article.data?.imageUrl == null) {
+                    modifier = if (article?.imageUrl == null) {
                         Modifier
                             .fillMaxSize()
                             .background(colorResource(id = R.color.top_app_bar_background))
@@ -144,7 +147,7 @@ fun NewsDetailsContent(
                     }
                 ) {
                     AsyncImage(
-                        model = "https://${article.data?.imageUrl}",
+                        model = "https://${article?.imageUrl}",
                         modifier = Modifier
                             .height(200.dp)
                             .fillMaxWidth(),
@@ -168,7 +171,7 @@ fun NewsDetailsContent(
                             )
                         }
                         Text(
-                            text = article.data?.title ?: "",
+                            text = article?.title ?: "",
                             modifier = Modifier.padding(24.dp),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
@@ -179,7 +182,7 @@ fun NewsDetailsContent(
                 }
             }
         ) {
-            article.data?.let { article ->
+            article?.let { article ->
                 NewsDetailsItem(
                     article,
                     location,
@@ -268,7 +271,7 @@ fun NewsDetailsItem(
             MapInColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((256+128).dp)
+                    .height((256 + 128).dp)
                     .padding(top = 32.dp),
                 location = location,
                 cameraPositionState = cameraPositionState,
