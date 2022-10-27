@@ -46,7 +46,7 @@ fun SourceListScreen(
         newsSources = newsSources,
         loadingState = loadingState,
         sortType = sortType,
-        onRefresh = { viewModel.getArticles() },
+        onRefresh = { viewModel.onRefresh() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )

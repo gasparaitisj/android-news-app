@@ -27,30 +27,30 @@ class SourceListViewModel @Inject constructor(
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
-        getArticles()
+        onRefresh()
     }
 
     override fun onCleared() {
         compositeDisposable.clear()
     }
 
-    fun getArticles() {
+    fun onRefresh() {
         _loadingState.postValue(LoadingState.LOADING)
         articlesRepository
             .getNewsSources()
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
-            .subscribe({ onGetArticlesSuccess(it) }, { onGetArticlesError() })
+            .subscribe({ onSuccess(it) }, { onError() })
             .addTo(compositeDisposable)
     }
 
-    private fun onGetArticlesError() {
+    private fun onError() {
         viewModelScope.launch {
             _newsSources.postValue(articlesRepository.getNewsSourcesFromDatabase().map { it.toNewsSource() })
         }
     }
 
-    private fun onGetArticlesSuccess(newsSources: List<NewsSource>) {
+    private fun onSuccess(newsSources: List<NewsSource>) {
         _newsSources.postValue(newsSources)
         cacheNewsSources(newsSources)
     }
@@ -68,7 +68,7 @@ class SourceListViewModel @Inject constructor(
             }
         } else {
             _sortType.postValue(SortBy.NONE)
-            getArticles()
+            onRefresh()
         }
     }
 
