@@ -69,16 +69,30 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
-    fun getNewsSourcesRx(): Single<List<NewsSource>> =
-        articlesApi.getArticlesRx().map { response ->
-            response.articles?.map { previewResponse ->
-                NewsSource(
-                    id = previewResponse.id,
-                    title = previewResponse.title ?: "",
-                    description = previewResponse.description ?: ""
-                )
-            } ?: listOf()
-        }
+    fun getArticleByIdRx(id: String): Single<Article> = articlesApi.getArticleByIdRx(id).map {
+        Article(
+            id = it.id,
+            isFavorite = false,
+            publishedAt = it.publishedAt.replace("[\$TZ]".toRegex(), " "),
+            source = it.source,
+            category = it.category,
+            author = it.author,
+            title = it.title,
+            description = it.description,
+            imageUrl = it.imageUrl,
+            votes = it.votes
+        )
+    }
+
+    fun getNewsSourcesRx(): Single<List<NewsSource>> = articlesApi.getArticlesRx().map { response ->
+        response.articles?.map { previewResponse ->
+            NewsSource(
+                id = previewResponse.id,
+                title = previewResponse.title ?: "",
+                description = previewResponse.description ?: ""
+            )
+        } ?: listOf()
+    }
 
     suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
         return articleDao.getAllArticles()
