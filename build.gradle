@@ -9,7 +9,7 @@ buildscript {
         accompanist_version = "0.25.1"
         activity_version = "1.6.0"
         appcompat_version = "1.5.1"
-        camerax_version = "1.2.0-rc01"
+        camerax_version = "1.1.0"
         coil_version = "2.2.2"
         collapsing_toolbar_version = "2.3.2"
         compose_activity_version = "1.6.0"
