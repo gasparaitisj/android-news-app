@@ -37,7 +37,7 @@ class SourceListViewModel @Inject constructor(
     fun getArticles() {
         _loadingState.postValue(LoadingState.LOADING)
         articlesRepository
-            .getNewsSourcesRx()
+            .getNewsSources()
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
             .subscribe({ onGetArticlesSuccess(it) }, { onGetArticlesError() })

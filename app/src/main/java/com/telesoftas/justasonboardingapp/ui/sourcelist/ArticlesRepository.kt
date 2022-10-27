@@ -18,7 +18,7 @@ class ArticlesRepository @Inject constructor(
     private val articleDao: ArticleDao,
     private val newsSourceDao: NewsSourceDao
 ) {
-    fun getArticlesRx(): Single<List<Article>> = articlesApi.getArticlesRx().map { response ->
+    fun getArticles(): Single<List<Article>> = articlesApi.getArticles().map { response ->
         response.articles?.map { articleResponse ->
             Article(
                 id = articleResponse.id,
@@ -38,7 +38,7 @@ class ArticlesRepository @Inject constructor(
         } ?: listOf()
     }
 
-    fun getArticleByIdRx(id: String): Single<Article> = articlesApi.getArticleByIdRx(id).map {
+    fun getArticleById(id: String): Single<Article> = articlesApi.getArticleById(id).map {
         Article(
             id = it.id,
             isFavorite = false,
@@ -53,7 +53,7 @@ class ArticlesRepository @Inject constructor(
         )
     }
 
-    fun getNewsSourcesRx(): Single<List<NewsSource>> = articlesApi.getArticlesRx().map { response ->
+    fun getNewsSources(): Single<List<NewsSource>> = articlesApi.getArticles().map { response ->
         response.articles?.map { articleResponse ->
             NewsSource(
                 id = articleResponse.id,

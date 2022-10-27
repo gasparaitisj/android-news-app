@@ -53,7 +53,7 @@ class NewsListViewModel @Inject constructor(
 
     fun onRefresh() {
         articlesRepository
-            .getArticlesRx()
+            .getArticles()
             .map { articles ->
                 articles.map { article ->
                     val favoriteArticleById = favoriteArticles.value.firstOrNull { article.id == it.id.toString() }

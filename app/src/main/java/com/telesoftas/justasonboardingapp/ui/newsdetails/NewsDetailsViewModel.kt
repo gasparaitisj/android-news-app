@@ -45,7 +45,7 @@ class NewsDetailsViewModel @Inject constructor(
 
     private fun getArticle(articleEntity: ArticleEntity?) {
         articlesRepository
-            .getArticleByIdRx(id)
+            .getArticleById(id)
             .map { it.copy(isFavorite = articleEntity?.isFavorite ?: false) }
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
