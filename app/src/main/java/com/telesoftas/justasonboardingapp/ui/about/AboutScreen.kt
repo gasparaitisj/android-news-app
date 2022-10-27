@@ -41,6 +41,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.File
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
@@ -110,60 +111,14 @@ private fun CameraContent(
     onImageSuccessfullyLoaded: (Uri) -> Unit,
     savedPhotoUri: Uri?
 ) {
-    val cameraExecutor = Executors.newSingleThreadExecutor()
-    val context = LocalContext.current
     val permissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-    val photoUri: MutableState<Uri?> = remember { mutableStateOf(null) }
-    val cameraStatus = remember { mutableStateOf(CameraStatus.PHOTO_LOADING) }
-
     when (permissionState.status) {
         PermissionStatus.Granted -> {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SelfieButton(onClick = { cameraStatus.value = CameraStatus.CAMERA })
-                when (cameraStatus.value) {
-                    CameraStatus.NONE -> {}
-                    CameraStatus.PHOTO_LOADING -> {
-                        Text(stringResource(id = R.string.about_screen_loading_photo))
-                        if (savedPhotoUri != null) {
-                            if (savedPhotoUri == Uri.EMPTY) {
-                                cameraStatus.value = CameraStatus.NONE
-                            } else {
-                                photoUri.value = savedPhotoUri
-                                cameraStatus.value = CameraStatus.PHOTO
-                            }
-                        }
-                    }
-                    CameraStatus.CAMERA -> {
-                        CameraView(
-                            outputDirectory = context.filesDir,
-                            executor = cameraExecutor,
-                            onImageCaptured = { uri ->
-                                photoUri.value = uri
-                                cameraStatus.value = CameraStatus.PHOTO
-                                channel.trySend(SnackbarStatus.CAPTURE_SUCCESS)
-                            },
-                            onError = {
-                                channel.trySend(SnackbarStatus.CAPTURE_FAILURE)
-                            }
-                        )
-                    }
-                    CameraStatus.PHOTO -> {
-                        AsyncImage(
-                            model = ImageRequest.Builder(context).data(data = photoUri.value).build(),
-                            contentDescription = "Your selfie",
-                            onSuccess = {
-                                photoUri.value?.let { onImageSuccessfullyLoaded(it) }
-                            },
-                            onError = {
-                                channel.trySend(SnackbarStatus.LOADING_FAILURE)
-                            }
-                        )
-                    }
-                }
-            }
+            CameraPermissionGrantedContent(
+                channel = channel,
+                onImageSuccessfullyLoaded = onImageSuccessfullyLoaded,
+                savedPhotoUri = savedPhotoUri
+            )
         }
         is PermissionStatus.Denied -> {
             Column(
@@ -174,6 +129,64 @@ private fun CameraContent(
                     channel.trySend(SnackbarStatus.SHOW_RATIONALE)
                 }
                 SelfieButton(onClick = { permissionState.launchPermissionRequest() })
+            }
+        }
+    }
+}
+
+@Composable
+private fun CameraPermissionGrantedContent(
+    channel: Channel<SnackbarStatus>,
+    onImageSuccessfullyLoaded: (Uri) -> Unit,
+    savedPhotoUri: Uri?
+) {
+    val cameraStatus = remember { mutableStateOf(CameraStatus.PHOTO_LOADING) }
+    val photoUri: MutableState<Uri?> = remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SelfieButton(onClick = { cameraStatus.value = CameraStatus.CAMERA })
+        when (cameraStatus.value) {
+            CameraStatus.NONE -> {}
+            CameraStatus.PHOTO_LOADING -> {
+                Text(stringResource(id = R.string.about_screen_loading_photo))
+                if (savedPhotoUri != null) {
+                    if (savedPhotoUri == Uri.EMPTY) {
+                        cameraStatus.value = CameraStatus.NONE
+                    } else {
+                        photoUri.value = savedPhotoUri
+                        cameraStatus.value = CameraStatus.PHOTO
+                    }
+                }
+            }
+            CameraStatus.CAMERA -> {
+                CameraView(
+                    outputDirectory = context.filesDir,
+                    executor = cameraExecutor,
+                    onImageCaptured = { uri ->
+                        photoUri.value = uri
+                        cameraStatus.value = CameraStatus.PHOTO
+                        channel.trySend(SnackbarStatus.CAPTURE_SUCCESS)
+                    },
+                    onError = {
+                        channel.trySend(SnackbarStatus.CAPTURE_FAILURE)
+                    }
+                )
+            }
+            CameraStatus.PHOTO -> {
+                AsyncImage(
+                    model = ImageRequest.Builder(context).data(data = photoUri.value).build(),
+                    contentDescription = "Your selfie",
+                    onSuccess = {
+                        photoUri.value?.let { onImageSuccessfullyLoaded(it) }
+                    },
+                    onError = {
+                        channel.trySend(SnackbarStatus.LOADING_FAILURE)
+                    }
+                )
             }
         }
     }
