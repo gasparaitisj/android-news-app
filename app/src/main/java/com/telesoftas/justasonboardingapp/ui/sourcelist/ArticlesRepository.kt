@@ -11,6 +11,7 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
+import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -67,6 +68,17 @@ class ArticlesRepository @Inject constructor(
             Resource.error(msgRes = R.string.network_error)
         }
     }
+
+    fun getNewsSourcesRx(): Single<List<NewsSource>> =
+        articlesApi.getArticlesRx().map { response ->
+            response.articles?.map { previewResponse ->
+                NewsSource(
+                    id = previewResponse.id,
+                    title = previewResponse.title ?: "",
+                    description = previewResponse.description ?: ""
+                )
+            } ?: listOf()
+        }
 
     suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
         return articleDao.getAllArticles()
