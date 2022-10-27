@@ -24,11 +24,14 @@ class SourceListViewModel @Inject constructor(
 
     private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
     val loadingState: LiveData<LoadingState> = _loadingState
-
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
         getArticles()
+    }
+
+    override fun onCleared() {
+        compositeDisposable.clear()
     }
 
     fun getArticles() {
