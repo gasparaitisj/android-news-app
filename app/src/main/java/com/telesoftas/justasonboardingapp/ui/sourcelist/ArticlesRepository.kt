@@ -54,6 +54,26 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
+    fun getArticlesRx(): Single<List<Article>> = articlesApi.getArticlesRx().map { response ->
+        response.articles?.map { articleResponse ->
+            Article(
+                id = articleResponse.id,
+                isFavorite = false,
+                publishedAt = articleResponse.publishedAt.replace(
+                    "[\$TZ]".toRegex(),
+                    " "
+                ),
+                source = articleResponse.source,
+                category = articleResponse.category,
+                author = articleResponse.author,
+                title = articleResponse.title,
+                description = articleResponse.description,
+                imageUrl = articleResponse.imageUrl,
+                votes = articleResponse.votes
+            )
+        } ?: listOf()
+    }
+
     suspend fun getArticleById(id: String): Resource<ArticlePreviewResponse> {
         return try {
             val response = articlesApi.getArticleById(id)
@@ -85,11 +105,11 @@ class ArticlesRepository @Inject constructor(
     }
 
     fun getNewsSourcesRx(): Single<List<NewsSource>> = articlesApi.getArticlesRx().map { response ->
-        response.articles?.map { previewResponse ->
+        response.articles?.map { articleResponse ->
             NewsSource(
-                id = previewResponse.id,
-                title = previewResponse.title ?: "",
-                description = previewResponse.description ?: ""
+                id = articleResponse.id,
+                title = articleResponse.title ?: "",
+                description = articleResponse.description ?: ""
             )
         } ?: listOf()
     }
