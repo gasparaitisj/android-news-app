@@ -38,26 +38,26 @@ class NewsDetailsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             articleFromDatabase.collectLatest {
-                getArticle(it)
+                onRefresh(it)
             }
         }
     }
 
-    private fun getArticle(articleEntity: ArticleEntity?) {
+    private fun onRefresh(articleEntity: ArticleEntity?) {
         articlesRepository
             .getArticleById(id)
             .map { it.copy(isFavorite = articleEntity?.isFavorite ?: false) }
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
-            .subscribe({ onGetArticleSuccess(it) }, { onGetArticleError(articleEntity) })
+            .subscribe({ onSuccess(it) }, { onError(articleEntity) })
             .addTo(compositeDisposable)
     }
 
-    private fun onGetArticleError(articleEntity: ArticleEntity?) {
+    private fun onError(articleEntity: ArticleEntity?) {
         _article.postValue(articleEntity?.toArticle())
     }
 
-    private fun onGetArticleSuccess(article: Article) {
+    private fun onSuccess(article: Article) {
         _article.postValue(article)
     }
 
