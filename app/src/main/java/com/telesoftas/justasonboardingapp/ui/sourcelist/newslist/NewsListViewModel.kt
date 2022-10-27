@@ -1,16 +1,23 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
+import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,9 +26,8 @@ class NewsListViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository,
     private val firebaseAnalytics: FirebaseAnalytics
 ) : ViewModel() {
-    private val _articles: MutableStateFlow<Resource<List<Article>>> =
-        MutableStateFlow(Resource.loading())
-    val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
+    private val _articles: MutableLiveData<List<Article>> = MutableLiveData(listOf())
+    val articles: LiveData<List<Article>> = _articles
 
     private val favoriteArticles: StateFlow<List<ArticleEntity>> =
         articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
@@ -30,8 +36,12 @@ class NewsListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed()
         )
 
-    private val _categoryType: MutableStateFlow<ArticleCategory> = MutableStateFlow(ArticleCategory.NONE)
-    val categoryType: StateFlow<ArticleCategory> = _categoryType.asStateFlow()
+    private val _categoryType: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
+    val categoryType: LiveData<ArticleCategory> = _categoryType
+
+    private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
+    val loadingState: LiveData<LoadingState> = _loadingState
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
         viewModelScope.launch {
@@ -42,26 +52,35 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        viewModelScope.launch {
-            _articles.value = Resource.loading()
-            val response = articlesRepository.getArticles()
-            if (response.status == Status.ERROR) {
-                _articles.update { NewsListFactory().mapEntitiesToResource(articlesRepository.getArticlesFromDatabase()) }
-            } else {
-                _articles.update { NewsListFactory().mapResponseToResource(response, favoriteArticles.value) }
-                cacheArticles()
+        articlesRepository
+            .getArticlesRx()
+            .map { articles ->
+                articles.map { article ->
+                    val favoriteArticleById = favoriteArticles.value.firstOrNull { article.id == it.id.toString() }
+                    if (favoriteArticleById != null) article.copy(isFavorite = true) else article
+                }
             }
+            .subscribeOn(Schedulers.io())
+            .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
+            .subscribe({ onSuccess(it) }, { onError() })
+            .addTo(compositeDisposable)
+    }
+
+    private fun onSuccess(articles: List<Article>) {
+        _articles.postValue(articles)
+        cacheArticles(articles)
+    }
+
+    private fun onError() {
+        viewModelScope.launch {
+            _articles.postValue(articlesRepository.getArticlesFromDatabase().map { it.toArticle() })
         }
     }
 
     fun onCategoryTypeChanged(categoryType: ArticleCategory) {
         if (_categoryType.value == ArticleCategory.NONE) {
             _categoryType.value = categoryType
-            _articles.update { resource ->
-                resource.copy(
-                    data = _articles.value.data?.filter { it.category == categoryType }
-                )
-            }
+            _articles.postValue(_articles.value?.filter { it.category == categoryType })
         } else {
             _categoryType.value = ArticleCategory.NONE
             onRefresh()
@@ -83,11 +102,9 @@ class NewsListViewModel @Inject constructor(
         }
     }
 
-    private fun cacheArticles() {
+    private fun cacheArticles(articles: List<Article>) {
         viewModelScope.launch {
-            articlesRepository.insertArticlesToDatabase(
-                NewsListFactory().mapResourceToEntity(articles.value)
-            )
+            articlesRepository.insertArticlesToDatabase(articles.map { it.toArticleEntity() })
         }
     }
 }
