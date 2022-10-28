@@ -25,7 +25,7 @@
     - [ ] Bonus: Display votes
 - [x] About screen
     - [x] Display app version, developer’s full name and/or company name.
-    - [ ] Bonus: Take and display a camera selfie
+    - [x] Bonus: Take and display a camera selfie
 - [x] Bonus: Maps screen
     - [x] Large map with all locations (custom marker, cluster & tooltip)
 
@@ -36,11 +36,12 @@
 - [x] Handle errors (show Snackbar)
 - [x] Unit tests
 - [x] UI tests
-- [ ] Full dark mode support (missing: maps, captions)
 - [x] Bonus: Add Google Maps with full customization
+- [x] Bonus: Take and display a camera selfie in About Screen
+- [x] Bonus: Migrate to Rx (branch: `coroutines-to-rx`)
+- [ ] Full dark mode support (missing: maps, captions)
+- [ ] Bonus: Display votes
 - [ ] Bonus: Save article as .pdf to external storage in News Details Screen
-- [ ] Bonus: Take and display a camera selfie in About Screen
-- [ ] Bonus: Migrate to Rx (separate branch)
 - [ ] Bonus: Utilize GraphQL with SpaceX API
     - [ ] Get a `landpads` list from the API
     - [ ] Show the `landpads` list on a map using `latitude`, `longitude` variables
@@ -61,7 +62,7 @@
 - Concurrency
     - [x] [Flow](https://developer.android.com/kotlin/flow)
     - [x] [Coroutines](https://developer.android.com/kotlin/coroutines)
-    - [ ] [Rx](https://github.com/ReactiveX/RxKotlin)
+    - [x] [Rx](https://github.com/ReactiveX/RxKotlin)
 - [Dependency Injection](https://developer.android.com/training/dependency-injection)
     - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - Network
