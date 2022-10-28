@@ -40,7 +40,7 @@ fun NewsListScreen(
     viewModel: NewsListViewModel = hiltViewModel()
 ) {
     val articles by viewModel.articles.observeAsState(initial = listOf())
-    val categoryType by viewModel.categoryType.observeAsState(initial = ArticleCategory.NONE)
+    val categoryType by viewModel.category.observeAsState(initial = ArticleCategory.NONE)
     val status by viewModel.status.observeAsState(initial = Status.LOADING)
 
     NewsListContent(

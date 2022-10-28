@@ -36,11 +36,12 @@ class NewsListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed()
         )
 
-    private val _categoryType: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
-    val categoryType: LiveData<ArticleCategory> = _categoryType
+    private val _category: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
+    val category: LiveData<ArticleCategory> = _category
 
     private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
     val status: LiveData<Status> = _status
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -54,10 +55,13 @@ class NewsListViewModel @Inject constructor(
     fun onRefresh() {
         articlesRepository
             .getArticles()
-            .map { articles ->
-                articles.map { article ->
-                    val favoriteArticleById = favoriteArticles.value.firstOrNull { article.id == it.id.toString() }
-                    if (favoriteArticleById != null) article.copy(isFavorite = true) else article
+            .map { mappedArticles ->
+                mappedArticles.map { mappedArticle ->
+                    val favoriteArticleById = favoriteArticles.value.firstOrNull {
+                        mappedArticle.id == it.id.toString()
+                    }
+                    if (favoriteArticleById != null) mappedArticle.copy(isFavorite = true)
+                    else mappedArticle
                 }
             }
             .subscribeOn(Schedulers.io())
@@ -77,12 +81,12 @@ class NewsListViewModel @Inject constructor(
         }
     }
 
-    fun onCategoryTypeChanged(categoryType: ArticleCategory) {
-        if (_categoryType.value == ArticleCategory.NONE) {
-            _categoryType.value = categoryType
-            _articles.postValue(_articles.value?.filter { it.category == categoryType })
+    fun onCategoryTypeChanged(category: ArticleCategory) {
+        if (_category.value == ArticleCategory.NONE) {
+            _category.value = category
+            _articles.postValue(_articles.value?.filter { it.category == category })
         } else {
-            _categoryType.value = ArticleCategory.NONE
+            _category.value = ArticleCategory.NONE
             onRefresh()
         }
     }

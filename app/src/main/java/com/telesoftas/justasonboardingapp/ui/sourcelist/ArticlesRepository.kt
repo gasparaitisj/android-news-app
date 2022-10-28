@@ -38,19 +38,20 @@ class ArticlesRepository @Inject constructor(
         } ?: listOf()
     }
 
-    fun getArticleById(id: String): Single<Article> = articlesApi.getArticleById(id).map {
-        Article(
-            id = it.id,
-            isFavorite = false,
-            publishedAt = it.publishedAt.replace("[\$TZ]".toRegex(), " "),
-            source = it.source,
-            category = it.category,
-            author = it.author,
-            title = it.title,
-            description = it.description,
-            imageUrl = it.imageUrl,
-            votes = it.votes
-        )
+    fun getArticleById(id: String): Single<Article> =
+        articlesApi.getArticleById(id).map { articleResponse ->
+            Article(
+                id = articleResponse.id,
+                isFavorite = false,
+                publishedAt = articleResponse.publishedAt.replace("[\$TZ]".toRegex(), " "),
+                source = articleResponse.source,
+                category = articleResponse.category,
+                author = articleResponse.author,
+                title = articleResponse.title,
+                description = articleResponse.description,
+                imageUrl = articleResponse.imageUrl,
+                votes = articleResponse.votes
+            )
     }
 
     fun getNewsSources(): Single<List<NewsSource>> = articlesApi.getArticles().map { response ->
