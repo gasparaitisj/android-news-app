@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
-import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,8 +39,8 @@ class NewsListViewModel @Inject constructor(
     private val _categoryType: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
     val categoryType: LiveData<ArticleCategory> = _categoryType
 
-    private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
-    val loadingState: LiveData<LoadingState> = _loadingState
+    private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
+    val status: LiveData<Status> = _status
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -61,7 +61,7 @@ class NewsListViewModel @Inject constructor(
                 }
             }
             .subscribeOn(Schedulers.io())
-            .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
+            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError() })
             .addTo(compositeDisposable)
     }

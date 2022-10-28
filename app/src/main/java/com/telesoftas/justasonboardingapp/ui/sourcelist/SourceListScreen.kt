@@ -41,10 +41,10 @@ fun SourceListScreen(
 ) {
     val newsSources by viewModel.newsSources.observeAsState(initial = listOf())
     val sortType by viewModel.sortType.observeAsState(initial = SortBy.NONE)
-    val loadingState by viewModel.loadingState.observeAsState(initial = LoadingState.LOADING)
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
     SourceListContent(
         newsSources = newsSources,
-        loadingState = loadingState,
+        status = status,
         sortType = sortType,
         onRefresh = { viewModel.onRefresh() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
@@ -56,7 +56,7 @@ fun SourceListScreen(
 @Composable
 private fun SourceListContent(
     newsSources: List<NewsSource>,
-    loadingState: LoadingState,
+    status: Status,
     sortType: SortBy,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
@@ -84,11 +84,11 @@ private fun SourceListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = loadingState == LoadingState.LOADING
+                    isRefreshing = status == Status.LOADING
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (newsSources.isEmpty() && loadingState != LoadingState.LOADING) {
+                if (newsSources.isEmpty() && status != Status.LOADING) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -128,8 +128,8 @@ private fun SourceListContent(
         }
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.ERROR) {
+    LaunchedEffect(status) {
+        if (status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = context.resources.getString(R.string.network_error),

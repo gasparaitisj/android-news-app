@@ -42,7 +42,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
 import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
-import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -62,10 +62,10 @@ fun NewsDetailsScreen(
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
     val article by viewModel.article.observeAsState()
-    val loadingState by viewModel.loadingState.observeAsState(initial = LoadingState.LOADING)
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
     NewsDetailsContent(
         article = article,
-        loadingState = loadingState,
+        status = status,
         location = viewModel.location,
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item, isFavorite ->
@@ -84,7 +84,7 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Article?,
-    loadingState: LoadingState,
+    status: Status,
     location: LocationClusterItem,
     onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit
@@ -94,7 +94,7 @@ fun NewsDetailsContent(
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = loadingState == LoadingState.LOADING
+            isRefreshing = status == Status.LOADING
         ),
         swipeEnabled = false,
         onRefresh = {}

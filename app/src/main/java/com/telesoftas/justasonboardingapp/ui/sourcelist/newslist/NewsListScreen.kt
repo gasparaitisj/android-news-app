@@ -24,7 +24,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -41,11 +41,11 @@ fun NewsListScreen(
 ) {
     val articles by viewModel.articles.observeAsState(initial = listOf())
     val categoryType by viewModel.categoryType.observeAsState(initial = ArticleCategory.NONE)
-    val loadingState by viewModel.loadingState.observeAsState(initial = LoadingState.LOADING)
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
 
     NewsListContent(
         articles = articles,
-        loadingState = loadingState,
+        status = status,
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
@@ -61,7 +61,7 @@ fun NewsListScreen(
 @Composable
 private fun NewsListContent(
     articles: List<Article>,
-    loadingState: LoadingState,
+    status: Status,
     categoryType: ArticleCategory,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
@@ -90,11 +90,11 @@ private fun NewsListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = loadingState == LoadingState.LOADING
+                    isRefreshing = status == Status.LOADING
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (articles.isEmpty() && loadingState != LoadingState.LOADING) {
+                if (articles.isEmpty() && status != Status.LOADING) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -136,8 +136,8 @@ private fun NewsListContent(
         }
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.ERROR) {
+    LaunchedEffect(status) {
+        if (status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = context.resources.getString(R.string.network_error),

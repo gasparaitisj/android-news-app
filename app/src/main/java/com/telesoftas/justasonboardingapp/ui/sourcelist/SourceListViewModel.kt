@@ -22,8 +22,8 @@ class SourceListViewModel @Inject constructor(
     private val _sortType: MutableLiveData<SortBy> = MutableLiveData(SortBy.NONE)
     val sortType: LiveData<SortBy> = _sortType
 
-    private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
-    val loadingState: LiveData<LoadingState> = _loadingState
+    private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
+    val status: LiveData<Status> = _status
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -35,11 +35,11 @@ class SourceListViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        _loadingState.postValue(LoadingState.LOADING)
+        _status.postValue(Status.LOADING)
         articlesRepository
             .getNewsSources()
             .subscribeOn(Schedulers.io())
-            .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
+            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError() })
             .addTo(compositeDisposable)
     }
@@ -79,7 +79,7 @@ class SourceListViewModel @Inject constructor(
     }
 }
 
-enum class LoadingState {
+enum class Status {
     LOADING,
     ERROR,
     SUCCESS

@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.ui.newsdetails
 import androidx.lifecycle.*
 import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
-import com.telesoftas.justasonboardingapp.ui.sourcelist.LoadingState
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +31,8 @@ class NewsDetailsViewModel @Inject constructor(
 
     val location = locationRepository.getLocations()[0]
 
-    private val _loadingState: MutableLiveData<LoadingState> = MutableLiveData(LoadingState.LOADING)
-    val loadingState: LiveData<LoadingState> = _loadingState
+    private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
+    val status: LiveData<Status> = _status
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -48,7 +48,7 @@ class NewsDetailsViewModel @Inject constructor(
             .getArticleById(id)
             .map { it.copy(isFavorite = articleEntity?.isFavorite ?: false) }
             .subscribeOn(Schedulers.io())
-            .doAfterTerminate { _loadingState.postValue(LoadingState.SUCCESS) }
+            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError(articleEntity) })
             .addTo(compositeDisposable)
     }
