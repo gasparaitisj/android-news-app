@@ -5,14 +5,12 @@ import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -27,8 +25,6 @@ class NewsDetailsViewModel @Inject constructor(
     private val _article: MutableLiveData<Article> = MutableLiveData()
     val article: LiveData<Article> = _article
 
-    private val articleFromDatabase: Flow<ArticleEntity?> = articlesRepository.getArticleByIdFromDatabase(id)
-
     val location = locationRepository.getLocations()[0]
 
     private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
@@ -36,25 +32,25 @@ class NewsDetailsViewModel @Inject constructor(
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
-        viewModelScope.launch {
-            articleFromDatabase.collectLatest {
-                onRefresh(it)
-            }
-        }
-    }
-
-    private fun onRefresh(articleEntity: ArticleEntity?) {
         articlesRepository
-            .getArticleById(id)
-            .map { it.copy(isFavorite = articleEntity?.isFavorite ?: false) }
+            .getArticleByIdFromDatabase(id)
             .subscribeOn(Schedulers.io())
-            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
-            .subscribe({ onSuccess(it) }, { onError(articleEntity) })
+            .subscribe({ onRefresh(it) }, { Timber.d(it) })
             .addTo(compositeDisposable)
     }
 
-    private fun onError(articleEntity: ArticleEntity?) {
-        _article.postValue(articleEntity?.toArticle())
+    private fun onRefresh(article: Article) {
+        articlesRepository
+            .getArticleById(id)
+            .map { it.copy(isFavorite = article.isFavorite) }
+            .subscribeOn(Schedulers.io())
+            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
+            .subscribe({ onSuccess(it) }, { onError(article) })
+            .addTo(compositeDisposable)
+    }
+
+    private fun onError(article: Article) {
+        _article.postValue(article)
     }
 
     private fun onSuccess(article: Article) {

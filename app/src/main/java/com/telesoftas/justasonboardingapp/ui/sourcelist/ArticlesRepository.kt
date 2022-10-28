@@ -8,7 +8,6 @@ import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -68,12 +67,8 @@ class ArticlesRepository @Inject constructor(
         return articleDao.getAllArticles()
     }
 
-    fun getArticleByIdFromDatabase(id: String): Flow<ArticleEntity?> {
-        id.toIntOrNull()?.let { idInt ->
-            return articleDao.getArticleById(idInt)
-        }
-        return flow { emit(null) }
-    }
+    fun getArticleByIdFromDatabase(id: String): Single<Article> =
+        articleDao.getArticleById(id.toIntOrNull() ?: 0).map { it.toArticle() }
 
     fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
         return articleDao.getFavoriteArticles()
