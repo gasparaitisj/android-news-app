@@ -94,44 +94,8 @@ private fun NewsListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (articles.isEmpty() && status != Status.LOADING) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            modifier = Modifier.fillMaxSize(0.5f),
-                            painter = painterResource(id = R.drawable.img_empty_state_black),
-                            contentDescription = "Empty news image"
-                        )
-                        Text(
-                            text = stringResource(id = R.string.empty_state),
-                            style = Typography.body2
-                        )
-                    }
-                } else {
-                    Column {
-                        ChipGroupFilterArticles(
-                            categoryType = categoryType,
-                            onCategoryTypeChanged = onCategoryTypeChanged
-                        )
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()) {
-                            items(
-                                items = articles,
-                                key = { it.id }
-                            ) { item ->
-                                ArticleItem(
-                                    item = item,
-                                    onArticleItemClick = { onArticleItemClick(item) },
-                                    onArticleFavoriteChanged = onArticleFavoriteChanged
-                                )
-                            }
-                        }
-                    }
-                }
+                if (articles.isEmpty() && status != Status.LOADING) NewsListEmptyState()
+                else NewsListSuccessState(categoryType, onCategoryTypeChanged, articles, onArticleItemClick, onArticleFavoriteChanged)
             }
         }
     }
@@ -146,6 +110,58 @@ private fun NewsListContent(
                 )
             }
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun NewsListSuccessState(
+    categoryType: ArticleCategory,
+    onCategoryTypeChanged: (ArticleCategory) -> Unit,
+    articles: List<Article>,
+    onArticleItemClick: (Article) -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+) {
+    Column {
+        ChipGroupFilterArticles(
+            categoryType = categoryType,
+            onCategoryTypeChanged = onCategoryTypeChanged
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            items(
+                items = articles,
+                key = { it.id }
+            ) { item ->
+                ArticleItem(
+                    item = item,
+                    onArticleItemClick = { onArticleItemClick(item) },
+                    onArticleFavoriteChanged = onArticleFavoriteChanged
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewsListEmptyState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize(0.5f),
+            painter = painterResource(id = R.drawable.img_empty_state_black),
+            contentDescription = "Empty news image"
+        )
+        Text(
+            text = stringResource(id = R.string.empty_state),
+            style = Typography.body2
+        )
     }
 }
 
