@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,17 +26,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -44,14 +43,16 @@ fun FavoriteScreen(
     navController: NavHostController,
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val filteredArticles by viewModel.filteredArticles.collectAsStateWithLifecycle()
+    val articles by viewModel.articles.observeAsState(initial = listOf())
+    val filteredArticles by viewModel.filteredArticles.observeAsState(initial = listOf())
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
     val searchWidgetState by viewModel.searchWidgetState
     val searchTextState by viewModel.searchTextState
 
     FavoriteScreenContent(
         articles = articles,
         filteredArticles = filteredArticles,
+        status = status,
         onArticleFavoriteChanged = { article, isFavorite ->
             viewModel.onArticleFavoriteChanged(article, isFavorite)
         },
@@ -69,8 +70,9 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteScreenContent(
-    articles: Resource<List<Article>>,
-    filteredArticles: List<Article>,
+    articles: List<Article>?,
+    filteredArticles: List<Article>?,
+    status: Status,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit,
@@ -99,13 +101,12 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = articles.status == Status.LOADING
+                            isRefreshing = status == Status.LOADING
                         ),
                         onRefresh = {},
                         swipeEnabled = false
                     ) {
-                        val list = articles.getSuccessDataOrNull().orEmpty()
-                        if (list.isEmpty()) {
+                        if (articles.isNullOrEmpty()) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
@@ -123,7 +124,7 @@ fun FavoriteScreenContent(
                             }
                         } else {
                             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                items(list, { it.id }) { item ->
+                                items(articles, { it.id }) { item ->
                                     ArticleItem(
                                         item = item,
                                         onArticleItemClick = { onArticleItemClick(item) },
@@ -141,7 +142,7 @@ fun FavoriteScreenContent(
 
 @Composable
 fun MainAppBar(
-    filteredArticles: List<Article>,
+    filteredArticles: List<Article>?,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onArticleItemClick: (Article) -> Unit,
@@ -195,7 +196,7 @@ fun DefaultAppBar(onSearchClick: () -> Unit) {
 
 @Composable
 fun SearchAppBar(
-    filteredArticles: List<Article>,
+    filteredArticles: List<Article>?,
     text: String,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
@@ -262,7 +263,7 @@ fun SearchAppBar(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onSearchClick(text)
-                        if (filteredArticles.isNotEmpty()) expanded = true
+                        if (!filteredArticles.isNullOrEmpty()) expanded = true
                     }
                 ),
                 shape = RoundedCornerShape(4.dp),
@@ -281,7 +282,7 @@ fun SearchAppBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                filteredArticles.forEach { article ->
+                filteredArticles?.forEach { article ->
                     article.title?.let { title ->
                         DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
                             Column {

@@ -6,8 +6,10 @@ import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import kotlinx.coroutines.flow.Flow
+import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -68,23 +70,42 @@ class ArticlesRepository @Inject constructor(
     }
 
     fun getArticleByIdFromDatabase(id: String): Single<Article> =
-        articleDao.getArticleById(id.toIntOrNull() ?: 0).map { it.toArticle() }
+        articleDao.getArticleById(id.toIntOrNull() ?: 0).map { articleEntity ->
+            articleEntity.toArticle()
+        }
 
-    fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
-        return articleDao.getFavoriteArticles()
+    fun getFavoriteArticlesFromDatabase(): Flowable<List<Article>> =
+        articleDao.getFavoriteArticles().map { articleEntityList ->
+            articleEntityList.map { articleEntity ->
+                articleEntity.toArticle()
+            }
+        }
+
+    fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
+        articleDao
+            .insertArticles(articles)
+            .onTerminateDetach()
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, { Timber.d("$it") })
     }
 
-    suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
-        articleDao.insertArticles(articles)
+    fun insertArticleToDatabase(article: Article?) {
+        article?.toArticleEntity()?.let { articleEntity ->
+            articleDao
+                .insertArticle(articleEntity)
+                .onTerminateDetach()
+                .subscribeOn(Schedulers.io())
+                .subscribe({}, { Timber.d("$it") })
+        }
     }
 
-    suspend fun insertArticleToDatabase(article: Article?) {
-        article?.toArticleEntity()?.let { articleDao.insertArticle(it) }
-    }
-
-    suspend fun deleteArticleByIdFromDatabase(id: String) {
+    fun deleteArticleByIdFromDatabase(id: String) {
         id.toIntOrNull()?.let { idInt ->
-            articleDao.deleteArticleById(idInt)
+            articleDao
+                .deleteArticleById(idInt)
+                .onTerminateDetach()
+                .subscribeOn(Schedulers.io())
+                .subscribe({}, { Timber.d("$it") })
         }
     }
 

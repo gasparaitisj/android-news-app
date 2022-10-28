@@ -2,24 +2,24 @@ package com.telesoftas.justasonboardingapp.utils.network
 
 import androidx.annotation.StringRes
 
-data class Resource<out T>(val status: Status, val data: T?, val message: String?, @StringRes val messageRes: Int?) {
+data class Resource<out T>(val resourceStatus: ResourceStatus, val data: T?, val message: String?, @StringRes val messageRes: Int?) {
     companion object {
         fun <T> success(data: T? = null): Resource<T> {
-            return Resource(Status.SUCCESS, data, null, null)
+            return Resource(ResourceStatus.SUCCESS, data, null, null)
         }
 
         fun <T> error(msg: String? = null, @StringRes msgRes: Int? = null, data: T? = null): Resource<T> {
-            return Resource(Status.ERROR, data, msg, msgRes)
+            return Resource(ResourceStatus.ERROR, data, msg, msgRes)
         }
 
         fun <T> loading(data: T? = null): Resource<T> {
-            return Resource(Status.LOADING, data, null, null)
+            return Resource(ResourceStatus.LOADING, data, null, null)
         }
     }
-    fun getSuccessDataOrNull(): T? = if (status == Status.SUCCESS) data else null
+    fun getSuccessDataOrNull(): T? = if (resourceStatus == ResourceStatus.SUCCESS) data else null
 }
 
-enum class Status {
+enum class ResourceStatus {
     SUCCESS,
     ERROR,
     LOADING

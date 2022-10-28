@@ -8,17 +8,13 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +25,6 @@ class NewsListViewModel @Inject constructor(
     private val _articles: MutableLiveData<List<Article>> = MutableLiveData(listOf())
     val articles: LiveData<List<Article>> = _articles
 
-    private val favoriteArticles: StateFlow<List<ArticleEntity>> =
-        articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
-            scope = viewModelScope,
-            initialValue = listOf(),
-            started = SharingStarted.WhileSubscribed()
-        )
-
     private val _category: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
     val category: LiveData<ArticleCategory> = _category
 
@@ -43,13 +32,19 @@ class NewsListViewModel @Inject constructor(
     val status: LiveData<Status> = _status
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var favoriteArticles: List<Article> = listOf()
 
     init {
-        viewModelScope.launch {
-            favoriteArticles.collectLatest {
-                onRefresh()
-            }
-        }
+        articlesRepository
+            .getFavoriteArticlesFromDatabase()
+            .subscribeOn(Schedulers.io())
+            .subscribe({ favoriteArticles = it; onRefresh() }, { Timber.d(it) })
+            .addTo(compositeDisposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.clear()
     }
 
     fun onRefresh() {
@@ -57,9 +52,7 @@ class NewsListViewModel @Inject constructor(
             .getArticles()
             .map { mappedArticles ->
                 mappedArticles.map { mappedArticle ->
-                    val favoriteArticleById = favoriteArticles.value.firstOrNull {
-                        mappedArticle.id == it.id.toString()
-                    }
+                    val favoriteArticleById = favoriteArticles.firstOrNull { mappedArticle.id == it.id }
                     if (favoriteArticleById != null) mappedArticle.copy(isFavorite = true)
                     else mappedArticle
                 }
