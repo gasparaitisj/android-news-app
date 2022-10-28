@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 @Dao
 interface ArticleDao {
     @Query("SELECT * FROM article")
-    suspend fun getAllArticles(): List<ArticleEntity>
+    fun getAllArticles(): Single<List<ArticleEntity>>
 
     @Query("SELECT * FROM article WHERE id = :id")
     fun getArticleById(id: Int): Single<ArticleEntity>

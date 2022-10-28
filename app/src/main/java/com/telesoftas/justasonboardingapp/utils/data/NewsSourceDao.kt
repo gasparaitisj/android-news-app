@@ -4,12 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 
 @Dao
 interface NewsSourceDao {
     @Query("SELECT * FROM news_source")
-    suspend fun getAllNewsSources(): List<NewsSourceEntity>
+    fun getAllNewsSources(): Single<List<NewsSourceEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNewsSources(newsSources: List<NewsSourceEntity>)
+    fun insertNewsSources(newsSources: List<NewsSourceEntity>): Completable
 }

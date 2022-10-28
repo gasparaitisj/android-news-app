@@ -4,7 +4,6 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -65,9 +64,12 @@ class ArticlesRepository @Inject constructor(
         } ?: listOf()
     }
 
-    suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
-        return articleDao.getAllArticles()
-    }
+    fun getArticlesFromDatabase(): Single<List<Article>> =
+        articleDao.getAllArticles().map { articleEntityList ->
+            articleEntityList.map { articleEntity ->
+                articleEntity.toArticle()
+            }
+        }
 
     fun getArticleByIdFromDatabase(id: String): Single<Article> =
         articleDao.getArticleById(id.toIntOrNull() ?: 0).map { articleEntity ->
@@ -109,11 +111,14 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
-    suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
-        return newsSourceDao.getAllNewsSources()
-    }
+    fun getNewsSourcesFromDatabase(): Single<List<NewsSource>> =
+        newsSourceDao.getAllNewsSources().map { newsSourceEntityList ->
+            newsSourceEntityList.map { newsSourceEntity ->
+                newsSourceEntity.toNewsSource()
+            }
+        }
 
-    suspend fun insertNewsSourcesToDatabase(newsSources: List<NewsSourceEntity>) {
-        newsSourceDao.insertNewsSources(newsSources)
-    }
+
+    fun insertNewsSourcesToDatabase(newsSources: List<NewsSource>) =
+        newsSourceDao.insertNewsSources(newsSources.map { it.toEntity() })
 }

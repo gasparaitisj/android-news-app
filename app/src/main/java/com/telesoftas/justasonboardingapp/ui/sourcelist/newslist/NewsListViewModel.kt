@@ -3,7 +3,6 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
@@ -13,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -69,9 +67,11 @@ class NewsListViewModel @Inject constructor(
     }
 
     private fun onError() {
-        viewModelScope.launch {
-            _articles.postValue(articlesRepository.getArticlesFromDatabase().map { it.toArticle() })
-        }
+        articlesRepository
+            .getArticlesFromDatabase()
+            .subscribeOn(Schedulers.io())
+            .subscribe({ _articles.postValue(it) }, { Timber.d(it) })
+            .addTo(compositeDisposable)
     }
 
     fun onCategoryTypeChanged(category: ArticleCategory) {
@@ -85,9 +85,7 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
-        viewModelScope.launch {
-            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
-        }
+        articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
     }
 
     fun onArticleClicked(article: Article) {
@@ -100,8 +98,6 @@ class NewsListViewModel @Inject constructor(
     }
 
     private fun cacheArticles(articles: List<Article>) {
-        viewModelScope.launch {
-            articlesRepository.insertArticlesToDatabase(articles.map { it.toArticleEntity() })
-        }
+        articlesRepository.insertArticlesToDatabase(articles.map { it.toArticleEntity() })
     }
 }
