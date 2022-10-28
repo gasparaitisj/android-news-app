@@ -6,9 +6,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -17,18 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import kotlinx.coroutines.launch
 
@@ -39,11 +39,13 @@ fun NewsListScreen(
     navController: NavHostController,
     viewModel: NewsListViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
+    val articles by viewModel.articles.observeAsState(initial = listOf())
+    val categoryType by viewModel.category.observeAsState(initial = ArticleCategory.NONE)
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
 
     NewsListContent(
         articles = articles,
+        status = status,
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
@@ -58,7 +60,8 @@ fun NewsListScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun NewsListContent(
-    articles: Resource<List<Article>>,
+    articles: List<Article>,
+    status: Status,
     categoryType: ArticleCategory,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
@@ -67,6 +70,7 @@ private fun NewsListContent(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -86,65 +90,78 @@ private fun NewsListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = articles.status == Status.LOADING
+                    isRefreshing = status == Status.LOADING
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (articles.status == Status.ERROR) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            modifier = Modifier.fillMaxSize(0.5f),
-                            painter = painterResource(id = R.drawable.img_empty_state_black),
-                            contentDescription = "Empty news image"
-                        )
-                        Text(
-                            text = stringResource(id = R.string.empty_state),
-                            style = Typography.body2
-                        )
-                    }
-                } else {
-                    Column {
-                        ChipGroupFilterArticles(
-                            categoryType = categoryType,
-                            onCategoryTypeChanged = onCategoryTypeChanged
-                        )
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()) {
-                            items(
-                                items = articles.getSuccessDataOrNull().orEmpty(),
-                                key = { it.id }
-                            ) { item ->
-                                ArticleItem(
-                                    item = item,
-                                    onArticleItemClick = { onArticleItemClick(item) },
-                                    onArticleFavoriteChanged = onArticleFavoriteChanged
-                                )
-                            }
-                        }
-                    }
-                }
+                if (articles.isEmpty() && status != Status.LOADING) NewsListEmptyState()
+                else NewsListSuccessState(categoryType, onCategoryTypeChanged, articles, onArticleItemClick, onArticleFavoriteChanged)
             }
         }
     }
 
-    // Show Snackbar on network error
-    val message = stringResource(id = articles.messageRes ?: R.string.unknown_error)
-    val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(articles.status) {
-        if (articles.status == Status.ERROR) {
+    LaunchedEffect(status) {
+        if (status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = actionLabel,
+                    message = context.resources.getString(R.string.network_error),
+                    actionLabel = context.resources.getString(R.string.source_list_screen_snackbar_dismiss),
                     duration = SnackbarDuration.Long
                 )
             }
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun NewsListSuccessState(
+    categoryType: ArticleCategory,
+    onCategoryTypeChanged: (ArticleCategory) -> Unit,
+    articles: List<Article>,
+    onArticleItemClick: (Article) -> Unit,
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+) {
+    Column {
+        ChipGroupFilterArticles(
+            categoryType = categoryType,
+            onCategoryTypeChanged = onCategoryTypeChanged
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            items(
+                items = articles,
+                key = { it.id }
+            ) { item ->
+                ArticleItem(
+                    item = item,
+                    onArticleItemClick = { onArticleItemClick(item) },
+                    onArticleFavoriteChanged = onArticleFavoriteChanged
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewsListEmptyState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize(0.5f),
+            painter = painterResource(id = R.drawable.img_empty_state_black),
+            contentDescription = "Empty news image"
+        )
+        Text(
+            text = stringResource(id = R.string.empty_state),
+            style = Typography.body2
+        )
     }
 }
 

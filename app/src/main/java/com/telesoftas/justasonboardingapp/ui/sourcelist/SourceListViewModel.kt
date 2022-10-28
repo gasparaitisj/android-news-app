@@ -1,15 +1,14 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
-import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,74 +16,71 @@ import javax.inject.Inject
 class SourceListViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository
 ) : ViewModel() {
-    private val _newsSources: MutableStateFlow<Resource<List<NewsSource>>> =
-        MutableStateFlow(Resource.loading())
-    val newsSources: StateFlow<Resource<List<NewsSource>>> = _newsSources.asStateFlow()
+    private val _newsSources: MutableLiveData<List<NewsSource>> = MutableLiveData(listOf())
+    val newsSources: LiveData<List<NewsSource>> = _newsSources
 
-    private val _sortType: MutableStateFlow<SortBy> = MutableStateFlow(SortBy.NONE)
-    val sortType: StateFlow<SortBy> = _sortType.asStateFlow()
+    private val _sortType: MutableLiveData<SortBy> = MutableLiveData(SortBy.NONE)
+    val sortType: LiveData<SortBy> = _sortType
+
+    private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
+    val status: LiveData<Status> = _status
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
-        getArticles()
+        onRefresh()
     }
 
-    fun getArticles(
-        query: String? = null,
-        page: Int? = null,
-        pageSize: Int? = null,
-        category: ArticleCategory? = null,
-        sortBy: String? = null,
-        pageNumber: Int? = null,
-        xRequestId: String? = null
-    ) {
+    override fun onCleared() {
+        compositeDisposable.clear()
+    }
+
+    fun onRefresh() {
+        _status.postValue(Status.LOADING)
+        articlesRepository
+            .getNewsSources()
+            .subscribeOn(Schedulers.io())
+            .doAfterTerminate { _status.postValue(Status.SUCCESS) }
+            .subscribe({ onSuccess(it) }, { onError() })
+            .addTo(compositeDisposable)
+    }
+
+    private fun onError() {
         viewModelScope.launch {
-            _newsSources.value = Resource.loading()
-            val response = articlesRepository.getArticles(
-                query = query,
-                page = page,
-                pageSize = pageSize,
-                category = category,
-                sortBy = sortBy,
-                pageNumber = pageNumber,
-                xRequestId = xRequestId
-            )
-            if (response.status == Status.ERROR) {
-                _newsSources.value = SourceListFactory().mapEntitiesToResource(
-                    articlesRepository.getNewsSourcesFromDatabase()
-                )
-            } else {
-                _newsSources.value = SourceListFactory().mapResponseToResource(response)
-                cacheNewsSources()
-            }
+            _newsSources.postValue(articlesRepository.getNewsSourcesFromDatabase().map { it.toNewsSource() })
         }
+    }
+
+    private fun onSuccess(newsSources: List<NewsSource>) {
+        _newsSources.postValue(newsSources)
+        cacheNewsSources(newsSources)
     }
 
     fun sortArticles(sortBy: SortBy) {
         if (_sortType.value == SortBy.NONE) {
-            _sortType.value = sortBy
+            _sortType.postValue(sortBy)
             when (sortBy.ordinal) {
                 SortBy.ASCENDING.ordinal -> {
-                    _newsSources.value = _newsSources.value.copy(
-                        data = _newsSources.value.data?.sortedBy { it.title }
-                    )
+                    _newsSources.postValue(_newsSources.value?.sortedBy { it.title })
                 }
                 SortBy.DESCENDING.ordinal -> {
-                    _newsSources.value = _newsSources.value.copy(
-                        data = _newsSources.value.data?.sortedByDescending { it.title }
-                    )
+                    _newsSources.postValue(_newsSources.value?.sortedByDescending { it.title })
                 }
             }
         } else {
-            _sortType.value = SortBy.NONE
-            getArticles()
+            _sortType.postValue(SortBy.NONE)
+            onRefresh()
         }
     }
 
-    private fun cacheNewsSources() {
+    private fun cacheNewsSources(newsSources: List<NewsSource>) {
         viewModelScope.launch {
-            articlesRepository.insertNewsSourcesToDatabase(
-                SourceListFactory().mapResourceToEntity(newsSources.value)
-            )
+            articlesRepository.insertNewsSourcesToDatabase(newsSources.map { it.toEntity() })
         }
     }
+}
+
+enum class Status {
+    LOADING,
+    ERROR,
+    SUCCESS
 }

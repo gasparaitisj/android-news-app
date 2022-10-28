@@ -9,24 +9,26 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.ChipDefaults.filterChipColors
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import kotlinx.coroutines.launch
 
@@ -37,12 +39,14 @@ fun SourceListScreen(
     navController: NavHostController,
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
-    val newsSources by viewModel.newsSources.collectAsStateWithLifecycle()
-    val sortType by viewModel.sortType.collectAsState()
+    val newsSources by viewModel.newsSources.observeAsState(initial = listOf())
+    val sortType by viewModel.sortType.observeAsState(initial = SortBy.NONE)
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
     SourceListContent(
         newsSources = newsSources,
+        status = status,
         sortType = sortType,
-        onRefresh = { viewModel.getArticles() },
+        onRefresh = { viewModel.onRefresh() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )
@@ -51,7 +55,8 @@ fun SourceListScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun SourceListContent(
-    newsSources: Resource<List<NewsSource>>,
+    newsSources: List<NewsSource>,
+    status: Status,
     sortType: SortBy,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
@@ -59,6 +64,7 @@ private fun SourceListContent(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -78,11 +84,11 @@ private fun SourceListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = newsSources.status == Status.LOADING
+                    isRefreshing = status == Status.LOADING
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (newsSources.status == Status.ERROR) {
+                if (newsSources.isEmpty() && status != Status.LOADING) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -109,7 +115,7 @@ private fun SourceListContent(
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                         ) {
-                            items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
+                            items(newsSources) { item ->
                                 SourceItem(
                                     item = item,
                                     onSourceItemClick = { onSourceItemClick(item) }
@@ -122,15 +128,12 @@ private fun SourceListContent(
         }
     }
 
-    // Show Snackbar on network error
-    val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
-    val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(newsSources.status) {
-        if (newsSources.status == Status.ERROR) {
+    LaunchedEffect(status) {
+        if (status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = actionLabel,
+                    message = context.resources.getString(R.string.network_error),
+                    actionLabel = context.resources.getString(R.string.source_list_screen_snackbar_dismiss),
                     duration = SnackbarDuration.Long
                 )
             }
