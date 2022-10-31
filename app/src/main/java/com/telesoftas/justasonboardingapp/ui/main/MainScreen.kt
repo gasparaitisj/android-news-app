@@ -135,7 +135,8 @@ private fun setOnDestinationChangedListener(
                     topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
                         ?: context.resources.getString(Screen.NewsList.titleResId)
                 }
-                Screen.NewsDetails.route -> {
+                Screen.NewsDetails.route,
+                Screen.FavoriteNewsDetails.route -> {
                     topBarTitle.value = arguments?.getString(Screen.NewsList.KEY_TITLE)
                         ?: context.resources.getString(Screen.NewsDetails.titleResId)
                 }
