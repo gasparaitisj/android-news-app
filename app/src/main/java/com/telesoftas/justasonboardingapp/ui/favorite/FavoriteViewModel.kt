@@ -10,6 +10,7 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -40,6 +41,7 @@ class FavoriteViewModel @Inject constructor(
     init {
         articlesRepository
             .getFavoriteArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .doAfterNext { _status.postValue(Status.SUCCESS) }
             .subscribe({ onRefresh(it) }, { onError(it) })
@@ -76,7 +78,12 @@ class FavoriteViewModel @Inject constructor(
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
-        articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+        articlesRepository
+            .insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 }
 

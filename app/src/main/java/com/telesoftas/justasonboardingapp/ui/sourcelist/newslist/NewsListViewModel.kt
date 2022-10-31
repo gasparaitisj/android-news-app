@@ -9,6 +9,7 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -35,6 +36,7 @@ class NewsListViewModel @Inject constructor(
     init {
         articlesRepository
             .getFavoriteArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(
                 {
@@ -61,6 +63,7 @@ class NewsListViewModel @Inject constructor(
                     else mappedArticle
                 }
             }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError() })
@@ -75,6 +78,7 @@ class NewsListViewModel @Inject constructor(
     private fun onError() {
         articlesRepository
             .getArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({ _articles.postValue(it) }, { Timber.d(it) })
             .addTo(compositeDisposable)
@@ -91,7 +95,12 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
-        articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+        articlesRepository
+            .insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 
     fun onArticleClicked(article: Article) {
@@ -104,6 +113,11 @@ class NewsListViewModel @Inject constructor(
     }
 
     private fun cacheArticles(articles: List<Article>) {
-        articlesRepository.insertArticlesToDatabase(articles.map { it.toArticleEntity() })
+        articlesRepository
+            .insertArticlesToDatabase(articles.map { it.toArticleEntity() })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 }

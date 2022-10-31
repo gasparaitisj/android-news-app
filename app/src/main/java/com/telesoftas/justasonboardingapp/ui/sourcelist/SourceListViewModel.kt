@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -38,6 +39,7 @@ class SourceListViewModel @Inject constructor(
         _status.postValue(Status.LOADING)
         articlesRepository
             .getNewsSources()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError() })
@@ -47,6 +49,7 @@ class SourceListViewModel @Inject constructor(
     private fun onError() {
         articlesRepository
             .getNewsSourcesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({ _newsSources.postValue(it) }, Timber::e)
             .addTo(compositeDisposable)
@@ -75,7 +78,12 @@ class SourceListViewModel @Inject constructor(
     }
 
     private fun cacheNewsSources(newsSources: List<NewsSource>) {
-        articlesRepository.insertNewsSourcesToDatabase(newsSources)
+        articlesRepository
+            .insertNewsSourcesToDatabase(newsSources)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 }
 

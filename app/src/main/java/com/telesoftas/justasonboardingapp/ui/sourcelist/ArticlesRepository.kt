@@ -5,10 +5,9 @@ import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -83,33 +82,15 @@ class ArticlesRepository @Inject constructor(
             }
         }
 
-    fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
-        articleDao
-            .insertArticles(articles)
-            .onTerminateDetach()
-            .subscribeOn(Schedulers.io())
-            .subscribe({}, Timber::e)
-    }
+    fun insertArticlesToDatabase(articles: List<ArticleEntity>): Completable =
+        articleDao.insertArticles(articles)
 
-    fun insertArticleToDatabase(article: Article?) {
-        article?.toArticleEntity()?.let { articleEntity ->
-            articleDao
-                .insertArticle(articleEntity)
-                .onTerminateDetach()
-                .subscribeOn(Schedulers.io())
-                .subscribe({}, Timber::e)
-        }
-    }
 
-    fun deleteArticleByIdFromDatabase(id: String) {
-        id.toIntOrNull()?.let { idInt ->
-            articleDao
-                .deleteArticleById(idInt)
-                .onTerminateDetach()
-                .subscribeOn(Schedulers.io())
-                .subscribe({}, Timber::e)
-        }
-    }
+    fun insertArticleToDatabase(article: Article): Completable =
+        articleDao.insertArticle(article.toArticleEntity())
+
+    fun deleteArticleByIdFromDatabase(id: String): Completable =
+        articleDao.deleteArticleById(id.toInt())
 
     fun getNewsSourcesFromDatabase(): Single<List<NewsSource>> =
         newsSourceDao.getAllNewsSources().map { newsSourceEntityList ->
