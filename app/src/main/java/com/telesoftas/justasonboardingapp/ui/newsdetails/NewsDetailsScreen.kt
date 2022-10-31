@@ -39,7 +39,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
+import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
 import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
@@ -311,7 +311,7 @@ fun MapInColumn(
     onMapTouched: () -> Unit
 ) {
     Box(modifier = modifier) {
-        GoogleMapClustering(
+        GoogleMapWithClustering(
             items = listOf(location),
             modifier = Modifier
                 .fillMaxSize()

@@ -33,7 +33,7 @@ fun MapScreen(
 ) {
     val locations = viewModel.locations
     val defaultCameraPosition = viewModel.defaultCameraPosition
-    GoogleMapClustering(
+    GoogleMapWithClustering(
         items = locations,
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
@@ -42,7 +42,7 @@ fun MapScreen(
 
 @MapsComposeExperimentalApi
 @Composable
-fun GoogleMapClustering(
+fun GoogleMapWithClustering(
     items: List<LocationClusterItem>,
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
