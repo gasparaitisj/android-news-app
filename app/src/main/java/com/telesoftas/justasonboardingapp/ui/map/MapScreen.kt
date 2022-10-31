@@ -50,7 +50,7 @@ private fun MapScreenContent(
     defaultCameraPosition: CameraPosition
 ) {
     Scaffold(
-        topBar = { TopBar(stringResource(id = Screen.About.titleResId)) },
+        topBar = { TopBar(stringResource(id = Screen.Map.titleResId)) },
     ) { paddingValues ->
         GoogleMapWithClustering(
             items = locations,
