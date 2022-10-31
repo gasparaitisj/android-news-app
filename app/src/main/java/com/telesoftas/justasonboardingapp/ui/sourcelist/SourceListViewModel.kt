@@ -31,6 +31,7 @@ class SourceListViewModel @Inject constructor(
 
     override fun onCleared() {
         compositeDisposable.clear()
+        super.onCleared()
     }
 
     fun onRefresh() {

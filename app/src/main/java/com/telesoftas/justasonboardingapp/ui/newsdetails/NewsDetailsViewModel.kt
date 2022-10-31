@@ -41,6 +41,11 @@ class NewsDetailsViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
+    }
+
     private fun onRefresh(article: Article) {
         articlesRepository
             .getArticleById(id)

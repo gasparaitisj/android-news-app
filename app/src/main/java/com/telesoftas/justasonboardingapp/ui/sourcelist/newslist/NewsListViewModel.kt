@@ -47,8 +47,8 @@ class NewsListViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
         compositeDisposable.clear()
+        super.onCleared()
     }
 
     fun onRefresh() {

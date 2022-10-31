@@ -46,6 +46,11 @@ class FavoriteViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
+    }
+
     private fun onRefresh(articleList: List<Article>) {
         _status.postValue(Status.LOADING)
         _articles.postValue(articleList)
