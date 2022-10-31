@@ -37,7 +37,7 @@ class NewsDetailsViewModel @Inject constructor(
         articlesRepository
             .getArticleByIdFromDatabase(id)
             .subscribeOn(Schedulers.io())
-            .subscribe({ onRefresh(it) }, { Timber.d(it) })
+            .subscribe({ onRefresh(it) }, Timber::e)
             .addTo(compositeDisposable)
     }
 

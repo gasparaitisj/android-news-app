@@ -36,7 +36,13 @@ class NewsListViewModel @Inject constructor(
         articlesRepository
             .getFavoriteArticlesFromDatabase()
             .subscribeOn(Schedulers.io())
-            .subscribe({ favoriteArticles = it; onRefresh() }, { Timber.d(it) })
+            .subscribe(
+                {
+                    favoriteArticles = it
+                    onRefresh()
+                },
+                Timber::e
+            )
             .addTo(compositeDisposable)
     }
 

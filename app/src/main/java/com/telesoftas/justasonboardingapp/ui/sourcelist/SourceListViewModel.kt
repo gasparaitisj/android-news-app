@@ -47,7 +47,7 @@ class SourceListViewModel @Inject constructor(
         articlesRepository
             .getNewsSourcesFromDatabase()
             .subscribeOn(Schedulers.io())
-            .subscribe({ _newsSources.postValue(it) }, { Timber.d(it) })
+            .subscribe({ _newsSources.postValue(it) }, Timber::e)
             .addTo(compositeDisposable)
     }
 

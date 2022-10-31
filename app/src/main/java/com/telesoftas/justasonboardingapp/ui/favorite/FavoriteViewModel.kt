@@ -42,7 +42,7 @@ class FavoriteViewModel @Inject constructor(
             .getFavoriteArticlesFromDatabase()
             .subscribeOn(Schedulers.io())
             .doAfterNext { _status.postValue(Status.SUCCESS) }
-            .subscribe({ onRefresh(it) }, { Timber.d(it) })
+            .subscribe({ onRefresh(it) }, Timber::e)
             .addTo(compositeDisposable)
     }
 

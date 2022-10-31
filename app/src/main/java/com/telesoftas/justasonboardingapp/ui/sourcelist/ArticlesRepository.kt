@@ -88,7 +88,7 @@ class ArticlesRepository @Inject constructor(
             .insertArticles(articles)
             .onTerminateDetach()
             .subscribeOn(Schedulers.io())
-            .subscribe({}, { Timber.d("$it") })
+            .subscribe({}, Timber::e)
     }
 
     fun insertArticleToDatabase(article: Article?) {
@@ -97,7 +97,7 @@ class ArticlesRepository @Inject constructor(
                 .insertArticle(articleEntity)
                 .onTerminateDetach()
                 .subscribeOn(Schedulers.io())
-                .subscribe({}, { Timber.d("$it") })
+                .subscribe({}, Timber::e)
         }
     }
 
@@ -107,7 +107,7 @@ class ArticlesRepository @Inject constructor(
                 .deleteArticleById(idInt)
                 .onTerminateDetach()
                 .subscribeOn(Schedulers.io())
-                .subscribe({}, { Timber.d("$it") })
+                .subscribe({}, Timber::e)
         }
     }
 
