@@ -3,22 +3,17 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +24,6 @@ class NewsListViewModel @Inject constructor(
     private val _articles: MutableLiveData<List<Article>> = MutableLiveData(listOf())
     val articles: LiveData<List<Article>> = _articles
 
-    private val favoriteArticles: StateFlow<List<ArticleEntity>> =
-        articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
-            scope = viewModelScope,
-            initialValue = listOf(),
-            started = SharingStarted.WhileSubscribed()
-        )
-
     private val _category: MutableLiveData<ArticleCategory> = MutableLiveData(ArticleCategory.NONE)
     val category: LiveData<ArticleCategory> = _category
 
@@ -43,13 +31,26 @@ class NewsListViewModel @Inject constructor(
     val status: LiveData<Status> = _status
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var favoriteArticles: List<Article> = listOf()
 
     init {
-        viewModelScope.launch {
-            favoriteArticles.collectLatest {
-                onRefresh()
-            }
-        }
+        articlesRepository
+            .getFavoriteArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(
+                {
+                    favoriteArticles = it
+                    onRefresh()
+                },
+                Timber::e
+            )
+            .addTo(compositeDisposable)
+    }
+
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
     }
 
     fun onRefresh() {
@@ -57,13 +58,12 @@ class NewsListViewModel @Inject constructor(
             .getArticles()
             .map { mappedArticles ->
                 mappedArticles.map { mappedArticle ->
-                    val favoriteArticleById = favoriteArticles.value.firstOrNull {
-                        mappedArticle.id == it.id.toString()
-                    }
+                    val favoriteArticleById = favoriteArticles.firstOrNull { mappedArticle.id == it.id }
                     if (favoriteArticleById != null) mappedArticle.copy(isFavorite = true)
                     else mappedArticle
                 }
             }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .doAfterTerminate { _status.postValue(Status.SUCCESS) }
             .subscribe({ onSuccess(it) }, { onError() })
@@ -76,9 +76,12 @@ class NewsListViewModel @Inject constructor(
     }
 
     private fun onError() {
-        viewModelScope.launch {
-            _articles.postValue(articlesRepository.getArticlesFromDatabase().map { it.toArticle() })
-        }
+        articlesRepository
+            .getArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({ _articles.postValue(it) }, { Timber.d(it) })
+            .addTo(compositeDisposable)
     }
 
     fun onCategoryTypeChanged(category: ArticleCategory) {
@@ -92,9 +95,12 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
-        viewModelScope.launch {
-            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
-        }
+        articlesRepository
+            .insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 
     fun onArticleClicked(article: Article) {
@@ -107,8 +113,11 @@ class NewsListViewModel @Inject constructor(
     }
 
     private fun cacheArticles(articles: List<Article>) {
-        viewModelScope.launch {
-            articlesRepository.insertArticlesToDatabase(articles.map { it.toArticleEntity() })
-        }
+        articlesRepository
+            .insertArticlesToDatabase(articles.map { it.toArticleEntity() })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 }

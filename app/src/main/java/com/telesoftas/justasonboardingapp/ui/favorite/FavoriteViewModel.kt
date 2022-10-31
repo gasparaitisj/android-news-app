@@ -3,14 +3,18 @@ package com.telesoftas.justasonboardingapp.ui.favorite
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
-import com.telesoftas.justasonboardingapp.utils.network.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,16 +28,40 @@ class FavoriteViewModel @Inject constructor(
     private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
 
-    val articles: StateFlow<Resource<List<Article>>> = articlesRepository.getFavoriteArticlesFromDatabase().map {
-        Resource.success(it.map { articleEntity -> articleEntity.toArticle() })
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = Resource.loading(),
-        started = SharingStarted.WhileSubscribed()
-    )
+    private val _articles: MutableLiveData<List<Article>> = MutableLiveData(listOf())
+    val articles: LiveData<List<Article>> = _articles
 
-    private val _filteredArticles: MutableStateFlow<List<Article>> = MutableStateFlow(emptyList())
-    val filteredArticles: StateFlow<List<Article>> = _filteredArticles.asStateFlow()
+    private val _filteredArticles: MutableLiveData<List<Article>> = MutableLiveData(emptyList())
+    val filteredArticles: LiveData<List<Article>> = _filteredArticles
+
+    private val _status: MutableLiveData<Status> = MutableLiveData(Status.LOADING)
+    val status: LiveData<Status> = _status
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    init {
+        articlesRepository
+            .getFavoriteArticlesFromDatabase()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .doAfterNext { _status.postValue(Status.SUCCESS) }
+            .subscribe({ onRefresh(it) }, { onError(it) })
+            .addTo(compositeDisposable)
+    }
+
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
+    }
+
+    private fun onRefresh(articleList: List<Article>) {
+        _status.postValue(Status.LOADING)
+        _articles.postValue(articleList)
+    }
+
+    private fun onError(throwable: Throwable) {
+        _status.postValue(Status.ERROR)
+        Timber.e(throwable)
+    }
 
     fun updateSearchWidgetState(newValue: SearchWidgetState) {
         _searchWidgetState.value = newValue
@@ -44,15 +72,18 @@ class FavoriteViewModel @Inject constructor(
     }
 
     fun onFilterArticles(text: String) {
-        _filteredArticles.value = articles.value.getSuccessDataOrNull()?.filter { article ->
+        _filteredArticles.value = articles.value?.filter { article ->
             article.title?.lowercase()?.contains(text.lowercase()) == true
         } ?: listOf()
     }
 
     fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
-        viewModelScope.launch {
-            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
-        }
+        articlesRepository
+            .insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({}, Timber::e)
+            .addTo(compositeDisposable)
     }
 }
 

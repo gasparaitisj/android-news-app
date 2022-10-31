@@ -4,11 +4,10 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -64,40 +63,43 @@ class ArticlesRepository @Inject constructor(
         } ?: listOf()
     }
 
-    suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
-        return articleDao.getAllArticles()
-    }
-
-    fun getArticleByIdFromDatabase(id: String): Flow<ArticleEntity?> {
-        id.toIntOrNull()?.let { idInt ->
-            return articleDao.getArticleById(idInt)
+    fun getArticlesFromDatabase(): Single<List<Article>> =
+        articleDao.getAllArticles().map { articleEntityList ->
+            articleEntityList.map { articleEntity ->
+                articleEntity.toArticle()
+            }
         }
-        return flow { emit(null) }
-    }
 
-    fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
-        return articleDao.getFavoriteArticles()
-    }
+    fun getArticleByIdFromDatabase(id: String): Single<Article> =
+        articleDao.getArticleById(id.toIntOrNull() ?: 0).map { articleEntity ->
+            articleEntity.toArticle()
+        }
 
-    suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
+    fun getFavoriteArticlesFromDatabase(): Flowable<List<Article>> =
+        articleDao.getFavoriteArticles().map { articleEntityList ->
+            articleEntityList.map { articleEntity ->
+                articleEntity.toArticle()
+            }
+        }
+
+    fun insertArticlesToDatabase(articles: List<ArticleEntity>): Completable =
         articleDao.insertArticles(articles)
-    }
 
-    suspend fun insertArticleToDatabase(article: Article?) {
-        article?.toArticleEntity()?.let { articleDao.insertArticle(it) }
-    }
 
-    suspend fun deleteArticleByIdFromDatabase(id: String) {
-        id.toIntOrNull()?.let { idInt ->
-            articleDao.deleteArticleById(idInt)
+    fun insertArticleToDatabase(article: Article): Completable =
+        articleDao.insertArticle(article.toArticleEntity())
+
+    fun deleteArticleByIdFromDatabase(id: String): Completable =
+        articleDao.deleteArticleById(id.toInt())
+
+    fun getNewsSourcesFromDatabase(): Single<List<NewsSource>> =
+        newsSourceDao.getAllNewsSources().map { newsSourceEntityList ->
+            newsSourceEntityList.map { newsSourceEntity ->
+                newsSourceEntity.toNewsSource()
+            }
         }
-    }
 
-    suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
-        return newsSourceDao.getAllNewsSources()
-    }
 
-    suspend fun insertNewsSourcesToDatabase(newsSources: List<NewsSourceEntity>) {
-        newsSourceDao.insertNewsSources(newsSources)
-    }
+    fun insertNewsSourcesToDatabase(newsSources: List<NewsSource>) =
+        newsSourceDao.insertNewsSources(newsSources.map { it.toEntity() })
 }

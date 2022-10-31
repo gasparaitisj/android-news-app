@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,17 +26,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Status
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -44,14 +43,16 @@ fun FavoriteScreen(
     navController: NavHostController,
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val filteredArticles by viewModel.filteredArticles.collectAsStateWithLifecycle()
+    val articles by viewModel.articles.observeAsState(initial = listOf())
+    val filteredArticles by viewModel.filteredArticles.observeAsState(initial = listOf())
+    val status by viewModel.status.observeAsState(initial = Status.LOADING)
     val searchWidgetState by viewModel.searchWidgetState
     val searchTextState by viewModel.searchTextState
 
     FavoriteScreenContent(
         articles = articles,
         filteredArticles = filteredArticles,
+        status = status,
         onArticleFavoriteChanged = { article, isFavorite ->
             viewModel.onArticleFavoriteChanged(article, isFavorite)
         },
@@ -69,8 +70,9 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteScreenContent(
-    articles: Resource<List<Article>>,
+    articles: List<Article>,
     filteredArticles: List<Article>,
+    status: Status,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onArticleFavoriteChanged: (Article, Boolean) -> Unit,
@@ -99,31 +101,16 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = articles.status == Status.LOADING
+                            isRefreshing = status == Status.LOADING
                         ),
                         onRefresh = {},
                         swipeEnabled = false
                     ) {
-                        val list = articles.getSuccessDataOrNull().orEmpty()
-                        if (list.isEmpty()) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    modifier = Modifier.fillMaxSize(0.5f),
-                                    painter = painterResource(id = R.drawable.img_empty_state_white),
-                                    contentDescription = "Empty favorites image"
-                                )
-                                Text(
-                                    text = stringResource(R.string.favorite_screen_empty_state),
-                                    style = Typography.body2
-                                )
-                            }
+                        if (articles.isEmpty() || status == Status.ERROR) {
+                            FavoriteEmptyState()
                         } else {
                             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                items(list, { it.id }) { item ->
+                                items(articles, { it.id }) { item ->
                                     ArticleItem(
                                         item = item,
                                         onArticleItemClick = { onArticleItemClick(item) },
@@ -137,6 +124,25 @@ fun FavoriteScreenContent(
             )
         }
     )
+}
+
+@Composable
+private fun FavoriteEmptyState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize(0.5f),
+            painter = painterResource(id = R.drawable.img_empty_state_white),
+            contentDescription = "Empty favorites image"
+        )
+        Text(
+            text = stringResource(R.string.favorite_screen_empty_state),
+            style = Typography.body2
+        )
+    }
 }
 
 @Composable
