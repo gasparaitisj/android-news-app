@@ -38,6 +38,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.CameraUtils.getCameraProvider
 import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.File
@@ -71,7 +72,7 @@ private fun AboutScreenContent(
 
     showSnackbar(channel, context, snackbarHostState)
     Scaffold(
-        topBar = { TopBar(stringResource(id = R.string.top_app_bar_title_about)) },
+        topBar = { TopBar(stringResource(id = Screen.About.titleResId)) },
         scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
         snackbarHost = { state ->
             SnackbarHost(state) { data ->
