@@ -6,7 +6,7 @@ import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
-import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ArticlesRepository @Inject constructor(
-    private val articlesApi: ArticlesApi,
+    private val articlesService: ArticlesService,
     private val articleDao: ArticleDao,
     private val newsSourceDao: NewsSourceDao
 ) {
@@ -32,7 +32,7 @@ class ArticlesRepository @Inject constructor(
         xRequestId: String? = null
     ): Resource<ArticlesListResponse> {
         return try {
-            val response = articlesApi.getArticles(
+            val response = articlesService.getArticles(
                 query = query,
                 page = page,
                 pageSize = pageSize,
@@ -55,7 +55,7 @@ class ArticlesRepository @Inject constructor(
 
     suspend fun getArticleById(id: String): Resource<ArticlePreviewResponse> {
         return try {
-            val response = articlesApi.getArticleById(id)
+            val response = articlesService.getArticleById(id)
             if (response.isSuccessful) {
                 response.body()?.let {
                     return@let Resource.success(it)

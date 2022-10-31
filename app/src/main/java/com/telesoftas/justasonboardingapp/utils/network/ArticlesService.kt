@@ -9,7 +9,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface ArticlesApi {
+interface ArticlesService {
     @Headers("Content-Type: application/json")
     @GET("articles")
     suspend fun getArticles(
