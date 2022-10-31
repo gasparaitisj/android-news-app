@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
@@ -30,7 +29,6 @@ import com.telesoftas.justasonboardingapp.ui.theme.Typography
 @MapsComposeExperimentalApi
 @Composable
 fun MapScreen(
-    navController: NavHostController,
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val locations = viewModel.locations
