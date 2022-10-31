@@ -296,16 +296,12 @@ private fun SearchTextField(
         textStyle = Typography.subtitle1,
         singleLine = true,
         leadingIcon = {
-            IconButton(
+            Icon(
                 modifier = Modifier.alpha(ContentAlpha.medium),
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                    tint = colorResource(id = R.color.favorite_search_icon),
-                )
-            }
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon",
+                tint = colorResource(id = R.color.favorite_search_icon),
+            )
         },
         trailingIcon = {
             IconButton(
