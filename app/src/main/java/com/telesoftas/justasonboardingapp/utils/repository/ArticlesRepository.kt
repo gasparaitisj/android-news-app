@@ -1,4 +1,4 @@
-package com.telesoftas.justasonboardingapp.ui.sourcelist
+package com.telesoftas.justasonboardingapp.utils.repository
 
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article

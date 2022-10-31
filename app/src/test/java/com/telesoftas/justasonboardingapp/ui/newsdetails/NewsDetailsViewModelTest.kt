@@ -3,12 +3,12 @@ package com.telesoftas.justasonboardingapp.ui.newsdetails
 import androidx.lifecycle.SavedStateHandle
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
 import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
-import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
+import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
