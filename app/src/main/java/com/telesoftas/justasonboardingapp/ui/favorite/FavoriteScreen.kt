@@ -106,22 +106,8 @@ fun FavoriteScreenContent(
                         onRefresh = {},
                         swipeEnabled = false
                     ) {
-                        if (articles.isEmpty()) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    modifier = Modifier.fillMaxSize(0.5f),
-                                    painter = painterResource(id = R.drawable.img_empty_state_white),
-                                    contentDescription = "Empty favorites image"
-                                )
-                                Text(
-                                    text = stringResource(R.string.favorite_screen_empty_state),
-                                    style = Typography.body2
-                                )
-                            }
+                        if (articles.isEmpty() || status == Status.ERROR) {
+                            FavoriteEmptyState()
                         } else {
                             LazyColumn(modifier = Modifier.fillMaxSize()) {
                                 items(articles, { it.id }) { item ->
@@ -138,6 +124,25 @@ fun FavoriteScreenContent(
             )
         }
     )
+}
+
+@Composable
+private fun FavoriteEmptyState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize(0.5f),
+            painter = painterResource(id = R.drawable.img_empty_state_white),
+            contentDescription = "Empty favorites image"
+        )
+        Text(
+            text = stringResource(R.string.favorite_screen_empty_state),
+            style = Typography.body2
+        )
+    }
 }
 
 @Composable
