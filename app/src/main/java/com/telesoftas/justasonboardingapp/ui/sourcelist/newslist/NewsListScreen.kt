@@ -36,6 +36,8 @@ import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
@@ -45,6 +47,7 @@ fun NewsListScreen(
 ) {
     val articles by viewModel.articles.collectAsStateWithLifecycle()
     val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
+    val sourceTitle = viewModel.sourceTitle ?: stringResource(id = Screen.NewsList.titleResId)
 
     NewsListContent(
         articles = articles,
@@ -55,10 +58,14 @@ fun NewsListScreen(
             viewModel.onArticleClicked(article)
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
-        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
+        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) },
+        topBarTitle = sourceTitle,
+        onTopBarNavigationClicked = { navController.navigateUp() }
     )
 }
 
+@ExperimentalPagerApi
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 private fun NewsListContent(
@@ -67,12 +74,15 @@ private fun NewsListContent(
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
+    topBarTitle: String,
+    onTopBarNavigationClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        topBar = { NewsListTopBar(topBarTitle, onTopBarNavigationClicked) },
         scaffoldState = scaffoldState,
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
@@ -158,12 +168,12 @@ private fun NewsListContent(
 @Composable
 private fun NewsListTopBar(
     title: String,
-    navController: NavHostController
+    onTopBarNavigationClicked: () -> Unit
 ) {
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
-            IconButton(onClick = { navController.navigateUp() }) {
+            IconButton(onClick = onTopBarNavigationClicked) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"
