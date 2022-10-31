@@ -70,8 +70,8 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteScreenContent(
-    articles: List<Article>?,
-    filteredArticles: List<Article>?,
+    articles: List<Article>,
+    filteredArticles: List<Article>,
     status: Status,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
@@ -106,7 +106,7 @@ fun FavoriteScreenContent(
                         onRefresh = {},
                         swipeEnabled = false
                     ) {
-                        if (articles.isNullOrEmpty()) {
+                        if (articles.isEmpty()) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
@@ -142,7 +142,7 @@ fun FavoriteScreenContent(
 
 @Composable
 fun MainAppBar(
-    filteredArticles: List<Article>?,
+    filteredArticles: List<Article>,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onArticleItemClick: (Article) -> Unit,
@@ -196,7 +196,7 @@ fun DefaultAppBar(onSearchClick: () -> Unit) {
 
 @Composable
 fun SearchAppBar(
-    filteredArticles: List<Article>?,
+    filteredArticles: List<Article>,
     text: String,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
@@ -263,7 +263,7 @@ fun SearchAppBar(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onSearchClick(text)
-                        if (!filteredArticles.isNullOrEmpty()) expanded = true
+                        if (filteredArticles.isNotEmpty()) expanded = true
                     }
                 ),
                 shape = RoundedCornerShape(4.dp),
@@ -282,7 +282,7 @@ fun SearchAppBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                filteredArticles?.forEach { article ->
+                filteredArticles.forEach { article ->
                     article.title?.let { title ->
                         DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
                             Column {
