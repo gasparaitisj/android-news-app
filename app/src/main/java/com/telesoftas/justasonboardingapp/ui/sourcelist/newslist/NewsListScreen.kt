@@ -1,10 +1,13 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +23,7 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
@@ -146,6 +150,29 @@ private fun NewsListContent(
             }
         }
     }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
+@Composable
+private fun NewsListTopBar(
+    title: String,
+    navController: NavHostController
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
+    )
 }
 
 

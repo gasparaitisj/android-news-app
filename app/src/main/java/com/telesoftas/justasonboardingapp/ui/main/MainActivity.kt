@@ -18,6 +18,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.main.navigation.BottomNavItem
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.tutorial.TutorialScreen
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 @ExperimentalMaterialApi
 fun BottomNavigationBar(navController: NavHostController) {
-    BottomNavigationBar(
+    com.telesoftas.justasonboardingapp.ui.main.navigation.BottomNavigationBar(
         items = listOf(
             BottomNavItem(
                 name = stringResource(id = R.string.bottom_navigation_source_list),
