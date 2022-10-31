@@ -3,6 +3,7 @@ package com.telesoftas.justasonboardingapp.ui.map
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.telesoftas.justasonboardingapp.utils.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

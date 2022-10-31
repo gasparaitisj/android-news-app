@@ -1,6 +1,7 @@
-package com.telesoftas.justasonboardingapp.ui.map
+package com.telesoftas.justasonboardingapp.utils.repository
 
 import com.google.android.gms.maps.model.LatLng
+import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import javax.inject.Inject
 import javax.inject.Singleton
 

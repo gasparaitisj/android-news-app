@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.map.utils.ClusterManager
+import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 
 @MapsComposeExperimentalApi

@@ -40,7 +40,7 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
-import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
+import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
