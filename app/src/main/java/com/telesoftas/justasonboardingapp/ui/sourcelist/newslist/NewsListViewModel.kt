@@ -1,10 +1,12 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -17,8 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository,
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics: FirebaseAnalytics,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val sourceTitle: String? = savedStateHandle[Screen.NewsList.KEY_TITLE]
+
     private val _articles: MutableStateFlow<Resource<List<Article>>> =
         MutableStateFlow(Resource.loading())
     val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
