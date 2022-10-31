@@ -25,12 +25,10 @@ object CameraUtils {
         onImageCaptured: (Uri) -> Unit,
         onError: (ImageCaptureException) -> Unit
     ) {
-
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(filenameFormat, Locale.US).format(System.currentTimeMillis()) + ".jpg"
         )
-
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         imageCapture.takePicture(
