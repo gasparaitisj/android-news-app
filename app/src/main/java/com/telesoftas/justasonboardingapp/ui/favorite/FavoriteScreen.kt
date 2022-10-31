@@ -12,7 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -202,7 +205,7 @@ fun SearchAppBar(
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
@@ -213,99 +216,129 @@ fun SearchAppBar(
         contentColor = colorResource(id = R.color.top_app_bar_content)
     ) {
         Box {
-            TextField(
+            SearchTextField(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
                     .align(Alignment.Center),
-                value = text,
-                onValueChange = { onTextChange(it) },
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.favorite_screen_search_text_field_placeholder),
-                        color = colorResource(id = R.color.favorite_search_label),
-                        style = Typography.subtitle1
-                    )
-                },
-                textStyle = Typography.subtitle1,
-                singleLine = true,
-                leadingIcon = {
-                    IconButton(
-                        modifier = Modifier.alpha(ContentAlpha.medium),
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon",
-                            tint = colorResource(id = R.color.favorite_search_icon),
-                        )
-                    }
-                },
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            if (text.isNotEmpty()) {
-                                onTextChange("")
-                            } else {
-                                onCloseClick()
-                                expanded = false
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close Icon",
-                            tint = colorResource(id = R.color.favorite_search_icon),
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        onSearchClick(text)
-                        if (filteredArticles.isNotEmpty()) expanded = true
-                    }
-                ),
-                shape = RoundedCornerShape(4.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = colorResource(id = R.color.favorite_search_background),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = Color.Black,
-                    textColor = colorResource(id = R.color.favorite_search_text),
-                )
+                text = text,
+                onTextChange = onTextChange,
+                onCloseClick = onCloseClick,
+                onExpandedChange = { expanded.value = it },
+                onSearchClick = onSearchClick,
+                filteredArticles = filteredArticles
             )
             DropdownMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.favorite_search_background)),
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = expanded.value,
+                onDismissRequest = { expanded.value = false }
             ) {
                 filteredArticles.forEach { article ->
                     article.title?.let { title ->
-                        DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
-                            Column {
-                                Text(
-                                    text = title,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = Typography.subtitle2
-                                )
-                                Text(
-                                    text = article.source ?: "",
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = Typography.caption
-                                )
-                                Divider(
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    color = colorResource(id = R.color.favorite_search_divider)
-                                )
-                            }
-                        }
+                        SearchDropdownMenuItem(onArticleItemClick, article, title)
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun SearchDropdownMenuItem(
+    onArticleItemClick: (Article) -> Unit,
+    article: Article,
+    title: String
+) {
+    DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
+        Column {
+            Text(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = Typography.subtitle2
+            )
+            Text(
+                text = article.source ?: "",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = Typography.caption
+            )
+            Divider(
+                modifier = Modifier.padding(top = 8.dp),
+                color = colorResource(id = R.color.favorite_search_divider)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchTextField(
+    modifier: Modifier,
+    text: String,
+    onTextChange: (String) -> Unit,
+    onCloseClick: () -> Unit,
+    onExpandedChange: (Boolean) -> Unit,
+    onSearchClick: (String) -> Unit,
+    filteredArticles: List<Article>
+) {
+    TextField(
+        modifier = modifier,
+        value = text,
+        onValueChange = onTextChange,
+        placeholder = {
+            Text(
+                text = stringResource(id = R.string.favorite_screen_search_text_field_placeholder),
+                color = colorResource(id = R.color.favorite_search_label),
+                style = Typography.subtitle1
+            )
+        },
+        textStyle = Typography.subtitle1,
+        singleLine = true,
+        leadingIcon = {
+            IconButton(
+                modifier = Modifier.alpha(ContentAlpha.medium),
+                onClick = {}
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon",
+                    tint = colorResource(id = R.color.favorite_search_icon),
+                )
+            }
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = {
+                    if (text.isNotEmpty()) {
+                        onTextChange("")
+                    } else {
+                        onCloseClick()
+                        onExpandedChange(false)
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close Icon",
+                    tint = colorResource(id = R.color.favorite_search_icon),
+                )
+            }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearchClick(text)
+                if (filteredArticles.isNotEmpty()) onExpandedChange(true)
+            }
+        ),
+        shape = RoundedCornerShape(4.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = colorResource(id = R.color.favorite_search_background),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = Color.Black,
+            textColor = colorResource(id = R.color.favorite_search_text),
+        )
+    )
 }
