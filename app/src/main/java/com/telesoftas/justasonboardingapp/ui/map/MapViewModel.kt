@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val locationRepository: LocationRepository
+    locationRepository: LocationRepository
 ) : ViewModel() {
     val locations = locationRepository.getLocations()
     val defaultCameraPosition = CameraPosition.fromLatLngZoom(
