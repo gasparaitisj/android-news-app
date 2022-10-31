@@ -42,13 +42,18 @@ class FavoriteViewModel @Inject constructor(
             .getFavoriteArticlesFromDatabase()
             .subscribeOn(Schedulers.io())
             .doAfterNext { _status.postValue(Status.SUCCESS) }
-            .subscribe({ onRefresh(it) }, Timber::e)
+            .subscribe({ onRefresh(it) }, { onError(it) })
             .addTo(compositeDisposable)
     }
 
     private fun onRefresh(articleList: List<Article>) {
         _status.postValue(Status.LOADING)
         _articles.postValue(articleList)
+    }
+
+    private fun onError(throwable: Throwable) {
+        _status.postValue(Status.ERROR)
+        Timber.e(throwable)
     }
 
     fun updateSearchWidgetState(newValue: SearchWidgetState) {
