@@ -49,7 +49,7 @@ fun MainScreen(
 @Composable
 private fun MainScreenContent(bottomNavController: NavHostController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = bottomNavController) },
+        bottomBar = { MainBottomNavigationBar(navController = bottomNavController) },
         content = { paddingValues ->
             Column(
                 modifier = Modifier.padding(paddingValues),
