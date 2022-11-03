@@ -232,12 +232,12 @@ fun NewsDetailsItem(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize()
             .verticalScroll(
                 state = rememberScrollState(),
                 enabled = columnScrollingEnabled
-            ),
+            )
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
