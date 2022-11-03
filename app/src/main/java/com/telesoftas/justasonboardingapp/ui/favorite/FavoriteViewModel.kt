@@ -24,13 +24,12 @@ class FavoriteViewModel @Inject constructor(
     private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
 
-    val articles: StateFlow<Resource<List<Article>>> = articlesRepository.getFavoriteArticlesFromDatabase().map {
-        Resource.success(it.map { articleEntity -> articleEntity.toArticle() })
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = Resource.loading(),
-        started = SharingStarted.WhileSubscribed()
-    )
+    val articles: StateFlow<Resource<List<Article>>> =
+        articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
+            scope = viewModelScope,
+            initialValue = Resource.loading(),
+            started = SharingStarted.WhileSubscribed()
+        )
 
     private val _filteredArticles: MutableStateFlow<List<Article>> = MutableStateFlow(emptyList())
     val filteredArticles: StateFlow<List<Article>> = _filteredArticles.asStateFlow()

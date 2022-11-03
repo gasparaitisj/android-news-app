@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
@@ -28,10 +27,10 @@ class NewsListViewModel @Inject constructor(
         MutableStateFlow(Resource.loading())
     val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
 
-    private val favoriteArticles: StateFlow<List<ArticleEntity>> =
+    private val favoriteArticles: StateFlow<Resource<List<Article>>> =
         articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
             scope = viewModelScope,
-            initialValue = listOf(),
+            initialValue = Resource.loading(),
             started = SharingStarted.WhileSubscribed()
         )
 
@@ -51,9 +50,16 @@ class NewsListViewModel @Inject constructor(
             _articles.value = Resource.loading()
             val response = articlesRepository.getArticles()
             if (response.status == Status.ERROR) {
-                _articles.update { NewsListFactory().mapEntitiesToResource(articlesRepository.getArticlesFromDatabase()) }
+                _articles.update { articlesRepository.getArticlesFromDatabase() }
             } else {
-                _articles.update { NewsListFactory().mapResponseToResource(response, favoriteArticles.value) }
+                _articles.update {
+                    Resource.success(
+                        response.data?.map { article ->
+                            val favoriteArticle = favoriteArticles.value.data?.find { it.id == article.id }
+                            article.copy(isFavorite = favoriteArticle?.isFavorite ?: false)
+                        }
+                    )
+                }
                 cacheArticles()
             }
         }
@@ -90,9 +96,7 @@ class NewsListViewModel @Inject constructor(
 
     private fun cacheArticles() {
         viewModelScope.launch {
-            articlesRepository.insertArticlesToDatabase(
-                NewsListFactory().mapResourceToEntity(articles.value)
-            )
+            articles.value.data?.let { articlesRepository.insertArticlesToDatabase(it) }
         }
     }
 }

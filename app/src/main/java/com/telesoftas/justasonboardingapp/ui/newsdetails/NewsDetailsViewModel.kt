@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
@@ -26,7 +25,7 @@ class NewsDetailsViewModel @Inject constructor(
     private val _article: MutableStateFlow<Resource<Article>> = MutableStateFlow(Resource.loading())
     val article: StateFlow<Resource<Article>> = _article.asStateFlow()
 
-    private val articleFromDatabase: StateFlow<ArticleEntity?> =
+    private val articleFromDatabase: StateFlow<Article?> =
         articlesRepository.getArticleByIdFromDatabase(id).stateIn(
             scope = viewModelScope,
             initialValue = null,
@@ -38,23 +37,20 @@ class NewsDetailsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             articleFromDatabase.collectLatest {
-                getArticle()
+                getArticle(it)
             }
         }
     }
 
-    private fun getArticle() {
+    private fun getArticle(articleFromDatabase: Article?) {
         viewModelScope.launch {
             _article.value = Resource.loading()
             val response = articlesRepository.getArticleById(id)
             if (response.status == Status.ERROR) {
-                articleFromDatabase.value?.let { articleEntity ->
-                    _article.value = NewsDetailsFactory().mapEntityToResource(articleEntity)
-                }
+                _article.value = Resource.success(articleFromDatabase)
             } else {
-                _article.value = NewsDetailsFactory().mapResponseToResource(
-                    response = response,
-                    isFavorite = articleFromDatabase.value?.isFavorite ?: false
+                _article.value = response.copy(
+                    data = response.data?.copy(isFavorite = articleFromDatabase?.isFavorite ?: false)
                 )
             }
         }

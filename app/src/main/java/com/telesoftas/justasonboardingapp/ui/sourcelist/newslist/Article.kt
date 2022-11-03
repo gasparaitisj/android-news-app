@@ -15,21 +15,17 @@ data class Article(
     val imageUrl: String?,
     val votes: Long
 ) {
-    fun toArticleEntity(): ArticleEntity? {
-        id.toIntOrNull()?.let { idInt ->
-            return ArticleEntity(
-                id = idInt,
-                isFavorite = isFavorite,
-                publishedAt = publishedAt,
-                source = source,
-                category = category.ordinal,
-                author = author,
-                title = title,
-                description = description,
-                imageUrl = imageUrl,
-                votes = votes
-            )
-        }
-        return null
-    }
+    fun toEntity(): ArticleEntity =
+        ArticleEntity(
+            id = id.toIntOrNull() ?: 0,
+            isFavorite = isFavorite,
+            publishedAt = publishedAt,
+            source = source,
+            category = category.ordinal,
+            author = author,
+            title = title,
+            description = description,
+            imageUrl = imageUrl,
+            votes = votes
+        )
 }

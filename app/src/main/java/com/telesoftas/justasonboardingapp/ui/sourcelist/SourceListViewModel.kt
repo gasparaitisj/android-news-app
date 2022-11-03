@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
-import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,32 +29,14 @@ class SourceListViewModel @Inject constructor(
         getArticles()
     }
 
-    fun getArticles(
-        query: String? = null,
-        page: Int? = null,
-        pageSize: Int? = null,
-        category: ArticleCategory? = null,
-        sortBy: String? = null,
-        pageNumber: Int? = null,
-        xRequestId: String? = null
-    ) {
+    fun getArticles() {
         viewModelScope.launch {
             _newsSources.value = Resource.loading()
-            val response = articlesRepository.getArticles(
-                query = query,
-                page = page,
-                pageSize = pageSize,
-                category = category,
-                sortBy = sortBy,
-                pageNumber = pageNumber,
-                xRequestId = xRequestId
-            )
+            val response = articlesRepository.getNewsSources()
             if (response.status == Status.ERROR) {
-                _newsSources.value = SourceListFactory().mapEntitiesToResource(
-                    articlesRepository.getNewsSourcesFromDatabase()
-                )
+                _newsSources.update { articlesRepository.getNewsSourcesFromDatabase() }
             } else {
-                _newsSources.value = SourceListFactory().mapResponseToResource(response)
+                _newsSources.update { response }
                 cacheNewsSources()
             }
         }
@@ -83,9 +65,7 @@ class SourceListViewModel @Inject constructor(
 
     private fun cacheNewsSources() {
         viewModelScope.launch {
-            articlesRepository.insertNewsSourcesToDatabase(
-                SourceListFactory().mapResourceToEntity(newsSources.value)
-            )
+            newsSources.value.data?.let { articlesRepository.insertNewsSourcesToDatabase(it) }
         }
     }
 }
