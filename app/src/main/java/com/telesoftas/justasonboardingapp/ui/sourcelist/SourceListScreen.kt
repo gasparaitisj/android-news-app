@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -177,6 +178,12 @@ fun ChipGroupSortArticles(
                 onClick = { onSortTypeChanged(SortBy.ASCENDING) }
             ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
+                Text(
+                    modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                    text = stringResource(id = R.string.source_list_screen_chip_sort_arrow),
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
             }
             FilterChip(
                 colors = chipColors,
@@ -185,6 +192,12 @@ fun ChipGroupSortArticles(
                 onClick = { onSortTypeChanged(SortBy.DESCENDING) }
             ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
+                Text(
+                    modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                    text = stringResource(id = R.string.source_list_screen_chip_sort_arrow),
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
             }
         }
     }
