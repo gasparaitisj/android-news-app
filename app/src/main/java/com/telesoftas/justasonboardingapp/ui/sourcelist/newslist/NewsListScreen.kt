@@ -5,6 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -32,7 +32,6 @@ import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import kotlinx.coroutines.launch
@@ -46,15 +45,12 @@ fun NewsListScreen(
     navController: NavHostController,
     viewModel: NewsListViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
-    val sourceTitle = viewModel.sourceTitle ?: stringResource(id = Screen.NewsList.titleResId)
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     NewsListContent(
-        articles = articles,
+        state = state,
         isLoading = isLoading,
-        categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
         onArticleItemClick = { article ->
@@ -62,7 +58,6 @@ fun NewsListScreen(
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
         onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
-        topBarTitle = sourceTitle,
         onTopBarNavigationClicked = { navController.navigateUp() }
     )
 
@@ -88,21 +83,20 @@ private fun addRefreshOnNavigation(
 @ExperimentalMaterialApi
 @Composable
 private fun NewsListContent(
-    articles: Resource<List<Article>>,
+    state: NewsListState,
     isLoading: Boolean,
-    categoryType: ArticleCategory,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
     onArticleItemClick: (Article) -> Unit,
     onArticleFavoriteChanged: (Article) -> Unit,
-    topBarTitle: String,
     onTopBarNavigationClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     Scaffold(
-        topBar = { NewsListTopBar(topBarTitle, onTopBarNavigationClicked) },
+        topBar = { NewsListTopBar(state.sourceTitle, onTopBarNavigationClicked) },
         scaffoldState = scaffoldState,
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
@@ -124,7 +118,7 @@ private fun NewsListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (articles.status == Status.ERROR) {
+                if (state.articles.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -143,12 +137,18 @@ private fun NewsListContent(
                 } else {
                     Column {
                         ChipGroupFilterArticles(
-                            categoryType = categoryType,
-                            onCategoryTypeChanged = onCategoryTypeChanged
+                            categoryType = state.categoryType,
+                            onCategoryTypeChanged = { category ->
+                                onCategoryTypeChanged(category)
+                                scope.launch { lazyListState.scrollToItem(0) }
+                            }
                         )
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = lazyListState
+                        ) {
                             items(
-                                items = articles.getSuccessDataOrNull().orEmpty(),
+                                items = state.articles.getSuccessDataOrNull().orEmpty(),
                                 key = { it.id }
                             ) { item ->
                                 ArticleItem(
@@ -165,10 +165,10 @@ private fun NewsListContent(
     }
 
     // Show Snackbar on network error
-    val message = stringResource(id = articles.messageRes ?: R.string.unknown_error)
+    val message = stringResource(id = state.articles.messageRes ?: R.string.unknown_error)
     val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(articles.status) {
-        if (articles.status == Status.ERROR) {
+    LaunchedEffect(state.articles.status) {
+        if (state.articles.status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = message,
