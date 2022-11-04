@@ -20,7 +20,7 @@ sealed class Screen(val routePattern: String) {
     object NewsList : Screen("news-list/{title}") {
         @StringRes val titleResId: Int = R.string.top_app_bar_title_news_list
         val route: String get() = routePattern
-        fun destination(title: String): String = "news-list/${title}"
+        fun destination(title: String): String = "news-list/${title.ifBlank { "No title" }}"
         const val KEY_TITLE = "title"
     }
     object NewsDetails : Screen("news-details/{id}") {
