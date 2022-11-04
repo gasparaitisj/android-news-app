@@ -8,8 +8,6 @@ import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,6 +26,7 @@ class ArticlesRepository @Inject constructor(
         pageNumber: Int? = null,
         xRequestId: String? = null
     ): Resource<List<Article>> {
+        val articlesFromDatabase = getFavoriteArticlesFromDatabase()
         return try {
             val response = articlesService.getArticles(
                 query = query,
@@ -40,11 +39,13 @@ class ArticlesRepository @Inject constructor(
             )
             if (!response.isSuccessful) return Resource.error(msg = response.message())
             response.body()?.let { articlesListResponse ->
-                return@let Resource.success(
+                val mappedResponse = Resource.success(
                     articlesListResponse.articles?.map { articlePreviewResponse ->
                         Article(
                             id = articlePreviewResponse.id,
-                            isFavorite = false,
+                            isFavorite = articlesFromDatabase.find { article ->
+                                article.id == articlePreviewResponse.id
+                            }?.isFavorite ?: false,
                             publishedAt = articlePreviewResponse.publishedAt.replace(
                                 regex = "[\$TZ]".toRegex(),
                                 replacement = " "
@@ -59,6 +60,8 @@ class ArticlesRepository @Inject constructor(
                         )
                     } ?: listOf()
                 )
+                mappedResponse.data?.let { insertArticlesToDatabase(it) }
+                return@let mappedResponse
             } ?: Resource.error(msg = response.message())
         } catch (exception: Exception) {
             Resource.error(msgRes = R.string.network_error)
@@ -66,14 +69,15 @@ class ArticlesRepository @Inject constructor(
     }
 
     suspend fun getArticleById(id: String): Resource<Article> {
+        val articleFromDatabase = getArticleByIdFromDatabase(id)
         return try {
             val response = articlesService.getArticleById(id)
-            if (!response.isSuccessful) return Resource.error(msg = response.message())
+            if (!response.isSuccessful) return Resource.success(articleFromDatabase)
             response.body()?.let { articlePreviewResponse ->
                 return@let Resource.success(
                     Article(
                         id = articlePreviewResponse.id,
-                        isFavorite = false,
+                        isFavorite = articleFromDatabase?.isFavorite ?: false,
                         publishedAt = articlePreviewResponse.publishedAt.replace(
                             regex = "[\$TZ]".toRegex(),
                             replacement = " "
@@ -89,20 +93,18 @@ class ArticlesRepository @Inject constructor(
                 )
             } ?: Resource.error(msg = response.message())
         } catch (exception: Exception) {
-            Resource.error(msgRes = R.string.network_error)
+            Resource.success(articleFromDatabase)
         }
     }
 
     suspend fun getArticlesFromDatabase(): Resource<List<Article>> =
         Resource.success(articleDao.getAllArticles().map { it.toArticle() })
 
-    fun getArticleByIdFromDatabase(id: String): Flow<Article?> =
-        articleDao.getArticleById(id.toIntOrNull() ?: 0).map { it?.toArticle() }
+    suspend fun getArticleByIdFromDatabase(id: String): Article? =
+        articleDao.getArticleById(id.toIntOrNull() ?: 0)?.toArticle()
 
-    fun getFavoriteArticlesFromDatabase(): Flow<Resource<List<Article>>> =
-        articleDao.getFavoriteArticles().map { articleEntityList ->
-            Resource.success(articleEntityList.map { it.toArticle() })
-        }
+    suspend fun getFavoriteArticlesFromDatabase(): List<Article> =
+        articleDao.getFavoriteArticles().map { it.toArticle() }
 
     suspend fun insertArticlesToDatabase(articles: List<Article>) {
         articleDao.insertArticles(articles.map { it.toEntity() })
@@ -113,8 +115,8 @@ class ArticlesRepository @Inject constructor(
 
     suspend fun deleteArticleByIdFromDatabase(id: Int) = articleDao.deleteArticleById(id)
 
-    suspend fun getNewsSources(): Resource<List<NewsSource>> =
-        Resource.success(
+    suspend fun getNewsSources(): Resource<List<NewsSource>> {
+        val resource = Resource.success(
             getArticles().data?.map { article ->
                 NewsSource(
                     id = article.id,
@@ -123,6 +125,9 @@ class ArticlesRepository @Inject constructor(
                 )
             } ?: listOf()
         )
+        resource.data?.let { insertNewsSourcesToDatabase(it) }
+        return resource
+    }
 
     suspend fun getNewsSourcesFromDatabase(): Resource<List<NewsSource>> =
         Resource.success(newsSourceDao.getAllNewsSources().map { it.toNewsSource() })

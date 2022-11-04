@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -46,11 +47,13 @@ fun NewsListScreen(
     viewModel: NewsListViewModel = hiltViewModel()
 ) {
     val articles by viewModel.articles.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
     val sourceTitle = viewModel.sourceTitle ?: stringResource(id = Screen.NewsList.titleResId)
 
     NewsListContent(
         articles = articles,
+        isLoading = isLoading,
         categoryType = categoryType,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
@@ -58,10 +61,26 @@ fun NewsListScreen(
             viewModel.onArticleClicked(article)
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
-        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) },
+        onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
         topBarTitle = sourceTitle,
         onTopBarNavigationClicked = { navController.navigateUp() }
     )
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.NewsList.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @ExperimentalPagerApi
@@ -70,11 +89,12 @@ fun NewsListScreen(
 @Composable
 private fun NewsListContent(
     articles: Resource<List<Article>>,
+    isLoading: Boolean,
     categoryType: ArticleCategory,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
+    onArticleFavoriteChanged: (Article) -> Unit,
     topBarTitle: String,
     onTopBarNavigationClicked: () -> Unit
 ) {
@@ -100,7 +120,7 @@ private fun NewsListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = articles.status == Status.LOADING
+                    isRefreshing = isLoading
                 ),
                 onRefresh = { onRefresh() },
             ) {
@@ -126,9 +146,7 @@ private fun NewsListContent(
                             categoryType = categoryType,
                             onCategoryTypeChanged = onCategoryTypeChanged
                         )
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()) {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(
                                 items = articles.getSuccessDataOrNull().orEmpty(),
                                 key = { it.id }
@@ -190,9 +208,8 @@ private fun NewsListTopBar(
 fun ArticleItem(
     item: Article,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (Article) -> Unit
 ) {
-    val selected = remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -214,12 +231,11 @@ fun ArticleItem(
             )
             IconButton(
                 onClick = {
-                    selected.value = !selected.value
-                    onArticleFavoriteChanged(item, selected.value)
+                    onArticleFavoriteChanged(item)
                 },
                 content = {
                     Icon(
-                        painter = if (selected.value) {
+                        painter = if (item.isFavorite) {
                             painterResource(id = R.drawable.btn_favorite_active)
                         } else {
                             painterResource(id = R.drawable.btn_favorite)
@@ -358,6 +374,6 @@ private fun ArticleItemPreview() {
         votes = 52
     )
     JustasOnboardingAppTheme {
-        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
+        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {})
     }
 }

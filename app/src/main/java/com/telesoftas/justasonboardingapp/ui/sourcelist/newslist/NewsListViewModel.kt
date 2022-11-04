@@ -7,11 +7,13 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,44 +26,25 @@ class NewsListViewModel @Inject constructor(
     val sourceTitle: String? = savedStateHandle[Screen.NewsList.KEY_TITLE]
 
     private val _articles: MutableStateFlow<Resource<List<Article>>> =
-        MutableStateFlow(Resource.loading())
+        MutableStateFlow(Resource.success())
     val articles: StateFlow<Resource<List<Article>>> = _articles.asStateFlow()
 
-    private val favoriteArticles: StateFlow<Resource<List<Article>>> =
-        articlesRepository.getFavoriteArticlesFromDatabase().stateIn(
-            scope = viewModelScope,
-            initialValue = Resource.loading(),
-            started = SharingStarted.WhileSubscribed()
-        )
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _categoryType: MutableStateFlow<ArticleCategory> = MutableStateFlow(ArticleCategory.NONE)
     val categoryType: StateFlow<ArticleCategory> = _categoryType.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            favoriteArticles.collectLatest {
-                onRefresh()
-            }
-        }
+        onRefresh()
     }
 
     fun onRefresh() {
         viewModelScope.launch {
-            _articles.value = Resource.loading()
+            _isLoading.value = true
             val response = articlesRepository.getArticles()
-            if (response.status == Status.ERROR) {
-                _articles.update { articlesRepository.getArticlesFromDatabase() }
-            } else {
-                _articles.update {
-                    Resource.success(
-                        response.data?.map { article ->
-                            val favoriteArticle = favoriteArticles.value.data?.find { it.id == article.id }
-                            article.copy(isFavorite = favoriteArticle?.isFavorite ?: false)
-                        }
-                    )
-                }
-                cacheArticles()
-            }
+            _articles.value = response
+            _isLoading.value = false
         }
     }
 
@@ -79,9 +62,10 @@ class NewsListViewModel @Inject constructor(
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
+    fun onArticleFavoriteChanged(article: Article) {
         viewModelScope.launch {
-            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = !article.isFavorite))
+            onRefresh()
         }
     }
 
@@ -91,12 +75,6 @@ class NewsListViewModel @Inject constructor(
             param(FirebaseAnalytics.Param.ITEM_NAME, article.title ?: "")
             param(FirebaseAnalytics.Param.CONTENT_TYPE, "news article")
             param(FirebaseAnalytics.Param.ITEM_CATEGORY, article.category.value)
-        }
-    }
-
-    private fun cacheArticles() {
-        viewModelScope.launch {
-            articles.value.data?.let { articlesRepository.insertArticlesToDatabase(it) }
         }
     }
 }

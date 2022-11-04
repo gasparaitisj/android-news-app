@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -44,8 +46,8 @@ import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -61,18 +63,32 @@ fun NewsDetailsScreen(
     navController: NavHostController,
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
-    val article by viewModel.article.collectAsState()
+    val article by viewModel.article.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     NewsDetailsContent(
         article = article,
+        isLoading = isLoading,
         location = viewModel.location,
         onBackArrowClicked = { navController.navigateUp() },
-        onArticleFavoriteChanged = { item, isFavorite ->
-            viewModel.onArticleFavoriteChanged(
-                article = item,
-                isFavorite = isFavorite
-            )
-        }
+        onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.NewsDetails.route &&
+                destination.route == Screen.FavoriteNewsDetails.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @ExperimentalComposeUiApi
@@ -82,16 +98,17 @@ fun NewsDetailsScreen(
 @Composable
 fun NewsDetailsContent(
     article: Resource<Article>,
+    isLoading: Boolean,
     location: LocationClusterItem,
     onBackArrowClicked: () -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (Article) -> Unit
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
     val progress = state.toolbarState.progress
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = article.status == Status.LOADING
+            isRefreshing = isLoading
         ),
         swipeEnabled = false,
         onRefresh = {}
@@ -217,10 +234,8 @@ private fun ExpandedCollapsingAppBar(
 fun NewsDetailsItem(
     item: Article,
     location: LocationClusterItem,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (Article) -> Unit
 ) {
-    val selected = remember { mutableStateOf(item.isFavorite) }
-
     val defaultCameraPosition = CameraPosition.fromLatLngZoom(location.position, 10f)
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
     var columnScrollingEnabled by remember { mutableStateOf(true) }
@@ -252,12 +267,11 @@ fun NewsDetailsItem(
             )
             IconButton(
                 onClick = {
-                    selected.value = !selected.value
-                    onArticleFavoriteChanged(item, selected.value)
+                    onArticleFavoriteChanged(item)
                 },
                 content = {
                     Icon(
-                        painter = if (selected.value) {
+                        painter = if (item.isFavorite) {
                             painterResource(id = R.drawable.btn_favorite_active)
                         } else {
                             painterResource(id = R.drawable.btn_favorite)
@@ -289,7 +303,7 @@ fun NewsDetailsItem(
             MapInColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((256+128).dp)
+                    .height((256 + 128).dp)
                     .padding(top = 32.dp),
                 location = location,
                 cameraPositionState = cameraPositionState,
@@ -396,5 +410,5 @@ fun NewsDetailsItemPreview() {
         imageUrl = "placebear.com/200/300",
         votes = 52
     )
-    NewsDetailsItem(item = item, location = LocationClusterItem(LatLng(0.0, 0.0), "", "")) { _, _ -> }
+    NewsDetailsItem(item = item, location = LocationClusterItem(LatLng(0.0, 0.0), "", "")) {}
 }

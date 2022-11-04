@@ -12,10 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -29,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -38,7 +36,6 @@ import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -48,35 +45,53 @@ fun FavoriteScreen(
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
     val articles by viewModel.articles.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val filteredArticles by viewModel.filteredArticles.collectAsStateWithLifecycle()
     val searchWidgetState by viewModel.searchWidgetState
     val searchTextState by viewModel.searchTextState
 
     FavoriteScreenContent(
         articles = articles,
+        isLoading = isLoading,
         filteredArticles = filteredArticles,
-        onArticleFavoriteChanged = { article, isFavorite ->
-            viewModel.onArticleFavoriteChanged(article, isFavorite)
-        },
+        onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
         onArticleItemClick = { article ->
             navController.navigate(Screen.FavoriteNewsDetails.destination(article.id))
         },
         searchWidgetState = searchWidgetState,
         searchTextState = searchTextState,
+        onRefresh = { viewModel.onRefresh() },
         onTextChange = { viewModel.updateSearchTextState(newValue = it) },
         onCloseClick = { viewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED) },
         onSearchClick = { text -> viewModel.onFilterArticles(text) },
         onSearchTrigger = { viewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED) }
     )
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.Favorite.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @Composable
 fun FavoriteScreenContent(
     articles: Resource<List<Article>>,
+    isLoading: Boolean,
     filteredArticles: List<Article>,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
+    onRefresh: () -> Unit,
+    onArticleFavoriteChanged: (Article) -> Unit,
     onArticleItemClick: (Article) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
@@ -102,10 +117,9 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = articles.status == Status.LOADING
+                            isRefreshing = isLoading
                         ),
-                        onRefresh = {},
-                        swipeEnabled = false
+                        onRefresh = onRefresh
                     ) {
                         val list = articles.getSuccessDataOrNull().orEmpty()
                         if (list.isEmpty()) {

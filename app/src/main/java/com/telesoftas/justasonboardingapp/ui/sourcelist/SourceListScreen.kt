@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -40,20 +41,38 @@ fun SourceListScreen(
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
     val newsSources by viewModel.newsSources.collectAsStateWithLifecycle()
-    val sortType by viewModel.sortType.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val sortType by viewModel.sortType.collectAsStateWithLifecycle()
     SourceListContent(
         newsSources = newsSources,
+        isLoading = isLoading,
         sortType = sortType,
-        onRefresh = { viewModel.getArticles() },
+        onRefresh = { viewModel.getNewsSources() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.getNewsSources() })
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.SourceList.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @ExperimentalMaterialApi
 @Composable
 private fun SourceListContent(
     newsSources: Resource<List<NewsSource>>,
+    isLoading: Boolean,
     sortType: SortBy,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
@@ -81,7 +100,7 @@ private fun SourceListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = newsSources.status == Status.LOADING
+                    isRefreshing = isLoading
                 ),
                 onRefresh = { onRefresh() },
             ) {

@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import com.telesoftas.justasonboardingapp.utils.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class NewsDetailsViewModel @Inject constructor(
@@ -22,43 +22,31 @@ class NewsDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val id: String = checkNotNull(savedStateHandle["id"])
 
-    private val _article: MutableStateFlow<Resource<Article>> = MutableStateFlow(Resource.loading())
-    val article: StateFlow<Resource<Article>> = _article.asStateFlow()
+    private val _article: MutableStateFlow<Resource<Article>> = MutableStateFlow(Resource.success())
+    val article: StateFlow<Resource<Article>> = _article
 
-    private val articleFromDatabase: StateFlow<Article?> =
-        articlesRepository.getArticleByIdFromDatabase(id).stateIn(
-            scope = viewModelScope,
-            initialValue = null,
-            started = SharingStarted.WhileSubscribed()
-        )
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     val location = locationRepository.getLocations()[0]
 
     init {
-        viewModelScope.launch {
-            articleFromDatabase.collectLatest {
-                getArticle(it)
-            }
-        }
+        onRefresh()
     }
 
-    private fun getArticle(articleFromDatabase: Article?) {
+    fun onRefresh() {
         viewModelScope.launch {
-            _article.value = Resource.loading()
+            _isLoading.value = true
             val response = articlesRepository.getArticleById(id)
-            if (response.status == Status.ERROR) {
-                _article.value = Resource.success(articleFromDatabase)
-            } else {
-                _article.value = response.copy(
-                    data = response.data?.copy(isFavorite = articleFromDatabase?.isFavorite ?: false)
-                )
-            }
+            _article.value = response
+            _isLoading.value = false
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article, isFavorite: Boolean) {
+    fun onArticleFavoriteChanged(article: Article) {
         viewModelScope.launch {
-            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = isFavorite))
+            articlesRepository.insertArticleToDatabase(article.copy(isFavorite = !article.isFavorite))
+            onRefresh()
         }
     }
 }
