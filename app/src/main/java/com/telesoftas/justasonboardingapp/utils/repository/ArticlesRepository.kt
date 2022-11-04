@@ -98,13 +98,13 @@ class ArticlesRepository @Inject constructor(
     }
 
     suspend fun getArticlesFromDatabase(): Resource<List<ArticleViewData>> =
-        Resource.success(articleDao.getAllArticles().map { it.toArticle() })
+        Resource.success(articleDao.getAllArticles().map { it.toViewData() })
 
     suspend fun getArticleByIdFromDatabase(id: String): ArticleViewData? =
-        articleDao.getArticleById(id.toIntOrNull() ?: 0)?.toArticle()
+        articleDao.getArticleById(id.toIntOrNull() ?: 0)?.toViewData()
 
     suspend fun getFavoriteArticlesFromDatabase(): List<ArticleViewData> =
-        articleDao.getFavoriteArticles().map { it.toArticle() }
+        articleDao.getFavoriteArticles().map { it.toViewData() }
 
     suspend fun insertArticlesToDatabase(articles: List<ArticleViewData>) {
         articleDao.insertArticles(articles.map { it.toEntity() })
@@ -130,7 +130,7 @@ class ArticlesRepository @Inject constructor(
     }
 
     suspend fun getNewsSourcesFromDatabase(): Resource<List<SourceViewData>> =
-        Resource.success(sourceDao.getAllNewsSources().map { it.toNewsSource() })
+        Resource.success(sourceDao.getAllNewsSources().map { it.toViewData() })
 
     suspend fun insertNewsSourcesToDatabase(sources: List<SourceViewData>) =
         sourceDao.insertNewsSources(sources.map { it.toEntity() })

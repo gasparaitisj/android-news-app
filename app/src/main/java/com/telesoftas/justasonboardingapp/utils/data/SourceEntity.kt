@@ -11,7 +11,7 @@ data class SourceEntity(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String
 ) {
-    fun toNewsSource(): SourceViewData {
+    fun toViewData(): SourceViewData {
         return SourceViewData(
             id = id.toString(),
             title = title,

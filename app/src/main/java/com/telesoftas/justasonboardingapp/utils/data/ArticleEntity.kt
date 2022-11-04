@@ -19,7 +19,7 @@ data class ArticleEntity(
     @ColumnInfo(name = "image_url") val imageUrl: String?,
     @ColumnInfo(name = "votes") val votes: Long
 ) {
-    fun toArticle(): ArticleViewData {
+    fun toViewData(): ArticleViewData {
         return ArticleViewData(
             id = id.toString(),
             isFavorite = isFavorite,
