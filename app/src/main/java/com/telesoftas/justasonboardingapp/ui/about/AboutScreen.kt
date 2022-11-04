@@ -52,10 +52,10 @@ import java.util.concurrent.Executors
 fun AboutScreen(
     viewModel: AboutViewModel = hiltViewModel()
 ) {
-    val savedPhotoUri by viewModel.savedPhotoUri.collectAsState()
+    val state by viewModel.state.collectAsState()
     AboutScreenContent(
         onImageSuccessfullyLoaded = { viewModel.updateSavedPhotoUri(it) },
-        savedPhotoUri = savedPhotoUri
+        state = state
     )
 }
 
@@ -63,7 +63,7 @@ fun AboutScreen(
 @Composable
 private fun AboutScreenContent(
     onImageSuccessfullyLoaded: (Uri) -> Unit,
-    savedPhotoUri: Uri?
+    state: AboutState
 ) {
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -74,8 +74,8 @@ private fun AboutScreenContent(
     Scaffold(
         topBar = { TopBar(stringResource(id = Screen.About.titleResId)) },
         scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
-        snackbarHost = { state ->
-            SnackbarHost(state) { data ->
+        snackbarHost = { snackbarState ->
+            SnackbarHost(snackbarState) { data ->
                 Snackbar(
                     backgroundColor = colorResource(id = R.color.snackbar_background),
                     actionColor = colorResource(id = R.color.snackbar_action),
@@ -100,7 +100,7 @@ private fun AboutScreenContent(
             CameraContent(
                 channel = channel,
                 onImageSuccessfullyLoaded = onImageSuccessfullyLoaded,
-                savedPhotoUri = savedPhotoUri
+                savedPhotoUri = state.savedPhotoUri
             )
         }
     }
@@ -124,6 +124,7 @@ private fun CameraContent(
         }
         is PermissionStatus.Denied -> {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -147,6 +148,7 @@ private fun CameraPermissionGrantedContent(
     val context = LocalContext.current
     val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     Column(
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -154,7 +156,6 @@ private fun CameraPermissionGrantedContent(
         when (cameraStatus.value) {
             CameraStatus.NONE -> {}
             CameraStatus.PHOTO_LOADING -> {
-                Text(stringResource(id = R.string.about_screen_loading_photo))
                 if (savedPhotoUri != null) {
                     if (savedPhotoUri == Uri.EMPTY) {
                         cameraStatus.value = CameraStatus.NONE
@@ -322,7 +323,12 @@ private fun CameraView(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
+    Box(
+        contentAlignment = Alignment.BottomCenter,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 48.dp)
+    ) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { previewView }
