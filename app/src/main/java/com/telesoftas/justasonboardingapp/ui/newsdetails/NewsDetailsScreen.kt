@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -63,12 +62,11 @@ fun NewsDetailsScreen(
     navController: NavHostController,
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
-    val article by viewModel.article.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     NewsDetailsContent(
-        article = article,
+        state = state,
         isLoading = isLoading,
-        location = MapState().items[0],
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
@@ -97,14 +95,13 @@ private fun addRefreshOnNavigation(
 @ExperimentalMaterialApi
 @Composable
 fun NewsDetailsContent(
-    article: Resource<Article>,
+    state: NewsDetailsState,
     isLoading: Boolean,
-    location: LocationClusterItem,
     onBackArrowClicked: () -> Unit,
     onArticleFavoriteChanged: (Article) -> Unit
 ) {
-    val state = rememberCollapsingToolbarScaffoldState()
-    val progress = state.toolbarState.progress
+    val scaffoldState = rememberCollapsingToolbarScaffoldState()
+    val progress = scaffoldState.toolbarState.progress
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
@@ -115,7 +112,7 @@ fun NewsDetailsContent(
     ) {
         CollapsingToolbarScaffold(
             modifier = Modifier,
-            state = state,
+            state = scaffoldState,
             scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
             toolbar = {
                 CollapsedCollapsingAppBar(
@@ -125,15 +122,15 @@ fun NewsDetailsContent(
                             whenExpanded = Alignment.BottomStart
                         )
                         .pin(),
-                    progress, article, onBackArrowClicked
+                    progress, state.article, onBackArrowClicked
                 )
-                ExpandedCollapsingAppBar(article, progress, onBackArrowClicked)
+                ExpandedCollapsingAppBar(state.article, progress, onBackArrowClicked)
             }
         ) {
-            article.data?.let { article ->
+            state.article.data?.let { article ->
                 NewsDetailsItem(
                     article,
-                    location,
+                    state.location,
                     onArticleFavoriteChanged
                 )
             }
