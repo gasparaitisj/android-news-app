@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +21,6 @@ class AboutViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             savedUri.collectLatest { uri ->
-                Timber.d("update state! $uri")
                 state.update { it.copy(savedPhotoUri = uri) }
             }
         }
