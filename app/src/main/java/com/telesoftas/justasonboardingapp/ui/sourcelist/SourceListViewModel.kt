@@ -33,7 +33,7 @@ class SourceListViewModel @Inject constructor(
 
     fun sortArticles(sortBy: SortBy) {
         if (state.value.sortType == SortBy.NONE) {
-            var updatedSources: Resource<List<Source>> = Resource.success()
+            var updatedSources: Resource<List<SourceViewData>> = Resource.success()
             when (sortBy.ordinal) {
                 SortBy.ASCENDING.ordinal -> {
                     updatedSources = state.value.sources.copy(

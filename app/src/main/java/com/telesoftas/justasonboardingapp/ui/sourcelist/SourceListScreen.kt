@@ -72,7 +72,7 @@ private fun SourceListContent(
     isLoading: Boolean,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
-    onSourceItemClick: (Source) -> Unit
+    onSourceItemClick: (SourceViewData) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -161,8 +161,8 @@ private fun SourceListContent(
 
 @Composable
 private fun SourceItem(
-    item: Source,
-    onSourceItemClick: (Source) -> Unit
+    item: SourceViewData,
+    onSourceItemClick: (SourceViewData) -> Unit
 ) {
     Column(modifier = Modifier
         .padding(16.dp)

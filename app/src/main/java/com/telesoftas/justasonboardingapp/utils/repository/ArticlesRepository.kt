@@ -1,7 +1,7 @@
 package com.telesoftas.justasonboardingapp.utils.repository
 
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.sourcelist.Source
+import com.telesoftas.justasonboardingapp.ui.sourcelist.SourceViewData
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.SourceDao
@@ -115,10 +115,10 @@ class ArticlesRepository @Inject constructor(
 
     suspend fun deleteArticleByIdFromDatabase(id: Int) = articleDao.deleteArticleById(id)
 
-    suspend fun getNewsSources(): Resource<List<Source>> {
+    suspend fun getNewsSources(): Resource<List<SourceViewData>> {
         val resource = Resource.success(
             getArticles().data?.map { article ->
-                Source(
+                SourceViewData(
                     id = article.id,
                     title = article.title ?: "",
                     description = article.description ?: ""
@@ -129,9 +129,9 @@ class ArticlesRepository @Inject constructor(
         return resource
     }
 
-    suspend fun getNewsSourcesFromDatabase(): Resource<List<Source>> =
+    suspend fun getNewsSourcesFromDatabase(): Resource<List<SourceViewData>> =
         Resource.success(sourceDao.getAllNewsSources().map { it.toNewsSource() })
 
-    suspend fun insertNewsSourcesToDatabase(sources: List<Source>) =
+    suspend fun insertNewsSourcesToDatabase(sources: List<SourceViewData>) =
         sourceDao.insertNewsSources(sources.map { it.toEntity() })
 }

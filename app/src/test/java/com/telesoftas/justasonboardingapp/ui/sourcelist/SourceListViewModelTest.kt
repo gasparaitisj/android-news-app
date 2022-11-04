@@ -79,10 +79,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            Source("4", "D Title", "D Description"),
-            Source("1", "A Title", "A Description"),
-            Source("2", "B Title", "B Description"),
-            Source("3", "C Title", "C Description"),
+            SourceViewData("4", "D Title", "D Description"),
+            SourceViewData("1", "A Title", "A Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("3", "C Title", "C Description"),
         )
 
         viewModel.onRefresh()
@@ -95,10 +95,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            Source("1", "A Title", "A Description"),
-            Source("2", "B Title", "B Description"),
-            Source("3", "C Title", "C Description"),
-            Source("4", "D Title", "D Description"),
+            SourceViewData("1", "A Title", "A Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("3", "C Title", "C Description"),
+            SourceViewData("4", "D Title", "D Description"),
         )
 
         viewModel.sortArticles(SortBy.ASCENDING)
@@ -111,10 +111,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            Source("4", "D Title", "D Description"),
-            Source("3", "C Title", "C Description"),
-            Source("2", "B Title", "B Description"),
-            Source("1", "A Title", "A Description"),
+            SourceViewData("4", "D Title", "D Description"),
+            SourceViewData("3", "C Title", "C Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("1", "A Title", "A Description"),
         )
 
         viewModel.sortArticles(SortBy.DESCENDING)
