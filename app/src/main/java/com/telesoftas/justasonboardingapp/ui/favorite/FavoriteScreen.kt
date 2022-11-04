@@ -45,6 +45,8 @@ fun FavoriteScreen(
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+
     FavoriteScreenContent(
         state = state,
         isLoading = isLoading,
@@ -58,7 +60,6 @@ fun FavoriteScreen(
         onSearchClick = { text -> viewModel.onFilterArticles(text) },
         onSearchTrigger = { viewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED) }
     )
-    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 }
 
 @Composable

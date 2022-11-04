@@ -48,6 +48,8 @@ fun NewsListScreen(
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+
     NewsListContent(
         state = state,
         isLoading = isLoading,
@@ -60,8 +62,6 @@ fun NewsListScreen(
         onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
         onTopBarNavigationClicked = { navController.navigateUp() }
     )
-
-    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 }
 
 @Composable

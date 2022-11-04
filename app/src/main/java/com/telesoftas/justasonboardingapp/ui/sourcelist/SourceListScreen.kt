@@ -41,6 +41,9 @@ fun SourceListScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+
     SourceListContent(
         state = state,
         isLoading = isLoading,
@@ -48,7 +51,6 @@ fun SourceListScreen(
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )
-    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 }
 
 @Composable
