@@ -72,7 +72,7 @@ private fun SourceListContent(
     isLoading: Boolean,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
-    onSourceItemClick: (NewsSource) -> Unit
+    onSourceItemClick: (Source) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -101,7 +101,7 @@ private fun SourceListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (state.newsSources.status == Status.ERROR) {
+                if (state.sources.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -130,7 +130,7 @@ private fun SourceListContent(
                             modifier = Modifier.fillMaxSize(),
                             state = lazyListState
                         ) {
-                            items(state.newsSources.getSuccessDataOrNull().orEmpty()) { item ->
+                            items(state.sources.getSuccessDataOrNull().orEmpty()) { item ->
                                 SourceItem(
                                     item = item,
                                     onSourceItemClick = { onSourceItemClick(item) }
@@ -144,10 +144,10 @@ private fun SourceListContent(
     }
 
     // Show Snackbar on network error
-    val message = stringResource(id = state.newsSources.messageRes ?: R.string.unknown_error)
+    val message = stringResource(id = state.sources.messageRes ?: R.string.unknown_error)
     val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(state.newsSources.status) {
-        if (state.newsSources.status == Status.ERROR) {
+    LaunchedEffect(state.sources.status) {
+        if (state.sources.status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = message,
@@ -161,8 +161,8 @@ private fun SourceListContent(
 
 @Composable
 private fun SourceItem(
-    item: NewsSource,
-    onSourceItemClick: (NewsSource) -> Unit
+    item: Source,
+    onSourceItemClick: (Source) -> Unit
 ) {
     Column(modifier = Modifier
         .padding(16.dp)

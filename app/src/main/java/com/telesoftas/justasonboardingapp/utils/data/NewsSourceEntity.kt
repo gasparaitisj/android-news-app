@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.utils.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.telesoftas.justasonboardingapp.ui.sourcelist.NewsSource
+import com.telesoftas.justasonboardingapp.ui.sourcelist.Source
 
 @Entity(tableName = "news_source")
 data class NewsSourceEntity(
@@ -11,8 +11,8 @@ data class NewsSourceEntity(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String
 ) {
-    fun toNewsSource(): NewsSource {
-        return NewsSource(
+    fun toNewsSource(): Source {
+        return Source(
             id = id.toString(),
             title = title,
             description = description

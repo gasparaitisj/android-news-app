@@ -79,10 +79,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("4", "D Title", "D Description"),
-            NewsSource("1", "A Title", "A Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("3", "C Title", "C Description"),
+            Source("4", "D Title", "D Description"),
+            Source("1", "A Title", "A Description"),
+            Source("2", "B Title", "B Description"),
+            Source("3", "C Title", "C Description"),
         )
 
         viewModel.onRefresh()
@@ -95,10 +95,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("1", "A Title", "A Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("3", "C Title", "C Description"),
-            NewsSource("4", "D Title", "D Description"),
+            Source("1", "A Title", "A Description"),
+            Source("2", "B Title", "B Description"),
+            Source("3", "C Title", "C Description"),
+            Source("4", "D Title", "D Description"),
         )
 
         viewModel.sortArticles(SortBy.ASCENDING)
@@ -111,10 +111,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("4", "D Title", "D Description"),
-            NewsSource("3", "C Title", "C Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("1", "A Title", "A Description"),
+            Source("4", "D Title", "D Description"),
+            Source("3", "C Title", "C Description"),
+            Source("2", "B Title", "B Description"),
+            Source("1", "A Title", "A Description"),
         )
 
         viewModel.sortArticles(SortBy.DESCENDING)

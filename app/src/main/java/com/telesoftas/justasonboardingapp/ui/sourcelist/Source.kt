@@ -2,7 +2,7 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist
 
 import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
 
-data class NewsSource(
+data class Source(
     val id: String,
     val title: String,
     val description: String

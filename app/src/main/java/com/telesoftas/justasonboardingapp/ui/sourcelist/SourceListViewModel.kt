@@ -26,27 +26,27 @@ class SourceListViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading.value = true
             val response = articlesRepository.getNewsSources()
-            state.update { it.copy(newsSources = response, sortType = SortBy.NONE) }
+            state.update { it.copy(sources = response, sortType = SortBy.NONE) }
             isLoading.value = false
         }
     }
 
     fun sortArticles(sortBy: SortBy) {
         if (state.value.sortType == SortBy.NONE) {
-            var updatedNewsSources: Resource<List<NewsSource>> = Resource.success()
+            var updatedSources: Resource<List<Source>> = Resource.success()
             when (sortBy.ordinal) {
                 SortBy.ASCENDING.ordinal -> {
-                    updatedNewsSources = state.value.newsSources.copy(
-                        data = state.value.newsSources.data?.sortedBy { it.title }
+                    updatedSources = state.value.sources.copy(
+                        data = state.value.sources.data?.sortedBy { it.title }
                     )
                 }
                 SortBy.DESCENDING.ordinal -> {
-                    updatedNewsSources = state.value.newsSources.copy(
-                        data = state.value.newsSources.data?.sortedByDescending { it.title }
+                    updatedSources = state.value.sources.copy(
+                        data = state.value.sources.data?.sortedByDescending { it.title }
                     )
                 }
             }
-            state.update { it.copy(newsSources = updatedNewsSources, sortType = sortBy) }
+            state.update { it.copy(sources = updatedSources, sortType = sortBy) }
         } else {
             state.update { it.copy(sortType = SortBy.NONE) }
             onRefresh()
