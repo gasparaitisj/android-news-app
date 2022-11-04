@@ -64,14 +64,15 @@ fun NewsDetailsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+
     NewsDetailsContent(
         state = state,
         isLoading = isLoading,
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
-
-    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 }
 
 @Composable
