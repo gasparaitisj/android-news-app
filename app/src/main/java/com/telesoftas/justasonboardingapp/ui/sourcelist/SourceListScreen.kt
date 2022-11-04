@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.ChipDefaults.filterChipColors
@@ -19,7 +20,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -28,7 +28,6 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
 import kotlinx.coroutines.launch
@@ -40,18 +39,16 @@ fun SourceListScreen(
     navController: NavHostController,
     viewModel: SourceListViewModel = hiltViewModel()
 ) {
-    val newsSources by viewModel.newsSources.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val sortType by viewModel.sortType.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     SourceListContent(
-        newsSources = newsSources,
+        state = state,
         isLoading = isLoading,
-        sortType = sortType,
-        onRefresh = { viewModel.getNewsSources() },
+        onRefresh = { viewModel.onRefresh() },
         onSortTypeChanged = { viewModel.sortArticles(it) },
         onSourceItemClick = { navController.navigate(Screen.NewsList.destination(it.title)) }
     )
-    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.getNewsSources() })
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 }
 
 @Composable
@@ -71,15 +68,15 @@ private fun addRefreshOnNavigation(
 @ExperimentalMaterialApi
 @Composable
 private fun SourceListContent(
-    newsSources: Resource<List<NewsSource>>,
+    state: SourceListState,
     isLoading: Boolean,
-    sortType: SortBy,
     onRefresh: () -> Unit,
     onSortTypeChanged: (SortBy) -> Unit,
     onSourceItemClick: (NewsSource) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     Scaffold(
         topBar = { TopBar(title = stringResource(id = Screen.SourceList.titleResId)) },
@@ -104,7 +101,7 @@ private fun SourceListContent(
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (newsSources.status == Status.ERROR) {
+                if (state.newsSources.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -123,15 +120,17 @@ private fun SourceListContent(
                 } else {
                     Column {
                         ChipGroupSortArticles(
-                            sortType = sortType,
-                            onSortTypeChanged = onSortTypeChanged
+                            sortType = state.sortType,
+                            onSortTypeChanged = { sortType ->
+                                onSortTypeChanged(sortType)
+                                scope.launch { lazyListState.scrollToItem(0) }
+                            }
                         )
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
+                            modifier = Modifier.fillMaxSize(),
+                            state = lazyListState
                         ) {
-                            items(newsSources.getSuccessDataOrNull().orEmpty()) { item ->
+                            items(state.newsSources.getSuccessDataOrNull().orEmpty()) { item ->
                                 SourceItem(
                                     item = item,
                                     onSourceItemClick = { onSourceItemClick(item) }
@@ -145,10 +144,10 @@ private fun SourceListContent(
     }
 
     // Show Snackbar on network error
-    val message = stringResource(id = newsSources.messageRes ?: R.string.unknown_error)
+    val message = stringResource(id = state.newsSources.messageRes ?: R.string.unknown_error)
     val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(newsSources.status) {
-        if (newsSources.status == Status.ERROR) {
+    LaunchedEffect(state.newsSources.status) {
+        if (state.newsSources.status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = message,

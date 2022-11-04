@@ -85,7 +85,7 @@ class SourceListViewModelTest {
             NewsSource("3", "C Title", "C Description"),
         )
 
-        viewModel.getNewsSources()
+        viewModel.onRefresh()
 
         assertEquals(answer, viewModel.newsSources.value.data)
     }
