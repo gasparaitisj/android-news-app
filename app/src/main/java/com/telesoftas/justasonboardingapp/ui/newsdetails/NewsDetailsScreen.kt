@@ -36,12 +36,12 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
+import com.telesoftas.justasonboardingapp.ui.map.MapState
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
@@ -68,7 +68,7 @@ fun NewsDetailsScreen(
     NewsDetailsContent(
         article = article,
         isLoading = isLoading,
-        location = viewModel.location,
+        location = MapState().items[0],
         onBackArrowClicked = { navController.navigateUp() },
         onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
@@ -306,7 +306,6 @@ fun NewsDetailsItem(
                     .height((256 + 128).dp)
                     .padding(top = 32.dp),
                 location = location,
-                cameraPositionState = cameraPositionState,
                 onMapTouched = {
                     columnScrollingEnabled = false
                 }
@@ -321,12 +320,13 @@ fun NewsDetailsItem(
 fun MapInColumn(
     modifier: Modifier = Modifier,
     location: LocationClusterItem,
-    cameraPositionState: CameraPositionState,
     onMapTouched: () -> Unit
 ) {
     Box(modifier = modifier) {
         GoogleMapWithClustering(
-            items = listOf(location),
+            state = MapState(
+                listOf(location)
+            ),
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter(
@@ -340,7 +340,6 @@ fun MapInColumn(
                         }
                     }
                 ),
-            cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(
                 compassEnabled = false,
                 indoorLevelPickerEnabled = false,

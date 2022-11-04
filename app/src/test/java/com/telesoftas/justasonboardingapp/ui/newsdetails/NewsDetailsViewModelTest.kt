@@ -8,7 +8,6 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
-import com.telesoftas.justasonboardingapp.utils.repository.LocationRepository
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
