@@ -6,10 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface NewsSourceDao {
+interface SourceDao {
     @Query("SELECT * FROM news_source")
-    suspend fun getAllNewsSources(): List<NewsSourceEntity>
+    suspend fun getAllNewsSources(): List<SourceEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNewsSources(newsSources: List<NewsSourceEntity>)
+    suspend fun insertNewsSources(newsSources: List<SourceEntity>)
 }

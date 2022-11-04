@@ -4,7 +4,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Source
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
+import com.telesoftas.justasonboardingapp.utils.data.SourceDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class ArticlesRepository @Inject constructor(
     private val articlesService: ArticlesService,
     private val articleDao: ArticleDao,
-    private val newsSourceDao: NewsSourceDao
+    private val sourceDao: SourceDao
 ) {
     suspend fun getArticles(
         query: String? = null,
@@ -130,8 +130,8 @@ class ArticlesRepository @Inject constructor(
     }
 
     suspend fun getNewsSourcesFromDatabase(): Resource<List<Source>> =
-        Resource.success(newsSourceDao.getAllNewsSources().map { it.toNewsSource() })
+        Resource.success(sourceDao.getAllNewsSources().map { it.toNewsSource() })
 
     suspend fun insertNewsSourcesToDatabase(sources: List<Source>) =
-        newsSourceDao.insertNewsSources(sources.map { it.toEntity() })
+        sourceDao.insertNewsSources(sources.map { it.toEntity() })
 }

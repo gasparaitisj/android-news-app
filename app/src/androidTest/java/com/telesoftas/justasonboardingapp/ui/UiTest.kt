@@ -19,8 +19,8 @@ import com.telesoftas.justasonboardingapp.ui.main.MainScreen
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
+import com.telesoftas.justasonboardingapp.utils.data.SourceDao
+import com.telesoftas.justasonboardingapp.utils.data.SourceEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -51,7 +51,7 @@ class UiTest {
     lateinit var articleDao: ArticleDao
 
     @Inject
-    lateinit var newsSourceDao: NewsSourceDao
+    lateinit var sourceDao: SourceDao
 
     @Before
     fun setUp() {
@@ -83,15 +83,15 @@ class UiTest {
     }
 
     private suspend fun addNewsSourcesToDatabase() {
-        newsSourceDao.insertNewsSources(
+        sourceDao.insertNewsSources(
             listOf(
-                NewsSourceEntity(1, "A News Source Title", "A News Source Description"),
-                NewsSourceEntity(2, "B News Source Title", "B News Source Description"),
-                NewsSourceEntity(3, "C News Source Title", "C News Source Description"),
-                NewsSourceEntity(4, "D News Source Title", "D News Source Description"),
-                NewsSourceEntity(5, "E News Source Title", "E News Source Description"),
-                NewsSourceEntity(6, "F News Source Title", "F News Source Description"),
-                NewsSourceEntity(7, "G News Source Title", "G News Source Description")
+                SourceEntity(1, "A News Source Title", "A News Source Description"),
+                SourceEntity(2, "B News Source Title", "B News Source Description"),
+                SourceEntity(3, "C News Source Title", "C News Source Description"),
+                SourceEntity(4, "D News Source Title", "D News Source Description"),
+                SourceEntity(5, "E News Source Title", "E News Source Description"),
+                SourceEntity(6, "F News Source Title", "F News Source Description"),
+                SourceEntity(7, "G News Source Title", "G News Source Description")
             )
         )
     }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Source
 
 @Entity(tableName = "news_source")
-data class NewsSourceEntity(
+data class SourceEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String
