@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -34,9 +33,18 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val bottomNavController = rememberAnimatedNavController()
-    handleFirstLaunch(viewModel, navController)
+    val isFirstLaunch by viewModel.isFirstLaunch.collectAsState(initial = false)
 
-    MainScreenContent(bottomNavController)
+    handleFirstLaunch(
+        isFirstLaunch = isFirstLaunch,
+        onFirstLaunchCompleted = { viewModel.onFirstLaunchCompleted() },
+        navController = navController
+    )
+
+    MainScreenContent(
+        bottomNavController,
+        isFirstLaunch
+    )
 }
 
 @ExperimentalPermissionsApi
@@ -47,33 +55,35 @@ fun MainScreen(
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
-private fun MainScreenContent(bottomNavController: NavHostController) {
-    Scaffold(
-        bottomBar = { MainBottomNavigationBar(navController = bottomNavController) },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier.padding(paddingValues),
-                content = {
-                    BottomNavigationBarNavigation(navController = bottomNavController)
-                }
-            )
-        }
-    )
+private fun MainScreenContent(
+    bottomNavController: NavHostController,
+    isFirstLaunch: Boolean
+) {
+    if (!isFirstLaunch) {
+        Scaffold(
+            bottomBar = { MainBottomNavigationBar(navController = bottomNavController) },
+            content = { paddingValues ->
+                Column(
+                    modifier = Modifier.padding(paddingValues),
+                    content = {
+                        BottomNavigationBarNavigation(navController = bottomNavController)
+                    }
+                )
+            }
+        )
+    }
 }
 
 @Composable
 private fun handleFirstLaunch(
-    viewModel: MainViewModel,
+    isFirstLaunch: Boolean,
+    onFirstLaunchCompleted: () -> Unit,
     navController: NavHostController
 ) {
-    val isFirstLaunch by viewModel.isFirstLaunch.collectAsState(initial = false)
-
     if (isFirstLaunch) {
-        LaunchedEffect(true) {
-            viewModel.setFirstLaunchCompleted()
-            navController.navigate(route = Screen.Tutorial.route) {
-                popUpTo(Screen.Main.route) { inclusive = true }
-            }
+        onFirstLaunchCompleted()
+        navController.navigate(route = Screen.Tutorial.route) {
+            popUpTo(Screen.Main.route) { inclusive = true }
         }
     }
 }
