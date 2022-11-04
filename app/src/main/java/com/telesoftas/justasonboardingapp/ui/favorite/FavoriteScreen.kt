@@ -30,8 +30,8 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
@@ -80,8 +80,8 @@ fun FavoriteScreenContent(
     state: FavoriteState,
     isLoading: Boolean,
     onRefresh: () -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit,
-    onArticleItemClick: (Article) -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -146,7 +146,7 @@ fun FavoriteScreenContent(
 @Composable
 fun MainAppBar(
     state: FavoriteState,
-    onArticleItemClick: (Article) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -197,9 +197,9 @@ fun DefaultAppBar(onSearchClick: () -> Unit) {
 
 @Composable
 fun SearchAppBar(
-    filteredArticles: List<Article>,
+    filteredArticles: List<ArticleViewData>,
     text: String,
-    onArticleItemClick: (Article) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -245,8 +245,8 @@ fun SearchAppBar(
 
 @Composable
 private fun SearchDropdownMenuItem(
-    onArticleItemClick: (Article) -> Unit,
-    article: Article,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    article: ArticleViewData,
     title: String
 ) {
     DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
@@ -279,7 +279,7 @@ private fun SearchTextField(
     onCloseClick: () -> Unit,
     onExpandedChange: (Boolean) -> Unit,
     onSearchClick: (String) -> Unit,
-    filteredArticles: List<Article>
+    filteredArticles: List<ArticleViewData>
 ) {
     TextField(
         modifier = modifier,

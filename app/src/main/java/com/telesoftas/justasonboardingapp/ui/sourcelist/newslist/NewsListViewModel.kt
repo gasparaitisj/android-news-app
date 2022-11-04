@@ -59,14 +59,14 @@ class NewsListViewModel @Inject constructor(
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article) {
+    fun onArticleFavoriteChanged(article: ArticleViewData) {
         viewModelScope.launch {
             articlesRepository.insertArticleToDatabase(article.copy(isFavorite = !article.isFavorite))
             onRefresh()
         }
     }
 
-    fun onArticleClicked(article: Article) {
+    fun onArticleClicked(article: ArticleViewData) {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
             param(FirebaseAnalytics.Param.ITEM_ID, article.id)
             param(FirebaseAnalytics.Param.ITEM_NAME, article.title ?: "")

@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.ui.newsdetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +33,7 @@ class NewsDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article) {
+    fun onArticleFavoriteChanged(article: ArticleViewData) {
         viewModelScope.launch {
             articlesRepository.insertArticleToDatabase(article.copy(isFavorite = !article.isFavorite))
             onRefresh()

@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 
-data class Article(
+data class ArticleViewData(
     val id: String,
     val isFavorite: Boolean,
     val publishedAt: String,

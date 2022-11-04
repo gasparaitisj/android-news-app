@@ -103,7 +103,7 @@ class NewsListViewModelTest {
         viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
         advanceUntilIdle()
         val answer = listOf(
-            Article(
+            ArticleViewData(
                 id = "4",
                 isFavorite = false,
                 publishedAt = "2022-10-03",
@@ -115,7 +115,7 @@ class NewsListViewModelTest {
                 source = null,
                 votes = 10
             ),
-            Article(
+            ArticleViewData(
                 id = "1",
                 isFavorite = false,
                 publishedAt = "2022-10-03",
@@ -127,7 +127,7 @@ class NewsListViewModelTest {
                 source = null,
                 votes = 10
             ),
-            Article(
+            ArticleViewData(
                 id = "2",
                 isFavorite = true,
                 publishedAt = "2022-10-03",
@@ -139,7 +139,7 @@ class NewsListViewModelTest {
                 source = null,
                 votes = 10
             ),
-            Article(
+            ArticleViewData(
                 id = "3",
                 isFavorite = false,
                 publishedAt = "2022-10-03",
@@ -163,7 +163,7 @@ class NewsListViewModelTest {
         viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
         advanceUntilIdle()
         val answer = listOf(
-            Article(
+            ArticleViewData(
                 id = "4",
                 isFavorite = false,
                 publishedAt = "2022-10-03",
@@ -175,7 +175,7 @@ class NewsListViewModelTest {
                 source = null,
                 votes = 10
             ),
-            Article(
+            ArticleViewData(
                 id = "3",
                 isFavorite = false,
                 publishedAt = "2022-10-03",

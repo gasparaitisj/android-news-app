@@ -2,7 +2,7 @@ package com.telesoftas.justasonboardingapp.utils.repository
 
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.sourcelist.Source
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
 import com.telesoftas.justasonboardingapp.utils.data.SourceDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
@@ -25,7 +25,7 @@ class ArticlesRepository @Inject constructor(
         sortBy: String? = null,
         pageNumber: Int? = null,
         xRequestId: String? = null
-    ): Resource<List<Article>> {
+    ): Resource<List<ArticleViewData>> {
         val articlesFromDatabase = getFavoriteArticlesFromDatabase()
         return try {
             val response = articlesService.getArticles(
@@ -41,7 +41,7 @@ class ArticlesRepository @Inject constructor(
             response.body()?.let { articlesListResponse ->
                 val mappedResponse = Resource.success(
                     articlesListResponse.articles?.map { articlePreviewResponse ->
-                        Article(
+                        ArticleViewData(
                             id = articlePreviewResponse.id,
                             isFavorite = articlesFromDatabase.find { article ->
                                 article.id == articlePreviewResponse.id
@@ -68,14 +68,14 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
-    suspend fun getArticleById(id: String): Resource<Article> {
+    suspend fun getArticleById(id: String): Resource<ArticleViewData> {
         val articleFromDatabase = getArticleByIdFromDatabase(id)
         return try {
             val response = articlesService.getArticleById(id)
             if (!response.isSuccessful) return Resource.success(articleFromDatabase)
             response.body()?.let { articlePreviewResponse ->
                 return@let Resource.success(
-                    Article(
+                    ArticleViewData(
                         id = articlePreviewResponse.id,
                         isFavorite = articleFromDatabase?.isFavorite ?: false,
                         publishedAt = articlePreviewResponse.publishedAt.replace(
@@ -97,20 +97,20 @@ class ArticlesRepository @Inject constructor(
         }
     }
 
-    suspend fun getArticlesFromDatabase(): Resource<List<Article>> =
+    suspend fun getArticlesFromDatabase(): Resource<List<ArticleViewData>> =
         Resource.success(articleDao.getAllArticles().map { it.toArticle() })
 
-    suspend fun getArticleByIdFromDatabase(id: String): Article? =
+    suspend fun getArticleByIdFromDatabase(id: String): ArticleViewData? =
         articleDao.getArticleById(id.toIntOrNull() ?: 0)?.toArticle()
 
-    suspend fun getFavoriteArticlesFromDatabase(): List<Article> =
+    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleViewData> =
         articleDao.getFavoriteArticles().map { it.toArticle() }
 
-    suspend fun insertArticlesToDatabase(articles: List<Article>) {
+    suspend fun insertArticlesToDatabase(articles: List<ArticleViewData>) {
         articleDao.insertArticles(articles.map { it.toEntity() })
     }
 
-    suspend fun insertArticleToDatabase(article: Article) =
+    suspend fun insertArticleToDatabase(article: ArticleViewData) =
         articleDao.insertArticle(article.toEntity())
 
     suspend fun deleteArticleByIdFromDatabase(id: Int) = articleDao.deleteArticleById(id)

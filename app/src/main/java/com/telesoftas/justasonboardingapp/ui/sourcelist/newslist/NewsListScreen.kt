@@ -87,8 +87,8 @@ private fun NewsListContent(
     isLoading: Boolean,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
-    onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit,
     onTopBarNavigationClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -206,9 +206,9 @@ private fun NewsListTopBar(
 
 @Composable
 fun ArticleItem(
-    item: Article,
-    onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit
+    item: ArticleViewData,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -361,7 +361,7 @@ fun CategoryFilterChip(
 @Composable
 @Preview(showBackground = true)
 private fun ArticleItemPreview() {
-    val article = Article(
+    val article = ArticleViewData(
         id = "1",
         isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",

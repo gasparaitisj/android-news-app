@@ -1,7 +1,7 @@
 package com.telesoftas.justasonboardingapp.ui.favorite
 
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
@@ -76,7 +76,7 @@ class FavoriteViewModelTest {
         viewModel = FavoriteViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            Article(
+            ArticleViewData(
                 id = "4",
                 isFavorite = true,
                 publishedAt = "2022-10-03",
@@ -88,7 +88,7 @@ class FavoriteViewModelTest {
                 source = null,
                 votes = 10
             ),
-            Article(
+            ArticleViewData(
                 id = "1",
                 isFavorite = true,
                 publishedAt = "2022-10-03",

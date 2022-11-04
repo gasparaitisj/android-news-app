@@ -42,7 +42,7 @@ import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
 import com.telesoftas.justasonboardingapp.ui.map.MapState
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
@@ -98,7 +98,7 @@ fun NewsDetailsContent(
     state: NewsDetailsState,
     isLoading: Boolean,
     onBackArrowClicked: () -> Unit,
-    onArticleFavoriteChanged: (Article) -> Unit
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
     val scaffoldState = rememberCollapsingToolbarScaffoldState()
     val progress = scaffoldState.toolbarState.progress
@@ -142,7 +142,7 @@ fun NewsDetailsContent(
 private fun CollapsedCollapsingAppBar(
     modifier: Modifier,
     progress: Float,
-    article: Resource<Article>,
+    article: Resource<ArticleViewData>,
     onBackArrowClicked: () -> Unit
 ) {
     TopAppBar(
@@ -174,7 +174,7 @@ private fun CollapsedCollapsingAppBar(
 
 @Composable
 private fun ExpandedCollapsingAppBar(
-    article: Resource<Article>,
+    article: Resource<ArticleViewData>,
     progress: Float,
     onBackArrowClicked: () -> Unit
 ) {
@@ -229,9 +229,9 @@ private fun ExpandedCollapsingAppBar(
 @MapsComposeExperimentalApi
 @Composable
 fun NewsDetailsItem(
-    item: Article,
+    item: ArticleViewData,
     location: LocationClusterItem,
-    onArticleFavoriteChanged: (Article) -> Unit
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
     val defaultCameraPosition = CameraPosition.fromLatLngZoom(location.position, 10f)
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
@@ -394,7 +394,7 @@ fun ReadFullArticleButton(
 @Composable
 @Preview(showBackground = true)
 fun NewsDetailsItemPreview() {
-    val item = Article(
+    val item = ArticleViewData(
         id = "1",
         isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",

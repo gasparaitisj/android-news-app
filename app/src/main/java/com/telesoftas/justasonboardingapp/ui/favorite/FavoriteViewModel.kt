@@ -2,7 +2,7 @@ package com.telesoftas.justasonboardingapp.ui.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +49,7 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun onArticleFavoriteChanged(article: Article) {
+    fun onArticleFavoriteChanged(article: ArticleViewData) {
         viewModelScope.launch {
             articlesRepository.insertArticleToDatabase(article.copy(isFavorite = !article.isFavorite))
             onRefresh()
