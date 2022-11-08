@@ -320,11 +320,11 @@ fun MapInColumn(
     location: LocationClusterItem,
     onMapTouched: () -> Unit
 ) {
+    val state = MapState()
     Box(modifier = modifier) {
         GoogleMapWithClustering(
-            state = MapState(
-                listOf(location)
-            ),
+            items = state.pharmacyLocations,
+            cameraPosition = state.pharmacyCameraPosition,
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter(

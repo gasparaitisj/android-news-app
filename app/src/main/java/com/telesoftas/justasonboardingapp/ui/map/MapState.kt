@@ -3,9 +3,11 @@ package com.telesoftas.justasonboardingapp.ui.map
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
+import com.telesoftas.justasonboardingapp.utils.network.Resource
+import com.telesoftas.justasonboardingapp.utils.network.data.Landpad
 
 data class MapState(
-    val items: List<LocationClusterItem> = listOf(
+    val pharmacyLocations: List<LocationClusterItem> = listOf(
         LatLng(54.685581219627494, 25.204550482478087),
         LatLng(54.67993210823842, 25.213782567975255),
         LatLng(54.673290870679786, 25.239226770855613),
@@ -45,7 +47,11 @@ data class MapState(
             itemSnippet = "https://gintarine.lt"
         )
     },
-    val cameraPosition: CameraPosition = CameraPosition.fromLatLngZoom(
+    val pharmacyCameraPosition: CameraPosition = CameraPosition.fromLatLngZoom(
         LatLng(54.897790620137464, 23.913658590073002), 6f
-    )
+    ),
+    val landpadLocations: Resource<List<Landpad>> = Resource.success(),
+    val landpadCameraPosition: CameraPosition = CameraPosition.fromLatLngZoom(
+        LatLng(54.897790620137464, 23.913658590073002), 6f
+    ),
 )

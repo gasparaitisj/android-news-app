@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
@@ -31,6 +30,7 @@ import com.telesoftas.justasonboardingapp.ui.map.utils.ClusterManager
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
+import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @MapsComposeExperimentalApi
 @Composable
@@ -46,22 +46,46 @@ fun MapScreen(
 private fun MapScreenContent(
     state: MapState
 ) {
+    var currentTab by remember { mutableStateOf(0) }
     Scaffold(
         topBar = { TopBar(stringResource(id = Screen.Map.titleResId)) },
     ) { paddingValues ->
-        GoogleMapWithClustering(
-            state = state,
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        )
+        Column(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            MapScreenTabRow(
+                currentTab = currentTab,
+                onFirstTabClicked = { currentTab = 0 },
+                onSecondTabClicked = { currentTab = 1 }
+            )
+            when (currentTab) {
+                0 -> {
+                    GoogleMapWithClustering(
+                        items = state.pharmacyLocations,
+                        cameraPosition = state.pharmacyCameraPosition,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                1 -> {
+                    val locations = state.landpadLocations.data?.mapNotNull { it.toClusterItem() }
+                    if (state.landpadLocations.status == Status.SUCCESS && locations != null) {
+                        GoogleMapWithClustering(
+                            items = locations,
+                            cameraPosition = state.landpadCameraPosition,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
 @MapsComposeExperimentalApi
 @Composable
 fun GoogleMapWithClustering(
-    state: MapState,
+    items: List<LocationClusterItem>,
+    cameraPosition: CameraPosition,
     modifier: Modifier,
     uiSettings: MapUiSettings = MapUiSettings()
 ) {
@@ -70,20 +94,20 @@ fun GoogleMapWithClustering(
     val context = LocalContext.current
     val viewGroup = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
-    val cameraPositionState = CameraPositionState(state.cameraPosition)
+    val cameraPositionState = CameraPositionState(cameraPosition)
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
         uiSettings = uiSettings
     ) {
-        MapEffect(state.items) { map ->
+        MapEffect(items) { map ->
             clusterManager = ClusterManager(
                 context = context,
                 viewGroup = viewGroup,
                 compositionContext = compositionContext,
                 map = map,
-                items = state.items,
+                items = items,
                 clusterItemInfoWindowContent = { marker ->
                     ClusterItemInfoWindow(marker)
                 },
@@ -100,6 +124,30 @@ fun GoogleMapWithClustering(
                 clusterManager?.onCameraIdle()
             }
         }
+    }
+}
+
+@Composable
+private fun MapScreenTabRow(
+    currentTab: Int,
+    onFirstTabClicked: () -> Unit,
+    onSecondTabClicked: () -> Unit,
+) {
+    TabRow(selectedTabIndex = currentTab) {
+        Tab(
+            selected = currentTab == 0,
+            onClick = onFirstTabClicked,
+            text = {
+                Text(text = "Google")
+            }
+        )
+        Tab(
+            selected = currentTab == 1,
+            onClick = onSecondTabClicked,
+            text = {
+                Text(text = "SpaceX")
+            }
+        )
     }
 }
 
