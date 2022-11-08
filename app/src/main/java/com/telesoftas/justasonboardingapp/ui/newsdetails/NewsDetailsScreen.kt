@@ -135,7 +135,6 @@ private fun CollapsedCollapsingAppBar(
         modifier = modifier,
         title = {
             Text(
-                modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
                 text = article.data?.title ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -147,7 +146,6 @@ private fun CollapsedCollapsingAppBar(
                 enabled = progress <= 0.5f
             ) {
                 Icon(
-                    modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
