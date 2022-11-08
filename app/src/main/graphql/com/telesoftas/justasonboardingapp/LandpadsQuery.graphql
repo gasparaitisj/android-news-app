@@ -1,0 +1,12 @@
+query LandpadsQuery {
+    landpads {
+        location {
+            latitude
+            longitude
+        }
+        full_name
+        successful_landings
+        attempted_landings
+        wikipedia
+    }
+}
