@@ -1,5 +1,6 @@
 package com.telesoftas.justasonboardingapp.utils.di
 
+import com.apollographql.apollo.ApolloClient
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import dagger.Module
@@ -35,6 +36,12 @@ class NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun provideApollo(): ApolloClient = ApolloClient.builder()
+        .serverUrl(Constants.BASE_SPACEX_URL)
+        .build()
 
     @Singleton
     @Provides
