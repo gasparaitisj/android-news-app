@@ -6,6 +6,7 @@ plugins {
     id "com.google.gms.google-services"
     id "com.google.firebase.crashlytics"
     id "com.google.android.libraries.mapsplatform.secrets-gradle-plugin"
+    id "com.apollographql.apollo"
 }
 
 android {
@@ -59,6 +60,10 @@ dependencies {
     // Core libraries
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.activity:activity-ktx:$activity_version"
+
+    // GraphQL
+    implementation "com.apollographql.apollo:apollo-runtime:2.4.6"
+    implementation "com.apollographql.apollo:apollo-coroutines-support:2.4.6"
 
     // Camera
     implementation "androidx.camera:camera-core:$camerax_version"
@@ -166,6 +171,9 @@ dependencies {
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
 }
 
+apollo {
+    generateKotlinModels.set(true)
+}
 
 kapt {
     correctErrorTypes true
