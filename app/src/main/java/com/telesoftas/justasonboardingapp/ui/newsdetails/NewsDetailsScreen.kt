@@ -303,7 +303,6 @@ fun NewsDetailsItem(
                     .fillMaxWidth()
                     .height((256 + 128).dp)
                     .padding(top = 32.dp),
-                location = location,
                 onMapTouched = {
                     columnScrollingEnabled = false
                 }
@@ -317,7 +316,6 @@ fun NewsDetailsItem(
 @Composable
 fun MapInColumn(
     modifier: Modifier = Modifier,
-    location: LocationClusterItem,
     onMapTouched: () -> Unit
 ) {
     val state = MapState()
