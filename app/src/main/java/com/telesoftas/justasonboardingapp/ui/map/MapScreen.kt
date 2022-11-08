@@ -26,6 +26,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
+import com.telesoftas.justasonboardingapp.ui.map.utils.ClusterColors
 import com.telesoftas.justasonboardingapp.ui.map.utils.ClusterManager
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -63,7 +64,9 @@ private fun MapScreenContent(
                     GoogleMapWithClustering(
                         items = state.pharmacyLocations,
                         cameraPosition = state.pharmacyCameraPosition,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        clusterInfoWindowContent = { PharmacyClusterInfoWindow(it) },
+                        clusterItemInfoWindowContent = { PharmacyClusterItemInfoWindow(it) }
                     )
                 }
                 1 -> {
@@ -72,7 +75,14 @@ private fun MapScreenContent(
                         GoogleMapWithClustering(
                             items = locations,
                             cameraPosition = state.landpadCameraPosition,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            clusterColors = ClusterColors(
+                                small = Color.Red,
+                                medium = Color.DarkGray,
+                                large = Color.Blue
+                            ),
+                            clusterInfoWindowContent = { LandpadsClusterInfoWindow(it) },
+                            clusterItemInfoWindowContent = { LandpadsClusterItemInfoWindow(it) }
                         )
                     }
                 }
@@ -87,7 +97,10 @@ fun GoogleMapWithClustering(
     items: List<LocationClusterItem>,
     cameraPosition: CameraPosition,
     modifier: Modifier,
-    uiSettings: MapUiSettings = MapUiSettings()
+    uiSettings: MapUiSettings = MapUiSettings(),
+    clusterColors: ClusterColors = ClusterColors(),
+    clusterInfoWindowContent: @Composable (Cluster<LocationClusterItem>?) -> Unit,
+    clusterItemInfoWindowContent: @Composable (Marker) -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
     var clusterManager by remember { mutableStateOf<ClusterManager?>(null) }
@@ -108,11 +121,12 @@ fun GoogleMapWithClustering(
                 compositionContext = compositionContext,
                 map = map,
                 items = items,
+                clusterColors = clusterColors,
                 clusterItemInfoWindowContent = { marker ->
-                    ClusterItemInfoWindow(marker)
+                    clusterItemInfoWindowContent(marker)
                 },
                 clusterInfoWindowContent = {
-                    ClusterInfoWindow(clusterManager?.clickedCluster)
+                    clusterInfoWindowContent(clusterManager?.clickedCluster)
                 },
                 onClusterItemInfoWindowClicked = { clusterItem ->
                     uriHandler.openUri(clusterItem.snippet)
@@ -152,7 +166,7 @@ private fun MapScreenTabRow(
 }
 
 @Composable
-fun ClusterInfoWindow(
+fun PharmacyClusterInfoWindow(
     cluster: Cluster<LocationClusterItem>?
 ) {
     val locationText = if (cluster?.size != null) {
@@ -195,7 +209,50 @@ fun ClusterInfoWindow(
 }
 
 @Composable
-fun ClusterItemInfoWindow(marker: Marker) {
+fun LandpadsClusterInfoWindow(
+    cluster: Cluster<LocationClusterItem>?
+) {
+    val locationText = if (cluster?.size != null) {
+        "SpaceX Landpad (${cluster.size} locations)"
+    } else "SpaceX"
+
+    Surface(
+        elevation = 3.dp,
+        shape = RoundedCornerShape(24.dp),
+        color = Color.Blue.copy(alpha = 0.7f)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_spacex_logo),
+                contentDescription = "SpaceX"
+            )
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = locationText,
+                style = Typography.subtitle1,
+                color = Color.Black
+            )
+            cluster?.position?.let { latLng ->
+                Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = String.format(
+                        "%.5f, %.5f",
+                        latLng.latitude, latLng.longitude
+                    ),
+                    style = Typography.subtitle2,
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PharmacyClusterItemInfoWindow(marker: Marker) {
     Surface(
         elevation = 3.dp,
         shape = RoundedCornerShape(24.dp),
@@ -209,6 +266,47 @@ fun ClusterItemInfoWindow(marker: Marker) {
             Image(
                 painter = painterResource(id = R.drawable.img_gintarine_logo),
                 contentDescription = "Gintarinė vaistinė"
+            )
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = marker.title ?: "",
+                style = Typography.subtitle1,
+                color = Color.Black
+            )
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = marker.snippet ?: "",
+                style = Typography.subtitle1,
+                color = Color.Black
+            )
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = String.format(
+                    "%.5f, %.5f",
+                    marker.position.latitude, marker.position.longitude
+                ),
+                style = Typography.subtitle2,
+                color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun LandpadsClusterItemInfoWindow(marker: Marker) {
+    Surface(
+        elevation = 3.dp,
+        shape = RoundedCornerShape(24.dp),
+        color = Color.White.copy(alpha = 0.8f)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_spacex_logo),
+                contentDescription = "SpaceX"
             )
             Text(
                 modifier = Modifier.padding(4.dp),

@@ -41,6 +41,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
 import com.telesoftas.justasonboardingapp.ui.map.MapState
+import com.telesoftas.justasonboardingapp.ui.map.PharmacyClusterInfoWindow
+import com.telesoftas.justasonboardingapp.ui.map.PharmacyClusterItemInfoWindow
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
@@ -346,7 +348,9 @@ fun MapInColumn(
                 tiltGesturesEnabled = false,
                 zoomControlsEnabled = false,
                 zoomGesturesEnabled = false
-            )
+            ),
+            clusterInfoWindowContent = { PharmacyClusterInfoWindow(it) },
+            clusterItemInfoWindowContent = { PharmacyClusterItemInfoWindow(it) }
         )
     }
 }
