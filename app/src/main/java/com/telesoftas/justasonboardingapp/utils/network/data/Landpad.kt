@@ -14,7 +14,9 @@ data class Landpad(
             return LocationClusterItem(
                 itemTitle = fullName ?: "",
                 itemPosition = location,
-                itemSnippet = wikipedia ?: ""
+                itemSnippet = wikipedia ?: "",
+                successfulLandings = successfulLandings,
+                attemptedLandings = attemptedLandings
             )
         }
         return null

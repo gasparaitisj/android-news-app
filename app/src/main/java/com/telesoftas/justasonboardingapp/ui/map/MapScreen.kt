@@ -82,7 +82,15 @@ private fun MapScreenContent(
                                 large = Color.Blue
                             ),
                             clusterInfoWindowContent = { LandpadsClusterInfoWindow(it) },
-                            clusterItemInfoWindowContent = { LandpadsClusterItemInfoWindow(it) }
+                            clusterItemInfoWindowContent = { marker ->
+                                val markerItem = locations.firstOrNull { it.itemPosition == marker.position } ?:
+                                    LocationClusterItem(
+                                        marker.position,
+                                        marker.title ?: "",
+                                        marker.snippet ?: ""
+                                    )
+                                LandpadsClusterItemInfoWindow(markerItem)
+                            }
                         )
                     }
                 }
@@ -293,11 +301,11 @@ fun PharmacyClusterItemInfoWindow(marker: Marker) {
 }
 
 @Composable
-fun LandpadsClusterItemInfoWindow(marker: Marker) {
+fun LandpadsClusterItemInfoWindow(item: LocationClusterItem) {
     Surface(
         elevation = 3.dp,
         shape = RoundedCornerShape(24.dp),
-        color = Color.White.copy(alpha = 0.8f)
+        color = Color.Blue.copy(alpha = 0.6f)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -310,13 +318,13 @@ fun LandpadsClusterItemInfoWindow(marker: Marker) {
             )
             Text(
                 modifier = Modifier.padding(4.dp),
-                text = marker.title ?: "",
+                text = item.title,
                 style = Typography.subtitle1,
                 color = Color.Black
             )
             Text(
                 modifier = Modifier.padding(4.dp),
-                text = marker.snippet ?: "",
+                text = item.snippet,
                 style = Typography.subtitle1,
                 color = Color.Black
             )
@@ -324,11 +332,39 @@ fun LandpadsClusterItemInfoWindow(marker: Marker) {
                 modifier = Modifier.padding(4.dp),
                 text = String.format(
                     "%.5f, %.5f",
-                    marker.position.latitude, marker.position.longitude
+                    item.position.latitude, item.position.longitude
                 ),
                 style = Typography.subtitle2,
                 color = Color.Black
             )
+            if (item.attemptedLandings != null && item.successfulLandings != null) {
+                val successRatio = try {
+                    item.successfulLandings.toDouble().div(item.attemptedLandings.toDouble()) * 100
+                } catch (exception: Exception) { null }
+                Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = "Attempted landings: ${item.attemptedLandings}",
+                    style = Typography.subtitle2,
+                    color = Color.Black
+                )
+                Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = "Successful landings: ${item.successfulLandings}",
+                    style = Typography.subtitle2,
+                    color = Color.Black
+                )
+                if (successRatio != null) {
+                    Text(
+                        modifier = Modifier.padding(4.dp),
+                        text = String.format(
+                            "Success ratio: %.2f%%",
+                            successRatio
+                        ),
+                        style = Typography.subtitle2,
+                        color = Color.Black
+                    )
+                }
+            }
         }
     }
 }
@@ -336,25 +372,7 @@ fun LandpadsClusterItemInfoWindow(marker: Marker) {
 @Preview(showBackground = true)
 @Composable
 fun ClusterItemInfoWindowPreview() {
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = Color.White
-    ) {
-        Column {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Gintarine vaistine",
-                    style = Typography.subtitle1
-                )
-                Text(
-                    text = "https://gintarine.lt",
-                    style = Typography.subtitle1
-                )
-                Text(
-                    text = "-64.2341234678; 36.123412346",
-                    style = Typography.subtitle2
-                )
-            }
-        }
-    }
+//    LandpadsClusterItemInfoWindow(
+//        LocationClusterItem()
+//    )
 }
