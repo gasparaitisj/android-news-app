@@ -52,6 +52,6 @@ data class MapState(
     ),
     val landpadLocations: Resource<List<Landpad>> = Resource.success(),
     val landpadCameraPosition: CameraPosition = CameraPosition.fromLatLngZoom(
-        LatLng(54.897790620137464, 23.913658590073002), 6f
+        LatLng(39.23737824783825, -100.26510980673753), 3f
     ),
 )
