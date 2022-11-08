@@ -12,7 +12,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class AnalyticsModule {
-
     @Singleton
     @Provides
     fun provideAnalytics(): FirebaseAnalytics = Firebase.analytics
