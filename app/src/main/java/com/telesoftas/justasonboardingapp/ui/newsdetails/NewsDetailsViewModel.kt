@@ -3,12 +3,12 @@ package com.telesoftas.justasonboardingapp.ui.newsdetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telesoftas.justasonboardingapp.ui.map.LocationRepository
-import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
+import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
+import com.telesoftas.justasonboardingapp.utils.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsDetailsViewModel @Inject constructor(
     private val articlesRepository: ArticlesRepository,
-    private val locationRepository: LocationRepository,
+    locationRepository: LocationRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val id: String = checkNotNull(savedStateHandle["id"])

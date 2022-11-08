@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -17,34 +18,53 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
+import com.telesoftas.justasonboardingapp.ui.map.utils.ClusterManager
+import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 
 @MapsComposeExperimentalApi
 @Composable
 fun MapScreen(
-    navController: NavHostController,
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val locations = viewModel.locations
     val defaultCameraPosition = viewModel.defaultCameraPosition
-    GoogleMapClustering(
-        items = locations,
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
-    )
+    MapScreenContent(locations, defaultCameraPosition)
 }
 
 @MapsComposeExperimentalApi
 @Composable
-fun GoogleMapClustering(
+private fun MapScreenContent(
+    locations: List<LocationClusterItem>,
+    defaultCameraPosition: CameraPosition
+) {
+    Scaffold(
+        topBar = { TopBar(stringResource(id = Screen.Map.titleResId)) },
+    ) { paddingValues ->
+        GoogleMapWithClustering(
+            items = locations,
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+        )
+    }
+}
+
+@MapsComposeExperimentalApi
+@Composable
+fun GoogleMapWithClustering(
     items: List<LocationClusterItem>,
     modifier: Modifier,
     cameraPositionState: CameraPositionState,

@@ -1,6 +1,6 @@
 package com.telesoftas.justasonboardingapp.utils.di
 
-import com.telesoftas.justasonboardingapp.utils.network.ArticlesApi
+import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import dagger.Module
 import dagger.Provides
@@ -38,5 +38,5 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideArticlesService(retrofit: Retrofit): ArticlesApi = retrofit.create(ArticlesApi::class.java)
+    fun provideArticlesService(retrofit: Retrofit): ArticlesService = retrofit.create(ArticlesService::class.java)
 }

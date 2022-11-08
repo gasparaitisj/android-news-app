@@ -1,10 +1,13 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +23,7 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
@@ -32,6 +36,8 @@ import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
 @Composable
@@ -41,6 +47,7 @@ fun NewsListScreen(
 ) {
     val articles by viewModel.articles.collectAsStateWithLifecycle()
     val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
+    val sourceTitle = viewModel.sourceTitle ?: stringResource(id = Screen.NewsList.titleResId)
 
     NewsListContent(
         articles = articles,
@@ -51,10 +58,14 @@ fun NewsListScreen(
             viewModel.onArticleClicked(article)
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
-        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) }
+        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) },
+        topBarTitle = sourceTitle,
+        onTopBarNavigationClicked = { navController.navigateUp() }
     )
 }
 
+@ExperimentalPagerApi
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 private fun NewsListContent(
@@ -63,12 +74,15 @@ private fun NewsListContent(
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
     onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
+    topBarTitle: String,
+    onTopBarNavigationClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        topBar = { NewsListTopBar(topBarTitle, onTopBarNavigationClicked) },
         scaffoldState = scaffoldState,
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
@@ -146,6 +160,29 @@ private fun NewsListContent(
             }
         }
     }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
+@Composable
+private fun NewsListTopBar(
+    title: String,
+    onTopBarNavigationClicked: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = onTopBarNavigationClicked) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
+    )
 }
 
 

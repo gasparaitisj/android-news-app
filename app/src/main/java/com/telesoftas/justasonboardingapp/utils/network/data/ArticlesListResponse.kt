@@ -2,19 +2,19 @@ package com.telesoftas.justasonboardingapp.utils.network.data
 
 import com.squareup.moshi.Json
 
-data class ArticlesListResponse (
-    @Json(name="totalArticles")
+data class ArticlesListResponse(
+    @Json(name = "totalArticles")
     val totalArticles: Long,
 
-    @Json(name="currentPage")
+    @Json(name = "currentPage")
     val currentPage: Long,
 
-    @Json(name="totalPages")
+    @Json(name = "totalPages")
     val totalPages: Long,
 
-    @Json(name="pageSize")
+    @Json(name = "pageSize")
     val pageSize: Long,
 
-    @Json(name="articles")
+    @Json(name = "articles")
     val articles: List<ArticlePreviewResponse>?
 )

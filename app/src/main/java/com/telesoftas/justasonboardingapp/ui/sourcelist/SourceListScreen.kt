@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
+import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
@@ -61,6 +62,7 @@ private fun SourceListContent(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        topBar = { TopBar(title = stringResource(id = Screen.SourceList.titleResId)) },
         scaffoldState = scaffoldState,
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->

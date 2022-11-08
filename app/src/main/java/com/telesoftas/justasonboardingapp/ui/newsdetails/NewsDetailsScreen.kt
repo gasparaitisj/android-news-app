@@ -39,8 +39,8 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.map.GoogleMapClustering
-import com.telesoftas.justasonboardingapp.ui.map.LocationClusterItem
+import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
+import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
@@ -101,82 +101,16 @@ fun NewsDetailsContent(
             state = state,
             scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
             toolbar = {
-                TopAppBar(
+                CollapsedCollapsingAppBar(
                     modifier = Modifier
                         .road(
                             whenCollapsed = Alignment.BottomStart,
                             whenExpanded = Alignment.BottomStart
                         )
                         .pin(),
-                    title = {
-                        Text(
-                            modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
-                            text = article.data?.title ?: "",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { onBackArrowClicked() },
-                            enabled = progress <= 0.5f
-                        ) {
-                            Icon(
-                                modifier = Modifier.alpha(if (progress <= 0.5f) 1f else progress * 2),
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.top_app_bar_background),
-                    contentColor = colorResource(id = R.color.top_app_bar_content)
+                    progress, article, onBackArrowClicked
                 )
-
-                Box(
-                    modifier = if (article.data?.imageUrl == null) {
-                        Modifier
-                            .fillMaxSize()
-                            .background(colorResource(id = R.color.top_app_bar_background))
-                    } else {
-                        Modifier
-                            .fillMaxSize()
-                            .alpha(if (progress <= 0.5f) progress * 2 else 1f)
-                    }
-                ) {
-                    AsyncImage(
-                        model = "https://${article.data?.imageUrl}",
-                        modifier = Modifier
-                            .height(200.dp)
-                            .fillMaxWidth(),
-                        contentDescription = "Image",
-                        error = if (isSystemInDarkTheme()) {
-                            painterResource(R.drawable.img_placeholder_dark)
-                        } else {
-                            painterResource(R.drawable.img_placeholder)
-                        },
-                        contentScale = ContentScale.Crop,
-                    )
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        IconButton(onClick = { onBackArrowClicked() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                        Text(
-                            text = article.data?.title ?: "",
-                            modifier = Modifier.padding(24.dp),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = Typography.h6,
-                            color = Color.White
-                        )
-                    }
-                }
+                ExpandedCollapsingAppBar(article, progress, onBackArrowClicked)
             }
         ) {
             article.data?.let { article ->
@@ -186,6 +120,91 @@ fun NewsDetailsContent(
                     onArticleFavoriteChanged
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CollapsedCollapsingAppBar(
+    modifier: Modifier,
+    progress: Float,
+    article: Resource<Article>,
+    onBackArrowClicked: () -> Unit
+) {
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(
+                text = article.data?.title ?: "",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onBackArrowClicked() },
+                enabled = progress <= 0.5f
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.top_app_bar_background),
+        contentColor = colorResource(id = R.color.top_app_bar_content)
+    )
+}
+
+@Composable
+private fun ExpandedCollapsingAppBar(
+    article: Resource<Article>,
+    progress: Float,
+    onBackArrowClicked: () -> Unit
+) {
+    Box(
+        modifier = if (article.data?.imageUrl == null) {
+            Modifier
+                .fillMaxSize()
+                .background(colorResource(id = R.color.top_app_bar_background))
+        } else {
+            Modifier
+                .fillMaxSize()
+                .alpha(if (progress <= 0.5f) progress * 2 else 1f)
+        }
+    ) {
+        AsyncImage(
+            model = "https://${article.data?.imageUrl}",
+            modifier = Modifier
+                .height(200.dp)
+                .fillMaxWidth(),
+            contentDescription = "Image",
+            error = if (isSystemInDarkTheme()) {
+                painterResource(R.drawable.img_placeholder_dark)
+            } else {
+                painterResource(R.drawable.img_placeholder)
+            },
+            contentScale = ContentScale.Crop,
+        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            IconButton(onClick = { onBackArrowClicked() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+            Text(
+                text = article.data?.title ?: "",
+                modifier = Modifier.padding(24.dp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = Typography.h6,
+                color = Color.White
+            )
         }
     }
 }
@@ -290,7 +309,7 @@ fun MapInColumn(
     onMapTouched: () -> Unit
 ) {
     Box(modifier = modifier) {
-        GoogleMapClustering(
+        GoogleMapWithClustering(
             items = listOf(location),
             modifier = Modifier
                 .fillMaxSize()

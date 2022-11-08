@@ -6,6 +6,7 @@ import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.SortBy
+import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

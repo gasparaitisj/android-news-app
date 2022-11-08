@@ -1,4 +1,4 @@
-package com.telesoftas.justasonboardingapp.ui.map
+package com.telesoftas.justasonboardingapp.ui.map.utils
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem

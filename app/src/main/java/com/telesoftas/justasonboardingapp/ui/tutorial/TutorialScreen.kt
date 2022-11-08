@@ -31,9 +31,9 @@ import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 @ExperimentalPagerApi
 fun TutorialScreen(navController: NavHostController) {
     val pages = listOf(
-        OnBoardingPage.First,
-        OnBoardingPage.Second,
-        OnBoardingPage.Third
+        OnboardingPage.First,
+        OnboardingPage.Second,
+        OnboardingPage.Third
     )
     val pagerState = rememberPagerState()
     Column(
@@ -65,7 +65,7 @@ fun TutorialScreen(navController: NavHostController) {
 }
 
 @Composable
-fun PagerScreen(onBoardingPage: OnBoardingPage) {
+fun PagerScreen(onBoardingPage: OnboardingPage) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,

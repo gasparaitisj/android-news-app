@@ -2,12 +2,12 @@ package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
-import com.telesoftas.justasonboardingapp.ui.sourcelist.ArticlesRepository
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
+import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

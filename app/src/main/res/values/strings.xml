@@ -53,8 +53,8 @@
 
     <!-- Source list screen -->
     <string name="source_list_screen_snackbar_dismiss">Dismiss</string>
-    <string name="source_list_screen_chip_sort_ascending">A -> Z</string>
-    <string name="source_list_screen_chip_sort_descending">Z -> A</string>
+    <string name="source_list_screen_chip_sort_ascending">A → Z</string>
+    <string name="source_list_screen_chip_sort_descending">Z → A</string>
 
     <!-- News list screen -->
     <string name="news_list_screen_chip_category_politics">Politics</string>
@@ -80,7 +80,7 @@
     <string name="about_screen_selfie_button">Take a selfie! :)</string>
     <string name="image_loading_error">Image couldn\'t be loaded</string>
     <string name="about_screen_permission_rationale">You will not be able to take a selfie without the Camera permission.\nPlease grant the permission.</string>
-    <string name="about_screen_loading_photo">Your selfie is being loaded...</string>
+    <string name="about_screen_loading_photo">Your selfie is being loaded…</string>
     <string name="about_screen_image_capture_success">Image successfully captured!</string>
     <string name="about_screen_image_loading_failure">Image could not be loaded.</string>
     <string name="about_screen_image_capture_failure">"Image could not be captured. "</string>

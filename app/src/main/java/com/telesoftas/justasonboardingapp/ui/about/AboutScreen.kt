@@ -36,14 +36,15 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.about.CameraUtils.getCameraProvider
+import com.telesoftas.justasonboardingapp.ui.main.navigation.TopBar
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.File
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-
 
 @ExperimentalPermissionsApi
 @ExperimentalMaterialApi
@@ -71,6 +72,7 @@ private fun AboutScreenContent(
 
     showSnackbar(channel, context, snackbarHostState)
     Scaffold(
+        topBar = { TopBar(stringResource(id = Screen.About.titleResId)) },
         scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
         snackbarHost = { state ->
             SnackbarHost(state) { data ->
