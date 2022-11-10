@@ -4,21 +4,18 @@ import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 
 data class Landpad(
     val location: Location,
-    val fullName: String?,
-    val successfulLandings: String?,
-    val attemptedLandings: String?,
-    val wikipedia: String?
+    val fullName: String = "",
+    val successfulLandings: String = "",
+    val attemptedLandings: String = "",
+    val wikipedia: String = ""
 ) {
-    fun toClusterItem(): LocationClusterItem? {
-        location.toLatLng()?.let { location ->
-            return LocationClusterItem(
-                itemTitle = fullName ?: "",
-                itemPosition = location,
-                itemSnippet = wikipedia ?: "",
-                successfulLandings = successfulLandings,
-                attemptedLandings = attemptedLandings
-            )
-        }
-        return null
+    fun toClusterItem(): LocationClusterItem {
+        return LocationClusterItem(
+            itemTitle = fullName,
+            itemPosition = location.toLatLng(),
+            itemSnippet = wikipedia,
+            successfulLandings = successfulLandings,
+            attemptedLandings = attemptedLandings
+        )
     }
 }

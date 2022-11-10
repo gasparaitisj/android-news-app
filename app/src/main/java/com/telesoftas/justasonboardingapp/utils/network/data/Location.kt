@@ -3,11 +3,10 @@ package com.telesoftas.justasonboardingapp.utils.network.data
 import com.google.android.gms.maps.model.LatLng
 
 data class Location(
-    val latitude: Double?,
-    val longitude: Double?
+    val latitude: Double,
+    val longitude: Double
 ) {
-    fun toLatLng(): LatLng? {
-        if (latitude == null || longitude == null) return null
+    fun toLatLng(): LatLng {
         return LatLng(latitude, longitude)
     }
 }
