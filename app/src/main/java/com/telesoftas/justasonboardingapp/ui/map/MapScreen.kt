@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
@@ -372,7 +373,11 @@ fun LandpadsClusterItemInfoWindow(item: LocationClusterItem) {
 @Preview(showBackground = true)
 @Composable
 fun ClusterItemInfoWindowPreview() {
-//    LandpadsClusterItemInfoWindow(
-//        LocationClusterItem()
-//    )
+    LandpadsClusterItemInfoWindow(
+        LocationClusterItem(
+            itemPosition = LatLng(54.685581219627494, 25.204550482478087),
+            itemTitle = "Labas",
+            itemSnippet = "Vakaras"
+        )
+    )
 }
