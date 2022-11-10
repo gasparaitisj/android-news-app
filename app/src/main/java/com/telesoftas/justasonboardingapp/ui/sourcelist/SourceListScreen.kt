@@ -199,7 +199,7 @@ fun ChipGroupSortArticles(
             ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_ascending))
                 Text(
-                    modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     text = stringResource(id = R.string.source_list_screen_chip_sort_arrow),
                     fontFamily = FontFamily.Monospace
                 )
@@ -213,7 +213,7 @@ fun ChipGroupSortArticles(
             ) {
                 Text(stringResource(id = R.string.source_list_screen_chip_sort_descending))
                 Text(
-                    modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     text = stringResource(id = R.string.source_list_screen_chip_sort_arrow),
                     fontFamily = FontFamily.Monospace
                 )
