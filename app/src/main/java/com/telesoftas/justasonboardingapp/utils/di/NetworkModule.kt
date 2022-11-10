@@ -1,6 +1,6 @@
 package com.telesoftas.justasonboardingapp.utils.di
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import dagger.Module
@@ -39,7 +39,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideApollo(): ApolloClient = ApolloClient.builder()
+    fun provideApollo(): ApolloClient = ApolloClient.Builder()
         .serverUrl(Constants.BASE_SPACEX_URL)
         .build()
 

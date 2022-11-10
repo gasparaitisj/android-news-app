@@ -1,7 +1,6 @@
 package com.telesoftas.justasonboardingapp.utils.repository
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
 import com.telesoftas.justasonboardingapp.LandpadsQuery
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.Landpad
@@ -17,7 +16,7 @@ class LandpadsRepository @Inject constructor(
     suspend fun getLandpads(): Resource<List<Landpad>> {
         return try {
             Resource.success(
-                apolloClient.query(LandpadsQuery()).await().data?.landpads?.map { landpad ->
+                apolloClient.query(LandpadsQuery()).execute().data?.landpads?.map { landpad ->
                     Landpad(
                         location = Location(landpad?.location?.latitude, landpad?.location?.longitude),
                         fullName = landpad?.full_name,
