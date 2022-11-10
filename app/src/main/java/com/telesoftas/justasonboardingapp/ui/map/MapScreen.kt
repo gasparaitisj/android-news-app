@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.compose.*
@@ -38,26 +37,23 @@ import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 fun MapScreen(
     viewModel: MapViewModel = hiltViewModel()
 ) {
-    val locations = viewModel.locations
-    val defaultCameraPosition = viewModel.defaultCameraPosition
-    MapScreenContent(locations, defaultCameraPosition)
+    val state by viewModel.state.collectAsState()
+    MapScreenContent(state)
 }
 
 @MapsComposeExperimentalApi
 @Composable
 private fun MapScreenContent(
-    locations: List<LocationClusterItem>,
-    defaultCameraPosition: CameraPosition
+    state: MapState
 ) {
     Scaffold(
         topBar = { TopBar(stringResource(id = Screen.Map.titleResId)) },
     ) { paddingValues ->
         GoogleMapWithClustering(
-            items = locations,
+            state = state,
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize(),
-            cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+                .fillMaxSize()
         )
     }
 }
@@ -65,9 +61,8 @@ private fun MapScreenContent(
 @MapsComposeExperimentalApi
 @Composable
 fun GoogleMapWithClustering(
-    items: List<LocationClusterItem>,
+    state: MapState,
     modifier: Modifier,
-    cameraPositionState: CameraPositionState,
     uiSettings: MapUiSettings = MapUiSettings()
 ) {
     val uriHandler = LocalUriHandler.current
@@ -75,19 +70,20 @@ fun GoogleMapWithClustering(
     val context = LocalContext.current
     val viewGroup = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
+    val cameraPositionState = CameraPositionState(state.cameraPosition)
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
         uiSettings = uiSettings
     ) {
-        MapEffect(items) { map ->
+        MapEffect(state.items) { map ->
             clusterManager = ClusterManager(
                 context = context,
                 viewGroup = viewGroup,
                 compositionContext = compositionContext,
                 map = map,
-                items = items,
+                items = state.items,
                 clusterItemInfoWindowContent = { marker ->
                     ClusterItemInfoWindow(marker)
                 },

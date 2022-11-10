@@ -12,10 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,17 +25,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleItem
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 
 @ExperimentalLifecycleComposeApi
 @ExperimentalMaterialApi
@@ -47,22 +42,19 @@ fun FavoriteScreen(
     navController: NavHostController,
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val filteredArticles by viewModel.filteredArticles.collectAsStateWithLifecycle()
-    val searchWidgetState by viewModel.searchWidgetState
-    val searchTextState by viewModel.searchTextState
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 
     FavoriteScreenContent(
-        articles = articles,
-        filteredArticles = filteredArticles,
-        onArticleFavoriteChanged = { article, isFavorite ->
-            viewModel.onArticleFavoriteChanged(article, isFavorite)
-        },
+        state = state,
+        isLoading = isLoading,
+        onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
         onArticleItemClick = { article ->
             navController.navigate(Screen.FavoriteNewsDetails.destination(article.id))
         },
-        searchWidgetState = searchWidgetState,
-        searchTextState = searchTextState,
+        onRefresh = { viewModel.onRefresh() },
         onTextChange = { viewModel.updateSearchTextState(newValue = it) },
         onCloseClick = { viewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED) },
         onSearchClick = { text -> viewModel.onFilterArticles(text) },
@@ -71,13 +63,26 @@ fun FavoriteScreen(
 }
 
 @Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.Favorite.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
+}
+
+@Composable
 fun FavoriteScreenContent(
-    articles: Resource<List<Article>>,
-    filteredArticles: List<Article>,
-    searchWidgetState: SearchWidgetState,
-    searchTextState: String,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
-    onArticleItemClick: (Article) -> Unit,
+    state: FavoriteState,
+    isLoading: Boolean,
+    onRefresh: () -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -86,9 +91,7 @@ fun FavoriteScreenContent(
     Scaffold(
         topBar = {
             MainAppBar(
-                filteredArticles = filteredArticles,
-                searchWidgetState = searchWidgetState,
-                searchTextState = searchTextState,
+                state = state,
                 onArticleItemClick = onArticleItemClick,
                 onTextChange = onTextChange,
                 onCloseClick = onCloseClick,
@@ -102,12 +105,11 @@ fun FavoriteScreenContent(
                 content = {
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(
-                            isRefreshing = articles.status == Status.LOADING
+                            isRefreshing = isLoading
                         ),
-                        onRefresh = {},
-                        swipeEnabled = false
+                        onRefresh = onRefresh
                     ) {
-                        val list = articles.getSuccessDataOrNull().orEmpty()
+                        val list = state.articles.getSuccessDataOrNull().orEmpty()
                         if (list.isEmpty()) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -144,16 +146,14 @@ fun FavoriteScreenContent(
 
 @Composable
 fun MainAppBar(
-    filteredArticles: List<Article>,
-    searchWidgetState: SearchWidgetState,
-    searchTextState: String,
-    onArticleItemClick: (Article) -> Unit,
+    state: FavoriteState,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
     onSearchTrigger: () -> Unit
 ) {
-    when (searchWidgetState) {
+    when (state.searchWidgetState) {
         SearchWidgetState.CLOSED -> {
             DefaultAppBar(
                 onSearchClick = onSearchTrigger
@@ -161,8 +161,8 @@ fun MainAppBar(
         }
         SearchWidgetState.OPENED -> {
             SearchAppBar(
-                filteredArticles = filteredArticles,
-                text = searchTextState,
+                filteredArticles = state.filteredArticles,
+                text = state.searchTextState,
                 onArticleItemClick = onArticleItemClick,
                 onTextChange = onTextChange,
                 onCloseClick = onCloseClick,
@@ -198,9 +198,9 @@ fun DefaultAppBar(onSearchClick: () -> Unit) {
 
 @Composable
 fun SearchAppBar(
-    filteredArticles: List<Article>,
+    filteredArticles: List<ArticleViewData>,
     text: String,
-    onArticleItemClick: (Article) -> Unit,
+    onArticleItemClick: (ArticleViewData) -> Unit,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -246,8 +246,8 @@ fun SearchAppBar(
 
 @Composable
 private fun SearchDropdownMenuItem(
-    onArticleItemClick: (Article) -> Unit,
-    article: Article,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    article: ArticleViewData,
     title: String
 ) {
     DropdownMenuItem(onClick = { onArticleItemClick(article) }) {
@@ -280,7 +280,7 @@ private fun SearchTextField(
     onCloseClick: () -> Unit,
     onExpandedChange: (Boolean) -> Unit,
     onSearchClick: (String) -> Unit,
-    filteredArticles: List<Article>
+    filteredArticles: List<ArticleViewData>
 ) {
     TextField(
         modifier = modifier,

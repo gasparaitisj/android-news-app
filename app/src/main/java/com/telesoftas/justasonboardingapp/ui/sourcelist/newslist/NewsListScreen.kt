@@ -5,6 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -31,7 +32,6 @@ import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.JustasOnboardingAppTheme
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
 import com.telesoftas.justasonboardingapp.utils.navigation.Screen
-import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import kotlinx.coroutines.launch
@@ -45,23 +45,37 @@ fun NewsListScreen(
     navController: NavHostController,
     viewModel: NewsListViewModel = hiltViewModel()
 ) {
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val categoryType by viewModel.categoryType.collectAsStateWithLifecycle()
-    val sourceTitle = viewModel.sourceTitle ?: stringResource(id = Screen.NewsList.titleResId)
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
 
     NewsListContent(
-        articles = articles,
-        categoryType = categoryType,
+        state = state,
+        isLoading = isLoading,
         onRefresh = { viewModel.onRefresh() },
         onCategoryTypeChanged = { viewModel.onCategoryTypeChanged(it) },
         onArticleItemClick = { article ->
             viewModel.onArticleClicked(article)
             navController.navigate(Screen.NewsDetails.destination(article.id))
         },
-        onArticleFavoriteChanged = { article, isFavorite -> viewModel.onArticleFavoriteChanged(article, isFavorite) },
-        topBarTitle = sourceTitle,
+        onArticleFavoriteChanged = { article -> viewModel.onArticleFavoriteChanged(article) },
         onTopBarNavigationClicked = { navController.navigateUp() }
     )
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.NewsList.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @ExperimentalPagerApi
@@ -69,20 +83,20 @@ fun NewsListScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun NewsListContent(
-    articles: Resource<List<Article>>,
-    categoryType: ArticleCategory,
+    state: NewsListState,
+    isLoading: Boolean,
     onRefresh: () -> Unit,
     onCategoryTypeChanged: (ArticleCategory) -> Unit,
-    onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit,
-    topBarTitle: String,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit,
     onTopBarNavigationClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     Scaffold(
-        topBar = { NewsListTopBar(topBarTitle, onTopBarNavigationClicked) },
+        topBar = { NewsListTopBar(state.sourceTitle, onTopBarNavigationClicked) },
         scaffoldState = scaffoldState,
         snackbarHost = { snackbarHostState ->
             SnackbarHost(snackbarHostState) { data ->
@@ -100,11 +114,11 @@ private fun NewsListContent(
         ) {
             SwipeRefresh(
                 state = rememberSwipeRefreshState(
-                    isRefreshing = articles.status == Status.LOADING
+                    isRefreshing = isLoading
                 ),
                 onRefresh = { onRefresh() },
             ) {
-                if (articles.status == Status.ERROR) {
+                if (state.articles.status == Status.ERROR) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -123,14 +137,18 @@ private fun NewsListContent(
                 } else {
                     Column {
                         ChipGroupFilterArticles(
-                            categoryType = categoryType,
-                            onCategoryTypeChanged = onCategoryTypeChanged
+                            categoryType = state.categoryType,
+                            onCategoryTypeChanged = { category ->
+                                onCategoryTypeChanged(category)
+                                scope.launch { lazyListState.scrollToItem(0) }
+                            }
                         )
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = lazyListState
+                        ) {
                             items(
-                                items = articles.getSuccessDataOrNull().orEmpty(),
+                                items = state.articles.getSuccessDataOrNull().orEmpty(),
                                 key = { it.id }
                             ) { item ->
                                 ArticleItem(
@@ -147,10 +165,10 @@ private fun NewsListContent(
     }
 
     // Show Snackbar on network error
-    val message = stringResource(id = articles.messageRes ?: R.string.unknown_error)
+    val message = stringResource(id = state.articles.messageRes ?: R.string.unknown_error)
     val actionLabel = stringResource(id = R.string.source_list_screen_snackbar_dismiss)
-    LaunchedEffect(articles.status) {
-        if (articles.status == Status.ERROR) {
+    LaunchedEffect(state.articles.status) {
+        if (state.articles.status == Status.ERROR) {
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = message,
@@ -188,11 +206,10 @@ private fun NewsListTopBar(
 
 @Composable
 fun ArticleItem(
-    item: Article,
-    onArticleItemClick: (Article) -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    item: ArticleViewData,
+    onArticleItemClick: (ArticleViewData) -> Unit,
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
-    val selected = remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -214,12 +231,11 @@ fun ArticleItem(
             )
             IconButton(
                 onClick = {
-                    selected.value = !selected.value
-                    onArticleFavoriteChanged(item, selected.value)
+                    onArticleFavoriteChanged(item)
                 },
                 content = {
                     Icon(
-                        painter = if (selected.value) {
+                        painter = if (item.isFavorite) {
                             painterResource(id = R.drawable.btn_favorite_active)
                         } else {
                             painterResource(id = R.drawable.btn_favorite)
@@ -345,7 +361,7 @@ fun CategoryFilterChip(
 @Composable
 @Preview(showBackground = true)
 private fun ArticleItemPreview() {
-    val article = Article(
+    val article = ArticleViewData(
         id = "1",
         isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",
@@ -358,6 +374,6 @@ private fun ArticleItemPreview() {
         votes = 52
     )
     JustasOnboardingAppTheme {
-        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {_, _ ->})
+        ArticleItem(item = article, onArticleItemClick = {}, onArticleFavoriteChanged = {})
     }
 }

@@ -28,24 +28,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
+import com.telesoftas.justasonboardingapp.ui.map.MapState
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
 import com.telesoftas.justasonboardingapp.ui.theme.Typography
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
-import com.telesoftas.justasonboardingapp.utils.network.Status
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.other.Constants
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -61,18 +62,32 @@ fun NewsDetailsScreen(
     navController: NavHostController,
     viewModel: NewsDetailsViewModel = hiltViewModel()
 ) {
-    val article by viewModel.article.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+
     NewsDetailsContent(
-        article = article,
-        location = viewModel.location,
+        state = state,
+        isLoading = isLoading,
         onBackArrowClicked = { navController.navigateUp() },
-        onArticleFavoriteChanged = { item, isFavorite ->
-            viewModel.onArticleFavoriteChanged(
-                article = item,
-                isFavorite = isFavorite
-            )
-        }
+        onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
+}
+
+@Composable
+private fun addRefreshOnNavigation(
+    navController: NavHostController,
+    onRefresh: () -> Unit
+) {
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.NewsDetails.route &&
+                destination.route == Screen.FavoriteNewsDetails.route) { onRefresh() }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 }
 
 @ExperimentalComposeUiApi
@@ -81,24 +96,24 @@ fun NewsDetailsScreen(
 @ExperimentalMaterialApi
 @Composable
 fun NewsDetailsContent(
-    article: Resource<Article>,
-    location: LocationClusterItem,
+    state: NewsDetailsState,
+    isLoading: Boolean,
     onBackArrowClicked: () -> Unit,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
-    val state = rememberCollapsingToolbarScaffoldState()
-    val progress = state.toolbarState.progress
+    val scaffoldState = rememberCollapsingToolbarScaffoldState()
+    val progress = scaffoldState.toolbarState.progress
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = article.status == Status.LOADING
+            isRefreshing = isLoading
         ),
         swipeEnabled = false,
         onRefresh = {}
     ) {
         CollapsingToolbarScaffold(
             modifier = Modifier,
-            state = state,
+            state = scaffoldState,
             scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
             toolbar = {
                 CollapsedCollapsingAppBar(
@@ -108,15 +123,15 @@ fun NewsDetailsContent(
                             whenExpanded = Alignment.BottomStart
                         )
                         .pin(),
-                    progress, article, onBackArrowClicked
+                    progress, state.article, onBackArrowClicked
                 )
-                ExpandedCollapsingAppBar(article, progress, onBackArrowClicked)
+                ExpandedCollapsingAppBar(state.article, progress, onBackArrowClicked)
             }
         ) {
-            article.data?.let { article ->
+            state.article.data?.let { article ->
                 NewsDetailsItem(
                     article,
-                    location,
+                    state.location,
                     onArticleFavoriteChanged
                 )
             }
@@ -128,7 +143,7 @@ fun NewsDetailsContent(
 private fun CollapsedCollapsingAppBar(
     modifier: Modifier,
     progress: Float,
-    article: Resource<Article>,
+    article: Resource<ArticleViewData>,
     onBackArrowClicked: () -> Unit
 ) {
     TopAppBar(
@@ -158,7 +173,7 @@ private fun CollapsedCollapsingAppBar(
 
 @Composable
 private fun ExpandedCollapsingAppBar(
-    article: Resource<Article>,
+    article: Resource<ArticleViewData>,
     progress: Float,
     onBackArrowClicked: () -> Unit
 ) {
@@ -213,12 +228,10 @@ private fun ExpandedCollapsingAppBar(
 @MapsComposeExperimentalApi
 @Composable
 fun NewsDetailsItem(
-    item: Article,
+    item: ArticleViewData,
     location: LocationClusterItem,
-    onArticleFavoriteChanged: (Article, Boolean) -> Unit
+    onArticleFavoriteChanged: (ArticleViewData) -> Unit
 ) {
-    val selected = remember { mutableStateOf(item.isFavorite) }
-
     val defaultCameraPosition = CameraPosition.fromLatLngZoom(location.position, 10f)
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
     var columnScrollingEnabled by remember { mutableStateOf(true) }
@@ -230,12 +243,12 @@ fun NewsDetailsItem(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize()
             .verticalScroll(
                 state = rememberScrollState(),
                 enabled = columnScrollingEnabled
-            ),
+            )
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -250,12 +263,11 @@ fun NewsDetailsItem(
             )
             IconButton(
                 onClick = {
-                    selected.value = !selected.value
-                    onArticleFavoriteChanged(item, selected.value)
+                    onArticleFavoriteChanged(item)
                 },
                 content = {
                     Icon(
-                        painter = if (selected.value) {
+                        painter = if (item.isFavorite) {
                             painterResource(id = R.drawable.btn_favorite_active)
                         } else {
                             painterResource(id = R.drawable.btn_favorite)
@@ -287,10 +299,9 @@ fun NewsDetailsItem(
             MapInColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((256+128).dp)
+                    .height((256 + 128).dp)
                     .padding(top = 32.dp),
                 location = location,
-                cameraPositionState = cameraPositionState,
                 onMapTouched = {
                     columnScrollingEnabled = false
                 }
@@ -305,12 +316,13 @@ fun NewsDetailsItem(
 fun MapInColumn(
     modifier: Modifier = Modifier,
     location: LocationClusterItem,
-    cameraPositionState: CameraPositionState,
     onMapTouched: () -> Unit
 ) {
     Box(modifier = modifier) {
         GoogleMapWithClustering(
-            items = listOf(location),
+            state = MapState(
+                listOf(location)
+            ),
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter(
@@ -324,7 +336,6 @@ fun MapInColumn(
                         }
                     }
                 ),
-            cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(
                 compassEnabled = false,
                 indoorLevelPickerEnabled = false,
@@ -382,7 +393,7 @@ fun ReadFullArticleButton(
 @Composable
 @Preview(showBackground = true)
 fun NewsDetailsItemPreview() {
-    val item = Article(
+    val item = ArticleViewData(
         id = "1",
         isFavorite = false,
         publishedAt = "2021-06-03T10:58:55Z",
@@ -394,5 +405,5 @@ fun NewsDetailsItemPreview() {
         imageUrl = "placebear.com/200/300",
         votes = 52
     )
-    NewsDetailsItem(item = item, location = LocationClusterItem(LatLng(0.0, 0.0), "", "")) { _, _ -> }
+    NewsDetailsItem(item = item, location = LocationClusterItem(LatLng(0.0, 0.0), "", "")) {}
 }

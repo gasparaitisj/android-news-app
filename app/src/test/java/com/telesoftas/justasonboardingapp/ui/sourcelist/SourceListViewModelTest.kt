@@ -79,13 +79,13 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("4", "D Title", "D Description"),
-            NewsSource("1", "A Title", "A Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("3", "C Title", "C Description"),
+            SourceViewData("4", "D Title", "D Description"),
+            SourceViewData("1", "A Title", "A Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("3", "C Title", "C Description"),
         )
 
-        viewModel.getArticles()
+        viewModel.onRefresh()
 
         assertEquals(answer, viewModel.newsSources.value.data)
     }
@@ -95,10 +95,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("1", "A Title", "A Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("3", "C Title", "C Description"),
-            NewsSource("4", "D Title", "D Description"),
+            SourceViewData("1", "A Title", "A Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("3", "C Title", "C Description"),
+            SourceViewData("4", "D Title", "D Description"),
         )
 
         viewModel.sortArticles(SortBy.ASCENDING)
@@ -111,10 +111,10 @@ class SourceListViewModelTest {
         viewModel = SourceListViewModel(articlesRepository)
         advanceUntilIdle()
         val answer = listOf(
-            NewsSource("4", "D Title", "D Description"),
-            NewsSource("3", "C Title", "C Description"),
-            NewsSource("2", "B Title", "B Description"),
-            NewsSource("1", "A Title", "A Description"),
+            SourceViewData("4", "D Title", "D Description"),
+            SourceViewData("3", "C Title", "C Description"),
+            SourceViewData("2", "B Title", "B Description"),
+            SourceViewData("1", "A Title", "A Description"),
         )
 
         viewModel.sortArticles(SortBy.DESCENDING)

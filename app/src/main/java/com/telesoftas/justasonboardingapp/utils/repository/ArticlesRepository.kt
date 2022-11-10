@@ -1,18 +1,13 @@
 package com.telesoftas.justasonboardingapp.utils.repository
 
 import com.telesoftas.justasonboardingapp.R
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.SourceViewData
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
-import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceEntity
+import com.telesoftas.justasonboardingapp.utils.data.SourceDao
 import com.telesoftas.justasonboardingapp.utils.network.ArticlesService
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
-import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
-import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +15,7 @@ import javax.inject.Singleton
 class ArticlesRepository @Inject constructor(
     private val articlesService: ArticlesService,
     private val articleDao: ArticleDao,
-    private val newsSourceDao: NewsSourceDao
+    private val sourceDao: SourceDao
 ) {
     suspend fun getArticles(
         query: String? = null,
@@ -30,7 +25,8 @@ class ArticlesRepository @Inject constructor(
         sortBy: String? = null,
         pageNumber: Int? = null,
         xRequestId: String? = null
-    ): Resource<ArticlesListResponse> {
+    ): Resource<List<ArticleViewData>> {
+        val articlesFromDatabase = getFavoriteArticlesFromDatabase()
         return try {
             val response = articlesService.getArticles(
                 query = query,
@@ -41,67 +37,77 @@ class ArticlesRepository @Inject constructor(
                 pageNumber = pageNumber,
                 xRequestId = xRequestId
             )
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    return@let Resource.success(it)
-                } ?: Resource.error(msg = response.message())
-            } else {
-                Resource.error(msg = response.message())
-            }
+            if (!response.isSuccessful) return Resource.error(msg = response.message())
+            response.body()?.let { articlesListResponse ->
+                val mappedResponse = Resource.success(
+                    articlesListResponse.articles?.map { articlePreviewResponse ->
+                        articlePreviewResponse.toViewData().copy(
+                            isFavorite = articlesFromDatabase.find { article ->
+                                article.id == articlePreviewResponse.id
+                            }?.isFavorite ?: false
+                        )
+                    } ?: listOf()
+                )
+                mappedResponse.data?.let { insertArticlesToDatabase(it) }
+                return@let mappedResponse
+            } ?: Resource.error(msg = response.message())
         } catch (exception: Exception) {
             Resource.error(msgRes = R.string.network_error)
         }
     }
 
-    suspend fun getArticleById(id: String): Resource<ArticlePreviewResponse> {
+    suspend fun getArticleById(id: String): Resource<ArticleViewData> {
+        val articleFromDatabase = getArticleByIdFromDatabase(id)
         return try {
             val response = articlesService.getArticleById(id)
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    return@let Resource.success(it)
-                } ?: Resource.error(msg = response.message())
-            } else {
-                Resource.error(msg = response.message())
-            }
+            if (!response.isSuccessful) return Resource.success(articleFromDatabase)
+            response.body()?.let { articlePreviewResponse ->
+                return@let Resource.success(
+                    articlePreviewResponse.toViewData().copy(
+                        isFavorite = articleFromDatabase?.isFavorite ?: false
+                    )
+                )
+            } ?: Resource.error(msg = response.message())
         } catch (exception: Exception) {
-            Resource.error(msgRes = R.string.network_error)
+            Resource.success(articleFromDatabase)
         }
     }
 
-    suspend fun getArticlesFromDatabase(): List<ArticleEntity> {
-        return articleDao.getAllArticles()
+    suspend fun getArticlesFromDatabase(): Resource<List<ArticleViewData>> =
+        Resource.success(articleDao.getAllArticles().map { it.toViewData() })
+
+    suspend fun getArticleByIdFromDatabase(id: String): ArticleViewData? =
+        articleDao.getArticleById(id.toIntOrNull() ?: 0)?.toViewData()
+
+    suspend fun getFavoriteArticlesFromDatabase(): List<ArticleViewData> =
+        articleDao.getFavoriteArticles().map { it.toViewData() }
+
+    suspend fun insertArticlesToDatabase(articles: List<ArticleViewData>) {
+        articleDao.insertArticles(articles.map { it.toEntity() })
     }
 
-    fun getArticleByIdFromDatabase(id: String): Flow<ArticleEntity?> {
-        id.toIntOrNull()?.let { idInt ->
-            return articleDao.getArticleById(idInt)
-        }
-        return flow { emit(null) }
+    suspend fun insertArticleToDatabase(article: ArticleViewData) =
+        articleDao.insertArticle(article.toEntity())
+
+    suspend fun deleteArticleByIdFromDatabase(id: Int) = articleDao.deleteArticleById(id)
+
+    suspend fun getNewsSources(): Resource<List<SourceViewData>> {
+        val resource = Resource.success(
+            getArticles().data?.map { article ->
+                SourceViewData(
+                    id = article.id,
+                    title = article.title ?: "",
+                    description = article.description ?: ""
+                )
+            } ?: listOf()
+        )
+        resource.data?.let { insertNewsSourcesToDatabase(it) }
+        return resource
     }
 
-    fun getFavoriteArticlesFromDatabase(): Flow<List<ArticleEntity>> {
-        return articleDao.getFavoriteArticles()
-    }
+    suspend fun getNewsSourcesFromDatabase(): Resource<List<SourceViewData>> =
+        Resource.success(sourceDao.getAllNewsSources().map { it.toViewData() })
 
-    suspend fun insertArticlesToDatabase(articles: List<ArticleEntity>) {
-        articleDao.insertArticles(articles)
-    }
-
-    suspend fun insertArticleToDatabase(article: Article?) {
-        article?.toArticleEntity()?.let { articleDao.insertArticle(it) }
-    }
-
-    suspend fun deleteArticleByIdFromDatabase(id: String) {
-        id.toIntOrNull()?.let { idInt ->
-            articleDao.deleteArticleById(idInt)
-        }
-    }
-
-    suspend fun getNewsSourcesFromDatabase(): List<NewsSourceEntity> {
-        return newsSourceDao.getAllNewsSources()
-    }
-
-    suspend fun insertNewsSourcesToDatabase(newsSources: List<NewsSourceEntity>) {
-        newsSourceDao.insertNewsSources(newsSources)
-    }
+    suspend fun insertNewsSourcesToDatabase(sources: List<SourceViewData>) =
+        sourceDao.insertNewsSources(sources.map { it.toEntity() })
 }

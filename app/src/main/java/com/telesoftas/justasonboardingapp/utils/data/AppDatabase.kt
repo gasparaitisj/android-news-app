@@ -6,11 +6,11 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         ArticleEntity::class,
-        NewsSourceEntity::class
+        SourceEntity::class
     ],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun articleDao(): ArticleDao
-    abstract fun newsSourceDao(): NewsSourceDao
+    abstract fun newsSourceDao(): SourceDao
 }

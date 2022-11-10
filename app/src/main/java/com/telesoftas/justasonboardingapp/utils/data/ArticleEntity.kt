@@ -3,7 +3,7 @@ package com.telesoftas.justasonboardingapp.utils.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.Article
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 
 @Entity(tableName = "article")
@@ -19,8 +19,8 @@ data class ArticleEntity(
     @ColumnInfo(name = "image_url") val imageUrl: String?,
     @ColumnInfo(name = "votes") val votes: Long
 ) {
-    fun toArticle(): Article {
-        return Article(
+    fun toViewData(): ArticleViewData {
+        return ArticleViewData(
             id = id.toString(),
             isFavorite = isFavorite,
             publishedAt = publishedAt,

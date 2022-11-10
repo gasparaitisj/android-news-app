@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.telesoftas.justasonboardingapp.utils.data.AppDatabase
 import com.telesoftas.justasonboardingapp.utils.data.ArticleDao
-import com.telesoftas.justasonboardingapp.utils.data.NewsSourceDao
+import com.telesoftas.justasonboardingapp.utils.data.SourceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -32,6 +32,6 @@ object TestDataModule {
 
     @Singleton
     @Provides
-    fun provideNewsSourceDao(database: AppDatabase): NewsSourceDao = database.newsSourceDao()
+    fun provideNewsSourceDao(database: AppDatabase): SourceDao = database.newsSourceDao()
 
 }
