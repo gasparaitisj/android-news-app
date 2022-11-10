@@ -41,22 +41,10 @@ class ArticlesRepository @Inject constructor(
             response.body()?.let { articlesListResponse ->
                 val mappedResponse = Resource.success(
                     articlesListResponse.articles?.map { articlePreviewResponse ->
-                        ArticleViewData(
-                            id = articlePreviewResponse.id,
+                        articlePreviewResponse.toViewData().copy(
                             isFavorite = articlesFromDatabase.find { article ->
                                 article.id == articlePreviewResponse.id
-                            }?.isFavorite ?: false,
-                            publishedAt = articlePreviewResponse.publishedAt.replace(
-                                regex = "[\$TZ]".toRegex(),
-                                replacement = " "
-                            ),
-                            source = articlePreviewResponse.source,
-                            category = articlePreviewResponse.category,
-                            author = articlePreviewResponse.author,
-                            title = articlePreviewResponse.title,
-                            description = articlePreviewResponse.description,
-                            imageUrl = articlePreviewResponse.imageUrl,
-                            votes = articlePreviewResponse.votes
+                            }?.isFavorite ?: false
                         )
                     } ?: listOf()
                 )
@@ -75,20 +63,8 @@ class ArticlesRepository @Inject constructor(
             if (!response.isSuccessful) return Resource.success(articleFromDatabase)
             response.body()?.let { articlePreviewResponse ->
                 return@let Resource.success(
-                    ArticleViewData(
-                        id = articlePreviewResponse.id,
-                        isFavorite = articleFromDatabase?.isFavorite ?: false,
-                        publishedAt = articlePreviewResponse.publishedAt.replace(
-                            regex = "[\$TZ]".toRegex(),
-                            replacement = " "
-                        ),
-                        source = articlePreviewResponse.source,
-                        category = articlePreviewResponse.category,
-                        author = articlePreviewResponse.author,
-                        title = articlePreviewResponse.title,
-                        description = articlePreviewResponse.description,
-                        imageUrl = articlePreviewResponse.imageUrl,
-                        votes = articlePreviewResponse.votes
+                    articlePreviewResponse.toViewData().copy(
+                        isFavorite = articleFromDatabase?.isFavorite ?: false
                     )
                 )
             } ?: Resource.error(msg = response.message())

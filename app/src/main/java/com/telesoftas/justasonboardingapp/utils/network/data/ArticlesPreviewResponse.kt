@@ -1,6 +1,7 @@
 package com.telesoftas.justasonboardingapp.utils.network.data
 
 import com.squareup.moshi.Json
+import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 
 data class ArticlePreviewResponse(
     @Json(name = "id")
@@ -29,7 +30,25 @@ data class ArticlePreviewResponse(
 
     @Json(name = "imageUrl")
     val imageUrl: String? = null
-)
+) {
+    fun toViewData(): ArticleViewData {
+        return ArticleViewData(
+            id = id,
+            isFavorite = false,
+            publishedAt = publishedAt.replace(
+                regex = "[\$TZ]".toRegex(),
+                replacement = " "
+            ),
+            source = source,
+            category = category,
+            author = author,
+            title = title,
+            description = description,
+            imageUrl = imageUrl,
+            votes = votes
+        )
+    }
+}
 
 enum class ArticleCategory(val value: String) {
     @Json(name = "Politics")
