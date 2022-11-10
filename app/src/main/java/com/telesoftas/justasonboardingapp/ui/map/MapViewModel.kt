@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +22,6 @@ class MapViewModel @Inject constructor(
     private fun loadLandpads() {
         viewModelScope.launch {
             state.update { it.copy(landpadLocations = landpadsRepository.getLandpads()) }
-            Timber.d("landpads = ${state.value.landpadLocations}")
         }
     }
 }
