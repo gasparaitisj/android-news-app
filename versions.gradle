@@ -1,11 +1,16 @@
 def versions = [:]
 
-def build_versions = [:]
-build_versions.min_sdk = 24
-build_versions.compile_sdk = 33
-build_versions.target_sdk = 33
-ext.build_versions = build_versions
+// SDKs
+versions.min_sdk = 24
+versions.compile_sdk = 33
+versions.target_sdk = 33
 
+// Plugins
+versions.android = "7.3.0"
+versions.kotlin = "1.6.10"
+versions.maps_secrets = "2.0.1"
+
+// Libraries
 versions.accompanist = "0.25.1"
 versions.activity = "1.6.1"
 versions.apollo = "3.7.0"
