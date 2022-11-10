@@ -8,10 +8,10 @@ import com.telesoftas.justasonboardingapp.utils.repository.LandpadsRepository
 import com.telesoftas.justasonboardingapp.utils.repository.toResource
 import io.mockk.coEvery
 import io.mockk.mockk
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
