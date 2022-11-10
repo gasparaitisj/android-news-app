@@ -5,7 +5,6 @@ import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertFalse
@@ -105,7 +104,7 @@ class ArticleDaoTest {
                 favoriteArticle
             )
         )
-        val allFavoriteArticles = dao.getFavoriteArticles().first()
+        val allFavoriteArticles = dao.getFavoriteArticles()
 
         assertTrue(allFavoriteArticles == answer)
     }

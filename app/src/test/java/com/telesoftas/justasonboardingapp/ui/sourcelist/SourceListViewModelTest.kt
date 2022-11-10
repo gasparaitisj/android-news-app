@@ -70,8 +70,16 @@ class SourceListViewModelTest {
     @Before
     fun setUp() {
         coEvery {
-            articlesRepository.getArticles()
-        } returns articlesListResponse
+            articlesRepository.getNewsSources()
+        } returns Resource.success(
+            articlesListResponse.data!!.articles!!.map { article ->
+                SourceViewData(
+                    id = article.id,
+                    title = article.title ?: "",
+                    description = article.description ?: ""
+                )
+            }
+        )
     }
 
     @Test
@@ -87,7 +95,7 @@ class SourceListViewModelTest {
 
         viewModel.onRefresh()
 
-        assertEquals(answer, viewModel.newsSources.value.data)
+        assertEquals(answer, viewModel.state.value.sources.data)
     }
 
     @Test
@@ -103,7 +111,7 @@ class SourceListViewModelTest {
 
         viewModel.sortArticles(SortBy.ASCENDING)
 
-        assertEquals(answer, viewModel.newsSources.value.data)
+        assertEquals(answer, viewModel.state.value.sources.data)
     }
 
     @Test
@@ -119,6 +127,6 @@ class SourceListViewModelTest {
 
         viewModel.sortArticles(SortBy.DESCENDING)
 
-        assertEquals(answer, viewModel.newsSources.value.data)
+        assertEquals(answer, viewModel.state.value.sources.data)
     }
 }

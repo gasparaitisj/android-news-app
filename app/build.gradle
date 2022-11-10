@@ -6,16 +6,17 @@ plugins {
     id "com.google.gms.google-services"
     id "com.google.firebase.crashlytics"
     id "com.google.android.libraries.mapsplatform.secrets-gradle-plugin"
+    id "com.apollographql.apollo3"
 }
 
 android {
     namespace "com.telesoftas.justasonboardingapp"
-    compileSdk rootProject.compileSdkVersion
+    compileSdk versions.compile_sdk
 
     defaultConfig {
         applicationId "com.telesoftas.justasonboardingapp"
-        minSdk rootProject.minSdkVersion
-        targetSdk rootProject.targetSdkVersion
+        minSdk versions.min_sdk
+        targetSdk versions.target_sdk
         versionCode 1
         versionName "1.0"
 
@@ -57,115 +58,121 @@ android {
 }
 dependencies {
     // Core libraries
-    implementation "androidx.core:core-ktx:$core_ktx_version"
-    implementation "androidx.activity:activity-ktx:$activity_version"
+    implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "androidx.activity:activity-ktx:$versions.activity"
+
+    // Apollo
+    implementation "com.apollographql.apollo3:apollo-runtime:$versions.apollo"
 
     // Camera
-    implementation "androidx.camera:camera-core:$camerax_version"
+    implementation "androidx.camera:camera-core:$versions.camerax"
 
     // AppCompat
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "androidx.appcompat:appcompat-resources:$versions.appcompat"
 
     // Lifecycle
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$versions.lifecycle"
 
     // Compose
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation "androidx.navigation:navigation-compose:$compose_navigation_version"
-    implementation "androidx.activity:activity-compose:$compose_activity_version"
-    implementation "androidx.navigation:navigation-testing:$compose_navigation_version"
+    implementation "androidx.compose.ui:ui:$versions.compose"
+    implementation "androidx.compose.ui:ui-tooling-preview:$versions.compose"
+    implementation "androidx.navigation:navigation-compose:$versions.compose_navigation"
+    implementation "androidx.activity:activity-compose:$versions.compose_activity"
+    implementation "androidx.navigation:navigation-testing:$versions.compose_navigation"
 
     // Accompanist libraries
-    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager:$versions.accompanist"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$versions.accompanist"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$versions.accompanist"
+    implementation "com.google.accompanist:accompanist-navigation-animation:$versions.accompanist"
+    implementation "com.google.accompanist:accompanist-permissions:$versions.accompanist"
 
     // Splash Screen API
-    implementation "androidx.core:core-splashscreen:$splash_screen_version"
+    implementation "androidx.core:core-splashscreen:$versions.splash_screen"
 
     // DataStore
-    implementation "androidx.datastore:datastore-preferences:$data_store_preferences_version"
+    implementation "androidx.datastore:datastore-preferences:$versions.data_store_preferences"
 
     // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$versions.retrofit"
+    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp"
 
     // Coil
-    implementation "io.coil-kt:coil:$coil_version"
-    implementation "io.coil-kt:coil-compose:$coil_version"
+    implementation "io.coil-kt:coil:$versions.coil"
+    implementation "io.coil-kt:coil-compose:$versions.coil"
 
     // Material Design
-    implementation "androidx.compose.material:material:$material_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.material:material:$versions.material"
+    implementation "androidx.compose.material:material-icons-extended:$versions.compose"
 
     // Collapsing Toolbar
-    implementation "me.onebone:toolbar-compose:$collapsing_toolbar_version"
+    implementation "me.onebone:toolbar-compose:$versions.collapsing_toolbar"
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation "com.google.dagger:hilt-android:$versions.hilt"
+    implementation "androidx.hilt:hilt-navigation-compose:$versions.hilt_navigation_compose"
+    kapt "com.google.dagger:hilt-compiler:$versions.hilt"
 
     // Timber for Logging
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation "com.jakewharton.timber:timber:$versions.timber"
 
     // Room
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    testImplementation "androidx.room:room-testing:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-runtime:$versions.room"
+    implementation "androidx.room:room-ktx:$versions.room"
+    testImplementation "androidx.room:room-testing:$versions.room"
+    annotationProcessor "androidx.room:room-compiler:$versions.room"
+    kapt "androidx.room:room-compiler:$versions.room"
 
     // Firebase
-    implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
+    implementation platform("com.google.firebase:firebase-bom:$versions.firebase_bom")
     implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-analytics-ktx"
     implementation "com.google.firebase:firebase-messaging-ktx"
 
     // Google Maps
     // noinspection GradleDependency (https://github.com/googlemaps/android-maps-compose/issues/207)
-    implementation "com.google.maps.android:maps-compose:$compose_maps_version"
-    implementation "com.google.maps.android:android-maps-utils:$compose_maps_utils_version"
-    implementation "com.google.android.gms:play-services-maps:$gms_maps_version"
+    implementation "com.google.maps.android:maps-compose:$versions.compose_maps"
+    implementation "com.google.maps.android:android-maps-utils:$versions.compose_maps_utils"
+    implementation "com.google.android.gms:play-services-maps:$versions.gms_maps"
 
     // CameraX
-    implementation "androidx.camera:camera-lifecycle:$camerax_version"
-    implementation "androidx.camera:camera-view:$camerax_version"
-    implementation "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$versions.camerax"
+    implementation "androidx.camera:camera-view:$versions.camerax"
+    implementation "androidx.camera:camera-camera2:$versions.camerax"
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines_test"
 
     // JUnit
-    testImplementation "junit:junit:$junit_version"
+    testImplementation "junit:junit:$versions.junit"
 
     // MockK
-    testImplementation "io.mockk:mockk-android:$mockk_version"
+    testImplementation "io.mockk:mockk-android:$versions.mockk"
 
     // UI Testing
-    androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
-    androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$versions.compose"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$versions.compose"
+    debugImplementation "androidx.compose.ui:ui-tooling:$versions.compose"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$versions.hilt"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$versions.hilt"
+    androidTestImplementation "androidx.test:runner:$versions.test_runner"
 
     // LeakCanary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakcanary"
 }
 
+apollo {
+    useVersion2Compat()
+}
 
 kapt {
     correctErrorTypes true

@@ -27,7 +27,9 @@
     - [x] Display app version, developer’s full name and/or company name.
     - [x] Bonus: Take and display a camera selfie
 - [x] Bonus: Maps screen
-    - [x] Large map with all locations (custom marker, cluster & tooltip)
+    - [x] Tabs to choose between the two maps
+    - [x] Large map with pharmacy locations (custom marker, cluster & tooltip)
+    - [x] GraphQL: large map with landpad locations
 
 ### Other tasks
 - [x] Cache items to display in offline mode
@@ -39,14 +41,14 @@
 - [x] Bonus: Add Google Maps with full customization
 - [x] Bonus: Take and display a camera selfie in About Screen
 - [x] Bonus: Migrate to Rx (branch: `coroutines-to-rx`)
+- [x] Bonus: Utilize GraphQL with SpaceX API
+    - [x] Get a `landpads` list from the API
+    - [x] Show the `landpads` list on a map using `latitude`, `longitude` variables
+    - [x] Show additional info on `landpad` pin clicked (`name`, `successfulLandings`, `attemptedLandings`, `successRatio`)
+    - [x] Clickable link to wiki page that opens browser 
 - [ ] Full dark mode support (missing: maps, captions)
 - [ ] Bonus: Display votes
 - [ ] Bonus: Save article as .pdf to external storage in News Details Screen
-- [ ] Bonus: Utilize GraphQL with SpaceX API
-    - [ ] Get a `landpads` list from the API
-    - [ ] Show the `landpads` list on a map using `latitude`, `longitude` variables
-    - [ ] Show additional info on `landpad` pin clicked (`name`, `successfulLandings`, `attemptedLandings`, `successRatio`)
-    - [ ] Clickable link to wiki page that opens browser 
 
 ### Requirements (libraries, tools, versions)
 - Correct SDKs
@@ -71,9 +73,9 @@
         - [x] [Moshi](https://github.com/square/moshi)
         - [x] [Coil](https://coil-kt.github.io/coil/)
     - GraphQL
-        - [ ] [Apollo](https://www.apollographql.com/docs/kotlin/)
-        - [ ] [GraphQL plugin for Android Studio](https://plugins.jetbrains.com/plugin/8097-graphql)
-        - [ ] [GraphQL SpaceX API](https://studio.apollographql.com/public/SpaceX-pxxbxen/explorer)
+        - [x] [Apollo](https://www.apollographql.com/docs/kotlin/)
+        - [x] [GraphQL plugin for Android Studio](https://plugins.jetbrains.com/plugin/8097-graphql)
+        - [x] [GraphQL SpaceX API](https://studio.apollographql.com/public/SpaceX-pxxbxen/explorer)
 - [Testing](https://developer.android.com/training/testing/local-tests)
     - [x] JUnit
     - [x] [MockK](https://mockk.io/ANDROID.html)

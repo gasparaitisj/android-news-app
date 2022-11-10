@@ -8,7 +8,6 @@ import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -67,7 +66,7 @@ class FavoriteViewModelTest {
     fun setUp() {
         coEvery {
             articlesRepository.getFavoriteArticlesFromDatabase()
-        } returns flow { emit(favoriteArticles) }
+        } returns favoriteArticles.map { it.toViewData() }
     }
 
     @Ignore("articles from FavoriteViewModel is empty, therefore test fails, reason unknown")
@@ -104,6 +103,6 @@ class FavoriteViewModelTest {
 
         viewModel.onFilterArticles("D")
 
-        assertEquals(answer, viewModel.filteredArticles.value)
+        assertEquals(answer, viewModel.state.value.filteredArticles)
     }
 }

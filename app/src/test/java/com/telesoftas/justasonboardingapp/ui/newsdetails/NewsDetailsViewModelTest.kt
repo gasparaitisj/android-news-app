@@ -12,7 +12,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -49,7 +48,6 @@ class NewsDetailsViewModelTest {
         votes = 10
     )
     private val articlesRepository: ArticlesRepository = mockk()
-    private val locationRepository: LocationRepository = LocationRepository()
     private val savedStateHandle: SavedStateHandle = mockk()
 
     @Before
@@ -60,15 +58,15 @@ class NewsDetailsViewModelTest {
 
         coEvery {
             articlesRepository.getArticleById(article.data!!.id)
-        } returns article
+        } returns Resource.success(article.data!!.toViewData().copy(isFavorite = articleFromDatabase.isFavorite))
         coEvery {
             articlesRepository.getArticleByIdFromDatabase(article.data!!.id)
-        } returns flow { emit(articleFromDatabase) }
+        } returns articleFromDatabase.toViewData()
     }
 
     @Test
     fun onViewModelInitialized_articleIsLoadedCorrectly() = runTest {
-        viewModel = NewsDetailsViewModel(articlesRepository, locationRepository, savedStateHandle)
+        viewModel = NewsDetailsViewModel(articlesRepository, savedStateHandle)
         advanceUntilIdle()
         val answer = Resource.success(
             ArticleViewData(
@@ -85,6 +83,6 @@ class NewsDetailsViewModelTest {
             )
         )
 
-        assertEquals(answer, viewModel.article.value)
+        assertEquals(answer, viewModel.state.value.article)
     }
 }

@@ -41,6 +41,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.telesoftas.justasonboardingapp.R
 import com.telesoftas.justasonboardingapp.ui.map.GoogleMapWithClustering
 import com.telesoftas.justasonboardingapp.ui.map.MapState
+import com.telesoftas.justasonboardingapp.ui.map.PharmacyClusterInfoWindow
+import com.telesoftas.justasonboardingapp.ui.map.PharmacyClusterItemInfoWindow
 import com.telesoftas.justasonboardingapp.ui.map.utils.LocationClusterItem
 import com.telesoftas.justasonboardingapp.ui.sourcelist.newslist.ArticleViewData
 import com.telesoftas.justasonboardingapp.ui.theme.DarkBlue
@@ -301,7 +303,6 @@ fun NewsDetailsItem(
                     .fillMaxWidth()
                     .height((256 + 128).dp)
                     .padding(top = 32.dp),
-                location = location,
                 onMapTouched = {
                     columnScrollingEnabled = false
                 }
@@ -315,14 +316,13 @@ fun NewsDetailsItem(
 @Composable
 fun MapInColumn(
     modifier: Modifier = Modifier,
-    location: LocationClusterItem,
     onMapTouched: () -> Unit
 ) {
+    val state = MapState()
     Box(modifier = modifier) {
         GoogleMapWithClustering(
-            state = MapState(
-                listOf(location)
-            ),
+            items = state.pharmacyLocations,
+            cameraPosition = state.pharmacyCameraPosition,
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter(
@@ -346,7 +346,9 @@ fun MapInColumn(
                 tiltGesturesEnabled = false,
                 zoomControlsEnabled = false,
                 zoomGesturesEnabled = false
-            )
+            ),
+            clusterInfoWindowContent = { PharmacyClusterInfoWindow(it) },
+            clusterItemInfoWindowContent = { PharmacyClusterItemInfoWindow(it) }
         )
     }
 }

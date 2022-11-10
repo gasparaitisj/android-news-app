@@ -1,17 +1,19 @@
 package com.telesoftas.justasonboardingapp.ui.sourcelist.newslist
 
+import androidx.lifecycle.SavedStateHandle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.telesoftas.justasonboardingapp.MainCoroutineRule
 import com.telesoftas.justasonboardingapp.utils.data.ArticleEntity
+import com.telesoftas.justasonboardingapp.utils.navigation.Screen
 import com.telesoftas.justasonboardingapp.utils.network.Resource
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticleCategory
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlePreviewResponse
 import com.telesoftas.justasonboardingapp.utils.network.data.ArticlesListResponse
 import com.telesoftas.justasonboardingapp.utils.repository.ArticlesRepository
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -83,15 +85,26 @@ class NewsListViewModelTest {
     )
     private val articlesRepository: ArticlesRepository = mockk()
     private val firebaseAnalytics: FirebaseAnalytics = mockk()
+    private val savedStateHandle: SavedStateHandle = mockk()
 
     @Before
     fun setUp() {
+        every {
+            checkNotNull(savedStateHandle[Screen.NewsList.KEY_TITLE]) as String
+        } returns "TITLE"
         coEvery {
             articlesRepository.getArticles()
-        } returns articlesListResponse
+        } returns Resource.success(articlesListResponse.data!!.articles!!.map {
+            it.toViewData().copy(
+                isFavorite = favoriteArticles.find { article ->
+                    article.id.toString() == it.id
+                }?.isFavorite ?: false,
+            )
+        }
+        )
         coEvery {
             articlesRepository.getFavoriteArticlesFromDatabase()
-        } returns flow { emit(favoriteArticles) }
+        } returns favoriteArticles.map { it.toViewData() }
         coEvery {
             articlesRepository.insertArticleToDatabase(any())
             articlesRepository.insertArticlesToDatabase(any())
@@ -100,7 +113,7 @@ class NewsListViewModelTest {
 
     @Test
     fun onRefresh_updatesArticlesCorrectly() = runTest {
-        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
+        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics, savedStateHandle)
         advanceUntilIdle()
         val answer = listOf(
             ArticleViewData(
@@ -155,12 +168,12 @@ class NewsListViewModelTest {
 
         viewModel.onRefresh()
 
-        assertEquals(answer, viewModel.articles.value.data)
+        assertEquals(answer, viewModel.state.value.articles.data)
     }
 
     @Test
     fun onCategoryTypeChanged_filtersArticlesCorrectly() = runTest {
-        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics)
+        viewModel = NewsListViewModel(articlesRepository, firebaseAnalytics, savedStateHandle)
         advanceUntilIdle()
         val answer = listOf(
             ArticleViewData(
@@ -191,6 +204,6 @@ class NewsListViewModelTest {
 
         viewModel.onCategoryTypeChanged(ArticleCategory.POLITICS)
 
-        assertEquals(answer, viewModel.articles.value.data)
+        assertEquals(answer, viewModel.state.value.articles.data)
     }
 }

@@ -7,5 +7,5 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 
 data class NewsDetailsState(
     val article: Resource<ArticleViewData> = Resource.success(),
-    val location: LocationClusterItem = MapState().items[0],
+    val location: LocationClusterItem = MapState().pharmacyLocations[0],
 )

@@ -7,6 +7,8 @@ data class LocationClusterItem(
     val itemPosition: LatLng,
     val itemTitle: String,
     val itemSnippet: String,
+    val successfulLandings: String? = null,
+    val attemptedLandings: String? = null
 ) : ClusterItem {
     override fun getPosition(): LatLng = itemPosition
     override fun getTitle(): String = itemTitle

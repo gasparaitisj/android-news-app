@@ -15,6 +15,7 @@ class ClusterManager(
     compositionContext: CompositionContext,
     map: GoogleMap,
     items: List<LocationClusterItem>,
+    clusterColors: ClusterColors = ClusterColors(),
     clusterInfoWindowContent: @Composable (Marker) -> Unit,
     clusterItemInfoWindowContent: @Composable (Marker) -> Unit,
     onClusterInfoWindowClicked: (Cluster<LocationClusterItem>) -> Unit = {},
@@ -26,7 +27,8 @@ class ClusterManager(
         renderer = ClusterRenderer(
             context = context,
             map = map,
-            clusterManager = this
+            clusterManager = this,
+            clusterColors = clusterColors
         )
         clusterMarkerCollection.setInfoWindowAdapter(
             ClusterInfoWindowAdapter(
