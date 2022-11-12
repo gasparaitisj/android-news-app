@@ -92,6 +92,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-navigation-animation:$versions.accompanist"
     implementation "com.google.accompanist:accompanist-permissions:$versions.accompanist"
 
+    // Capturable (convert Composable to Bitmap)
+    implementation "dev.shreyaspatil:capturable:1.0.3"
+
     // Splash Screen API
     implementation "androidx.core:core-splashscreen:$versions.splash_screen"
 
