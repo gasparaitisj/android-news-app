@@ -1,6 +1,11 @@
 package com.telesoftas.justasonboardingapp.ui.newsdetails
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.view.MotionEvent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -11,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -19,6 +25,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -26,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.navigation.NavController
@@ -68,6 +76,19 @@ fun NewsDetailsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     addRefreshOnNavigation(navController = navController, onRefresh = { viewModel.onRefresh() })
+    handleStoragePermissions(onUpdatePermissions = { read, write -> viewModel.onUpdatePermissions(read, write) })
+
+    val permissionsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        onUpdatePermissions(
+            permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false,
+            permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
+        )
+    }
+    if (permissionsToRequest.isNotEmpty()) {
+        SideEffect {
+            permissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        }
+    }
 
     NewsDetailsContent(
         state = state,
@@ -76,6 +97,59 @@ fun NewsDetailsScreen(
         onArticleFavoriteChanged = { item -> viewModel.onArticleFavoriteChanged(article = item) }
     )
 }
+
+@Composable
+private fun handleStoragePermissions(
+    onUpdatePermissions: (Boolean, Boolean) -> Unit
+) {
+    val hasReadPermission = ContextCompat.checkSelfPermission(
+        LocalContext.current,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
+    val hasWritePermission = ContextCompat.checkSelfPermission(
+        LocalContext.current,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+    val permissionsToRequest = mutableListOf<String>()
+    if (!hasReadPermission) {
+        permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+    if (!hasWritePermission) {
+        permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+    onUpdatePermissions(hasReadPermission, hasWritePermission)
+}
+
+//private fun saveArticleToExternalStorage(article: ArticleViewData): Boolean {
+//    val bmp = ContextCompat.getDrawable(this, R.drawable.img_spacex_logo)?.toBitmap() ?: return false
+//    val imageCollection = sdkIs29AndUpOrNull {
+//        MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+//    } ?: MediaStore.Files.getContentUri("external")
+//    val contentValues = ContentValues().apply {
+//        put(MediaStore.MediaColumns.DISPLAY_NAME, "${article.id + " " + article.title}.pdf")
+//        put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+//        put(MediaStore.MediaColumns.TITLE, article.title)
+//        put(MediaStore.MediaColumns.DATE_ADDED, article.publishedAt)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            put(MediaStore.MediaColumns.AUTHOR, article.author)
+//        }
+//    }
+//    return try {
+//        contentResolver.insert(imageCollection, contentValues)?.also { uri ->
+//            contentResolver.openOutputStream(uri).use { outputStream ->
+//                if(!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)) {
+//                    throw IOException("Failed to export article")
+//                }
+//            }
+//        } ?: throw IOException("Couldn't create MediaStore entry")
+//        true
+//    } catch (e: IOException) {
+//        e.printStackTrace()
+//        false
+//    }
+//}
 
 @Composable
 private fun addRefreshOnNavigation(
@@ -165,6 +239,14 @@ private fun CollapsedCollapsingAppBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    Icons.Filled.Save,
+                    contentDescription = "Export article"
                 )
             }
         },

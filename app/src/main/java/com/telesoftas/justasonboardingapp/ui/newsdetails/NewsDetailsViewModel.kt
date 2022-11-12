@@ -39,4 +39,21 @@ class NewsDetailsViewModel @Inject constructor(
             onRefresh()
         }
     }
+
+    fun onUpdatePermissions(isReadGranted: Boolean, isWriteGranted: Boolean) {
+        state.update {
+            it.copy(
+                isReadPermissionGranted = isReadGranted,
+                isWritePermissionGranted = isWriteGranted
+            )
+        }
+    }
+
+    fun onUpdateReadPermission(isGranted: Boolean) {
+        state.update { it.copy(isReadPermissionGranted = isGranted) }
+    }
+
+    fun onUpdateWritePermission(isGranted: Boolean) {
+        state.update { it.copy(isWritePermissionGranted = isGranted) }
+    }
 }

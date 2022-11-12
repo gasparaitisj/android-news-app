@@ -8,4 +8,6 @@ import com.telesoftas.justasonboardingapp.utils.network.Resource
 data class NewsDetailsState(
     val article: Resource<ArticleViewData> = Resource.success(),
     val location: LocationClusterItem = MapState().pharmacyLocations[0],
+    val isReadPermissionGranted: Boolean = false,
+    val isWritePermissionGranted: Boolean = false
 )
