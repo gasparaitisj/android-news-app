@@ -221,6 +221,7 @@ fun ArticleItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            VoteContent(item, modifier = Modifier.padding(end = 8.dp))
             Text(
                 modifier = Modifier.weight(1f),
                 text = "${item.author} - ${item.publishedAt}",
@@ -278,6 +279,33 @@ fun ArticleItem(
         thickness = 2.dp,
         color = colorResource(id = R.color.news_list_divider)
     )
+}
+
+@Composable
+fun VoteContent(
+    item: ArticleViewData,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.img_arrow_up),
+            contentDescription = "Vote up"
+        )
+        Text(
+            text = item.votes.toString(),
+            style = Typography.subtitle2,
+            maxLines = 1,
+            overflow = TextOverflow.Visible
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.img_arrow_down),
+            contentDescription = "Vote down"
+        )
+    }
 }
 
 @ExperimentalMaterialApi
