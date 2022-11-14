@@ -10,19 +10,19 @@
     - [x] Display articles of one particular source
     - [x] Add/remove article to/from favorites
     - [x] Filter articles by article category (politics, sports, business...)
-    - [ ] Bonus: Display votes
+    - [x] Bonus: Display votes
 - [x] News details screen
     - [x] Display one particular article
     - [x] Animated collapsing toolbar with image
     - [x] Button with openable link to original article
     - [x] Smooth screen transition when navigated from news list screen
     - [x] Bonus: Small map with a single location (single pinned location, locked camera zoom, custom marker & tooltip)
-    - [ ] Bonus: Display votes
+    - [x] Bonus: Display votes
     - [ ] Bonus: Save article as .pdf to external storage
 - [x] Favorite screen
     - [x] Display all articles, marked as favorite
     - [x] Search for a particular article by title in toolbar
-    - [ ] Bonus: Display votes
+    - [x] Bonus: Display votes
 - [x] About screen
     - [x] Display app version, developer’s full name and/or company name.
     - [x] Bonus: Take and display a camera selfie
@@ -45,9 +45,9 @@
     - [x] Get a `landpads` list from the API
     - [x] Show the `landpads` list on a map using `latitude`, `longitude` variables
     - [x] Show additional info on `landpad` pin clicked (`name`, `successfulLandings`, `attemptedLandings`, `successRatio`)
-    - [x] Clickable link to wiki page that opens browser 
+    - [x] Clickable link to wiki page that opens browser
+- [x] Bonus: Display votes
 - [ ] Full dark mode support (missing: maps, captions)
-- [ ] Bonus: Display votes
 - [ ] Bonus: Save article as .pdf to external storage in News Details Screen
 
 ### Requirements (libraries, tools, versions)
